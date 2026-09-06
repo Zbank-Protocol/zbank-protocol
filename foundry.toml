@@ -1,0 +1,23 @@
+[profile.default]
+src = "src"
+out = "out"
+test = "test"
+libs = ["lib"]
+solc = "0.8.26"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+
+# Robinhood Chain is an Arbitrum Orbit (Nitro) L2, so it is EVM-equivalent and
+# needs no special compilation settings beyond a Cancun-capable target.
+[rpc_endpoints]
+robinhood = "https://rpc.mainnet.chain.robinhood.com"
+robinhood_testnet = "https://rpc.testnet.chain.robinhood.com"
+
+# Blockscout verification. `forge verify-contract --verifier blockscout` uses these.
+[etherscan]
+robinhood = { key = "unused", chain = 4663, url = "https://robinhoodchain.blockscout.com/api/" }
+robinhood_testnet = { key = "unused", chain = 46630, url = "https://explorer.testnet.chain.robinhood.com/api/" }
+
+[fuzz]
+runs = 512
