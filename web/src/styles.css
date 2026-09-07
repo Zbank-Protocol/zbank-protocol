@@ -1371,6 +1371,22 @@ a.product:hover .product__arrow {
   user-select: none;
 }
 
+/* Real logo artwork: a dark disc on a subtle ring — brand PNGs here are drawn for dark UIs
+   (white Apple/Amazon marks); the image is cropped round so mixed source art reads as one set. */
+.tick-icon--img {
+  border-color: var(--line-strong);
+  background: #17181d;
+  overflow: hidden;
+}
+
+.tick-icon--img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
 /* ---- One-line strategy explainer under the picker. ---- */
 .strategy-brief {
   font-size: 0.8125rem;

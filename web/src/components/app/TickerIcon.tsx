@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { STOCK_TOKENS } from "../../config/protocol";
 
 /**
- * A branded monogram badge for a ticker: a ring-lit disc with the symbol's first letters
- * and a per-company accent hue. Deliberately not logo artwork — monograms stay premium at
- * 20px, never pixelate, and carry no trademark baggage.
+ * The real logo for a ticker, served from /tickers/{SYMBOL}.png (local assets — no runtime
+ * third-party CDN). If a symbol has no local artwork, or the image fails, the badge falls
+ * back to the branded monogram so the row never renders broken.
  */
 
 const ACCENT: Record<string, string> = {
@@ -24,6 +25,23 @@ const ACCENT: Record<string, string> = {
   ZBNK: "#e7b348",
 };
 
+/** Symbols with real logo artwork in public/tickers/. Keep in sync with that folder. */
+const HAS_LOGO = new Set([
+  "NVDA",
+  "AAPL",
+  "MSFT",
+  "META",
+  "GOOGL",
+  "AMZN",
+  "TSLA",
+  "SPY",
+  "QQQ",
+  "SGOV",
+  "GME",
+  "HIMS",
+  "ZEC",
+]);
+
 /** Deterministic fallback hue so unknown symbols still get a stable color. */
 function fallbackAccent(symbol: string): string {
   let h = 0;
@@ -33,6 +51,23 @@ function fallbackAccent(symbol: string): string {
 
 export function TickerIcon({ symbol, size = 22 }: { symbol: string; size?: number }) {
   const s = symbol.toUpperCase();
+  const [broken, setBroken] = useState(false);
+
+  if (HAS_LOGO.has(s) && !broken) {
+    return (
+      <span className="tick-icon tick-icon--img" aria-hidden="true" style={{ width: size, height: size }}>
+        <img
+          src={`/tickers/${s}.png`}
+          alt=""
+          width={size}
+          height={size}
+          loading="lazy"
+          onError={() => setBroken(true)}
+        />
+      </span>
+    );
+  }
+
   const accent = ACCENT[s] ?? fallbackAccent(s);
   const mono = s.length <= 2 ? s : s.slice(0, 2);
   return (
