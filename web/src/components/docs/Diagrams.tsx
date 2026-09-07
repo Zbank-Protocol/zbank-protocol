@@ -150,18 +150,18 @@ export function DiagramCreditMarket() {
 export function DiagramInvestRoute() {
   const outs = [
     ["NVDA", 25],
-    ["AAPL", 20],
     ["MSFT", 20],
+    ["AAPL", 20],
     ["META", 15],
-    ["ZEC", 10],
+    ["GOOGL", 10],
   ] as const;
   return (
     <Figure title="A ZINVEST execution: one input, one route, a weighted basket out" viewBox="0 0 560 210">
-      <Box x={20} y={80} w={90} h={44} label="ZEC" sub="your input" gold />
-      <Arrow x1={110} y1={102} x2={168} y2={102} label="swap" />
-      <Box x={170} y={80} w={90} h={44} label="USDG" sub="via router" />
-      <Arrow x1={260} y1={102} x2={318} y2={102} label="split by weight" />
-      <Box x={320} y={68} w={100} h={68} label="ALLOCATOR" sub="ZTECH targets" gold />
+      <Box x={20} y={80} w={90} h={44} label="USDG" sub="your input" gold />
+      <Arrow x1={110} y1={102} x2={168} y2={102} label="split by weight" />
+      <Box x={170} y={80} w={90} h={44} label="ALLOCATOR" sub="ZTECH targets" />
+      <Arrow x1={260} y1={102} x2={318} y2={102} label="swap per leg" />
+      <Box x={320} y={68} w={100} h={68} label="UNISWAP V3" sub="atomic multicall" gold />
       {outs.map(([sym, w], i) => {
         const y = 18 + i * 36;
         return (

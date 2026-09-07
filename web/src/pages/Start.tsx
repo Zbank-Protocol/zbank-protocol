@@ -47,14 +47,14 @@ const CHAPTERS: Chapter[] = [
   },
   {
     kicker: "Invest · ZINVEST",
-    title: ["Turn ZEC into a portfolio."],
+    title: ["One balance.", "An entire market."],
     copy:
-      "Pick an amount of ZEC and a set of Stock Tokens — your own weights, or a prebuilt ZINDEX strategy like ZTECH or Z500. ZINVEST routes ZEC through USDG into every position at its target weight, quoting price impact, fees, and estimated received before anything executes.",
+      "Fund with USDG and pick a set of Stock Tokens — your own weights, or a prebuilt ZINDEX strategy like ZTECH or Z500. Every leg is quoted live through Uniswap v3 — estimated received, slippage guard per leg — then the whole basket executes in one atomic multicall. Holding ZEC instead of dollars? ZLOOP lets you invest without selling it.",
     visual: <DiagramInvestRoute />,
     facts: [
-      ["Input", "ZEC"],
+      ["Input", "USDG"],
       ["Output", "A weighted Stock Token basket"],
-      ["Promise", "Full quote before execution — no surprises"],
+      ["Promise", "Full live quote before execution — no surprises"],
     ],
     link: { label: "Open ZINVEST", to: "/invest" },
   },
