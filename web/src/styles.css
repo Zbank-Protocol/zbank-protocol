@@ -2576,6 +2576,14 @@ a.protocol:hover {
   text-transform: uppercase;
   color: var(--ink-4);
 }
+.footer__x {
+  color: var(--gold);
+  text-decoration: none;
+  transition: opacity 0.2s var(--ease);
+}
+.footer__x:hover {
+  opacity: 0.75;
+}
 
 .footer__risks {
   display: grid;

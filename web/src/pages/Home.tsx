@@ -282,7 +282,15 @@ export default function Home() {
           <div className="footer__top">
             <Logo />
             <span className="footer__net">
-              {CHAIN.name} · {BRAND.domain}
+              {CHAIN.name} · {BRAND.domain} ·{" "}
+              <a
+                href="https://x.com/zbankworld"
+                target="_blank"
+                rel="noreferrer"
+                className="footer__x"
+              >
+                @zbankworld
+              </a>
             </span>
           </div>
           <ul className="footer__risks">
