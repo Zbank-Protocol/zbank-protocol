@@ -1417,6 +1417,91 @@ a.product:hover .product__arrow {
   display: block;
 }
 
+/* ---- Strategy picker cards (ZLOOP): what each strategy holds, at a glance. ---- */
+
+.stratpick {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.6rem;
+}
+
+.stratpick__card {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid var(--line-strong);
+  background: var(--panel-2);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.18s var(--ease),
+    background 0.18s var(--ease);
+}
+
+.stratpick__card:hover {
+  border-color: var(--ink-4);
+}
+
+.stratpick__card[data-active="true"] {
+  border-color: var(--gold-dim);
+  background: var(--gold-ghost);
+}
+
+.stratpick__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.stratpick__ticker {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+
+.stratpick__card[data-active="true"] .stratpick__ticker {
+  color: var(--gold);
+}
+
+.stratpick__count {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  white-space: nowrap;
+}
+
+.stratpick__name {
+  font-size: 0.8rem;
+  color: var(--ink-3);
+}
+
+/* Overlapping logo cluster — the contents visible before any click. */
+.stratpick__cluster {
+  display: flex;
+  align-items: center;
+}
+
+.stratpick__cluster .tick-icon {
+  margin-right: -6px;
+  box-shadow: 0 0 0 2px var(--panel-2);
+}
+
+.stratpick__card[data-active="true"] .stratpick__cluster .tick-icon {
+  box-shadow: 0 0 0 2px #17140c;
+}
+
+.stratpick__more {
+  margin-left: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--ink-4);
+}
+
 /* ---- One-line strategy explainer under the picker. ---- */
 .strategy-brief {
   font-size: 0.8125rem;

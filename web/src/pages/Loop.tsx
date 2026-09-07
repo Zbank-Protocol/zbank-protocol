@@ -5,6 +5,7 @@ import { AssetAmountInput } from "../components/app/AssetAmountInput";
 import { TransactionPreview } from "../components/app/TransactionPreview";
 import { HealthFactor } from "../components/app/HealthFactor";
 import { WalletButton } from "../components/app/WalletButton";
+import { TickerIcon, tickerName } from "../components/app/TickerIcon";
 import { INDEX_STRATEGIES, NETWORK, PRODUCT_STATUS } from "../config/protocol";
 import { useZCreditMarket } from "../hooks/useZCreditMarket";
 import { useZCreditPosition } from "../hooks/useZCreditPosition";
@@ -167,20 +168,54 @@ export default function Loop() {
 
             <div className="mode__body">
               <span className="metric__label">Invest borrowed USDG into</span>
-              <div className="builder__templates" role="tablist" aria-label="Strategies">
+
+              {/* Each strategy is a card that shows what it holds — never a bare ticker. */}
+              <div className="stratpick" role="tablist" aria-label="Strategies">
                 {strategies.map((s, i) => (
                   <button
                     key={s.ticker}
                     role="tab"
                     aria-selected={i === strategyIdx}
                     data-active={i === strategyIdx}
-                    className="builder__template"
+                    className="stratpick__card"
                     onClick={() => setStrategyIdx(i)}
                   >
-                    {s.ticker}
+                    <span className="stratpick__head">
+                      <span className="stratpick__ticker">{s.ticker}</span>
+                      <span className="stratpick__count">{s.targets.length} assets</span>
+                    </span>
+                    <span className="stratpick__name">{s.name}</span>
+                    <span className="stratpick__cluster" aria-hidden="true">
+                      {s.targets.slice(0, 5).map((t) => (
+                        <TickerIcon key={t.symbol} symbol={t.symbol} size={20} />
+                      ))}
+                      {s.targets.length > 5 ? (
+                        <span className="stratpick__more">+{s.targets.length - 5}</span>
+                      ) : null}
+                    </span>
                   </button>
                 ))}
               </div>
+
+              {/* The selected strategy, opened up: every holding, name, and weight. */}
+              <p className="strategy-brief">
+                <strong>{strategy.name}.</strong> {strategy.description}
+              </p>
+              <ul className="alloc">
+                {strategy.targets.map((t) => (
+                  <li className="alloc__row alloc__row--rich" key={t.symbol}>
+                    <TickerIcon symbol={t.symbol} />
+                    <span className="alloc__id">
+                      <span className="alloc__symbol">{t.symbol}</span>
+                      <span className="alloc__name">{tickerName(t.symbol)}</span>
+                    </span>
+                    <span className="alloc__bar">
+                      <span className="alloc__fill" style={{ width: `${t.weight}%` }} />
+                    </span>
+                    <span className="alloc__weight">{t.weight}%</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/* Risk is body copy on this product, not a footnote. */}
