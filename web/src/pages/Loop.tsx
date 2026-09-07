@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PageHead } from "../components/app/PageHead";
-import { PreviewBanner } from "../components/app/PreviewBanner";
+import { BetaNote } from "../components/app/PreviewBanner";
 import { AssetAmountInput } from "../components/app/AssetAmountInput";
 import { TransactionPreview } from "../components/app/TransactionPreview";
 import { HealthFactor } from "../components/app/HealthFactor";
@@ -131,7 +131,6 @@ export default function Loop() {
           lede="Deposit ZEC as collateral, borrow USDG, and invest the borrowed liquidity — one guided flow, the whole position visible before you confirm."
           aside={<WalletButton />}
         />
-        <PreviewBanner product="zloop" />
 
         <div className="workbench">
           {/* ---- Left: build the position. ---- */}
@@ -272,6 +271,7 @@ export default function Loop() {
             ) : null}
           </div>
         </div>
+        <BetaNote />
       </div>
     </main>
   );

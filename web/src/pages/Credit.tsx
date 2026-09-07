@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PageHead } from "../components/app/PageHead";
-import { PreviewBanner } from "../components/app/PreviewBanner";
+import { BetaNote } from "../components/app/PreviewBanner";
 import { BorrowPanel } from "../components/app/BorrowPanel";
 import { SupplyPanel } from "../components/app/SupplyPanel";
 import { WalletButton } from "../components/app/WalletButton";
@@ -40,8 +40,6 @@ export default function Credit() {
           lede="Deposit ZEC as collateral to borrow USDG — or supply USDG to borrowers and earn the variable interest they pay."
           aside={<WalletButton />}
         />
-        <PreviewBanner product="zcredit" />
-
         <div className="mode__tabs mode__tabs--page" role="tablist">
           <button
             role="tab"
@@ -128,6 +126,7 @@ export default function Credit() {
             mainnet.
           </p>
         </div>
+        <BetaNote />
       </div>
     </main>
   );

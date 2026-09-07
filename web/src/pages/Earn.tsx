@@ -1,5 +1,5 @@
 import { PageHead } from "../components/app/PageHead";
-import { PreviewBanner } from "../components/app/PreviewBanner";
+import { BetaNote } from "../components/app/PreviewBanner";
 import { SupplyPanel } from "../components/app/SupplyPanel";
 import { WalletButton } from "../components/app/WalletButton";
 import { PRODUCT_STATUS } from "../config/protocol";
@@ -27,8 +27,6 @@ export default function Earn() {
           lede="Deposit USDG. Earn the variable interest ZCREDIT borrowers pay. Withdraw whenever liquidity is available."
           aside={<WalletButton />}
         />
-        <PreviewBanner product="zearn" />
-
         <SupplyPanel market={market} position={position} account={wallet.address} />
 
         <p className="t-note container__note">
@@ -37,6 +35,7 @@ export default function Earn() {
           liquidity: when funds are utilized by borrowers, withdrawals wait for liquidity to
           return. There is no instant-redemption guarantee.
         </p>
+        <BetaNote />
       </div>
     </main>
   );
