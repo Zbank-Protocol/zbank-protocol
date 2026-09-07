@@ -1,0 +1,29 @@
+{
+  "name": "ZBANK",
+  "description": "Capital markets for Zcash on Robinhood Chain.",
+  "version": "1.0.0",
+  "homepage": "https://zbank.world",
+  "documentation": "https://zbank.world/docs",
+  "network": {
+    "name": "Robinhood Chain",
+    "chainId": 4663
+  },
+  "capabilities": [
+    "protocol-discovery",
+    "live-market-data",
+    "contract-addresses",
+    "risk-parameters",
+    "strategy-catalog"
+  ],
+  "endpoints": {
+    "protocol": "https://zbank.world/api/v1/protocol",
+    "market": "https://zbank.world/api/v1/market",
+    "llms": "https://zbank.world/llms.txt"
+  },
+  "safety": {
+    "transactionExecution": false,
+    "walletRequiredForWrites": true,
+    "betaProducts": ["zcredit", "zearn", "zloop"],
+    "unaudited": true
+  }
+}

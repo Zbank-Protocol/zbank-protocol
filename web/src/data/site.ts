@@ -347,39 +347,53 @@ export type RoadmapPhase = {
   phase: string;
   name: string;
   copy: string;
+  status: "Shipped" | "Active" | "Next" | "Long-term";
+  items: readonly string[];
   mission?: boolean;
 };
 
 export const ROADMAP: RoadmapPhase[] = [
   {
-    phase: "Phase 01",
-    name: "Accumulate",
-    copy: "Launch ZBANK and establish transparent ZEC treasury infrastructure.",
+    phase: "Foundation",
+    name: "The bank is onchain",
+    copy: "The public product surface and core execution infrastructure are deployed.",
+    status: "Shipped",
+    items: ["ZINVEST + ZINDEX execution", "ZEC/USD oracle", "ZCREDIT beta", "Safe administration"],
   },
   {
-    phase: "Phase 02",
-    name: "Invest",
-    copy: "Launch ZINVEST for USDG-funded Stock Token portfolios and connect it to ZEC through ZLOOP.",
+    phase: "Interface",
+    name: "Built for people and agents",
+    copy: "One system, documented for humans and exposed as structured data for software.",
+    status: "Shipped",
+    items: ["Visual product guide", "Protocol manifest API", "Live market API", "Agent discovery"],
   },
   {
-    phase: "Phase 03",
-    name: "Index",
-    copy: "Launch transparent target-allocation baskets that execute through ZINVEST.",
+    phase: "Hardening",
+    name: "Make beta resilient",
+    copy: "Strengthen the live credit path before describing it as production infrastructure.",
+    status: "Active",
+    items: ["External audit", "Redundant keepers", "Oracle alerts", "Mainnet lifecycle verification"],
   },
   {
-    phase: "Phase 04",
-    name: "Credit",
-    copy: "Introduce collateral and liquidity products.",
+    phase: "Token",
+    name: "Launch ZBNK + treasury",
+    copy: "Publish the token, treasury contracts, addresses, and real onchain accounting together.",
+    status: "Next",
+    items: ["Pons launch", "Treasury deployment", "Revenue allocation", "Burn reporting"],
   },
   {
-    phase: "Phase 05",
-    name: "Capital Markets",
-    copy: "Launch ZLAUNCH and broader ZEC-native financial products.",
+    phase: "Scale",
+    name: "Open the operating envelope",
+    copy: "Expand only after reliability, liquidity, and user-load evidence supports it.",
+    status: "Next",
+    items: ["RPC caching", "200–500 user tests", "Incident runbooks", "Measured cap reviews"],
   },
   {
     phase: "Mission",
     name: "1% of Zcash",
-    copy: "Build toward ownership of 1% of circulating ZEC.",
+    copy: "Build toward transparent ownership of 1% of circulating ZEC through protocol revenue.",
+    status: "Long-term",
+    items: ["Acquire ZEC", "Publish reserves", "Track redeemable vs. strategic ZEC", "Report every burn"],
     mission: true,
   },
 ];

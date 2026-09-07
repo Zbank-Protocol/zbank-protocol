@@ -2768,10 +2768,10 @@ a.product:hover .product__arrow {
 
 .stage {
   display: grid;
-  grid-template-columns: 8rem 14rem minmax(0, 1fr);
+  grid-template-columns: 9rem minmax(14rem, 0.85fr) minmax(18rem, 1fr);
   gap: var(--sp-2) var(--sp-3);
-  align-items: baseline;
-  padding-block: var(--sp-2);
+  align-items: start;
+  padding: var(--sp-3) var(--sp-2);
   border-bottom: 1px solid var(--line);
   transition: background-color 0.25s var(--ease);
 }
@@ -2788,8 +2788,35 @@ a.product:hover .product__arrow {
   color: var(--ink-4);
 }
 
+.stage__meta,
+.stage__summary {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.stage__status {
+  width: fit-content;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.stage[data-status="Shipped"] .stage__status {
+  border-color: rgb(80 190 120 / 0.38);
+  color: #72d995;
+}
+
+.stage[data-status="Active"] .stage__status {
+  border-color: var(--gold-dim);
+  color: var(--gold);
+}
+
 .stage__name {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-variation-settings: "wght" 600;
   letter-spacing: -0.01em;
 }
@@ -2801,6 +2828,36 @@ a.product:hover .product__arrow {
   max-width: 56ch;
 }
 
+.stage__items {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stage__items li {
+  position: relative;
+  padding-left: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.stage__items li::before {
+  content: "";
+  position: absolute;
+  top: 0.48em;
+  left: 0;
+  width: 0.3rem;
+  height: 0.3rem;
+  background: var(--gold-dim);
+}
+
 /* The mission row closes the timeline in the accent. */
 .stage[data-mission="true"] .stage__phase,
 .stage[data-mission="true"] .stage__name {
@@ -2810,7 +2867,11 @@ a.product:hover .product__arrow {
 @media (max-width: 56rem) {
   .stage {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0.3rem;
+    gap: var(--sp-2);
+  }
+
+  .stage__items {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -3907,8 +3968,138 @@ a.protocol:hover {
 }
 
 .docs__article {
-  max-width: 46rem;
+  max-width: 54rem;
   min-width: 0;
+}
+
+.docs-portal {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  padding: 1px;
+  margin-top: var(--sp-3);
+  background: var(--line-strong);
+}
+
+.docs-entry {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 13rem;
+  gap: 0.7rem;
+  padding: var(--sp-2);
+  background: var(--panel);
+  color: var(--ink);
+  text-decoration: none;
+  overflow: hidden;
+  transition: background-color 0.25s var(--ease);
+}
+
+.docs-entry:hover {
+  background: var(--panel-2);
+}
+
+.docs-entry--gold {
+  background:
+    radial-gradient(circle at 15% 0%, rgb(244 183 40 / 0.13), transparent 52%),
+    var(--panel);
+}
+
+.docs-entry__eyebrow,
+.docs-entry__arrow {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.docs-entry strong {
+  max-width: 14ch;
+  font-size: 1.15rem;
+  line-height: 1.1;
+}
+
+.docs-entry > span:not(.docs-entry__eyebrow, .docs-entry__arrow) {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+.docs-entry__arrow {
+  margin-top: auto;
+  color: var(--ink-2);
+}
+
+.docs-primitives {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-block: var(--sp-3);
+  padding: 1px;
+  background: var(--line);
+}
+
+.docs-primitives article {
+  padding: var(--sp-2);
+  background: var(--panel);
+}
+
+.docs-primitives article > span,
+.docs-api-grid a > span {
+  display: block;
+  margin-bottom: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+}
+
+.docs-primitives strong {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  letter-spacing: -0.02em;
+}
+
+.docs-primitives p {
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+.docs-api-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin-block: var(--sp-3);
+  padding: 1px;
+  background: var(--line-strong);
+}
+
+.docs-api-grid a {
+  display: block;
+  min-height: 10rem;
+  padding: var(--sp-2);
+  background: var(--panel);
+  text-decoration: none;
+  transition: background-color 0.25s var(--ease);
+}
+
+.docs-api-grid a:hover {
+  background: var(--panel-2);
+}
+
+.docs-api-grid code {
+  font-size: 0.78rem;
+  color: var(--ink);
+}
+
+.docs-api-grid p {
+  margin-top: 1rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--ink-3);
 }
 
 .doc {
@@ -4136,6 +4327,21 @@ a.protocol:hover {
 
   .docs__toc a[data-active="true"] {
     border-color: var(--gold);
+  }
+
+  .docs-portal,
+  .docs-primitives {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .docs-entry {
+    min-height: 10rem;
+  }
+}
+
+@media (max-width: 38rem) {
+  .docs-api-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

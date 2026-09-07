@@ -238,7 +238,7 @@ export default function Home() {
         </Section>
 
         {/* ============================== 07 · Roadmap ============================== */}
-        <Section no="07" kicker="Roadmap" id="roadmap" title={["Build the bank."]}>
+        <Section no="07" kicker="Roadmap" id="roadmap" title={["What shipped.", "What comes next."]}>
           <div className="roadmap">
             {ROADMAP.map((stage, i) => (
               <Rise key={stage.phase} delay={i * 0.05}>

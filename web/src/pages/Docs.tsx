@@ -29,6 +29,7 @@ const SECTIONS = [
   { id: "treasury", label: "Treasury accounting" },
   { id: "revenue", label: "Revenue model" },
   { id: "status", label: "Launch status & security" },
+  { id: "agents", label: "APIs for agents" },
   { id: "faq", label: "FAQ" },
 ] as const;
 
@@ -118,10 +119,30 @@ export default function Docs() {
             <span className="page-head__kicker">Docs</span>
             <h1 className="page-head__title">How ZBANK works.</h1>
             <p className="page-head__lede">
-              The complete reference: what each product does, how the mechanisms work, where
-              the numbers come from, and what is live versus proposed.
+              Start with a user journey, inspect the machinery, or connect an agent directly
+              to canonical protocol data. Every status and number has a source.
             </p>
           </header>
+          <div className="docs-portal" aria-label="Documentation entry points">
+            <Link className="docs-entry docs-entry--gold" to="/start">
+              <span className="docs-entry__eyebrow">New to ZBANK</span>
+              <strong>Take the visual tour</strong>
+              <span>Five chapters · products, risks, and the ZEC thesis</span>
+              <span className="docs-entry__arrow">Start →</span>
+            </Link>
+            <a className="docs-entry" href="/api/v1/protocol">
+              <span className="docs-entry__eyebrow">Building an agent</span>
+              <strong>Read the protocol manifest</strong>
+              <span>Contracts, assets, strategies, status, and risk parameters</span>
+              <span className="docs-entry__arrow">JSON →</span>
+            </a>
+            <Link className="docs-entry" to="/treasury">
+              <span className="docs-entry__eyebrow">Verifying claims</span>
+              <strong>Open live telemetry</strong>
+              <span>Oracle, credit liquidity, utilization, and onchain addresses</span>
+              <span className="docs-entry__arrow">Verify →</span>
+            </Link>
+          </div>
 
           {/* ============================== 01 Overview ============================== */}
           <section className="doc" id="overview">
@@ -136,11 +157,28 @@ export default function Docs() {
             </p>
             <Steps
               items={[
-                "INVEST — use ZEC to access Stock Token portfolios (ZINVEST, with ZINDEX as its strategy layer).",
+                "INVEST — deploy USDG into Stock Token portfolios, using your own USDG or USDG borrowed against ZEC (ZINVEST, with ZINDEX as its strategy layer).",
                 "BORROW — post ZEC as collateral and borrow USDG against it (ZCREDIT, with ZLOOP composing borrow + invest).",
                 "EARN — supply the USDG that borrowers draw, and earn the interest they pay (ZEARN).",
               ]}
             />
+            <div className="docs-primitives" aria-label="ZBANK's three primitives">
+              <article>
+                <span>01 · INVEST</span>
+                <strong>USDG → markets</strong>
+                <p>Build Stock Token portfolios through ZINVEST and ZINDEX.</p>
+              </article>
+              <article>
+                <span>02 · BORROW</span>
+                <strong>ZEC → liquidity</strong>
+                <p>Keep ZEC exposure while drawing USDG through ZCREDIT.</p>
+              </article>
+              <article>
+                <span>03 · EARN</span>
+                <strong>USDG → interest</strong>
+                <p>Supply the liquidity ZEC-backed borrowers use through ZEARN.</p>
+              </article>
+            </div>
             <p>
               Every product feeds one economic engine: protocol revenue acquires ZEC for the
               treasury and buys ZBNK for permanent burn. More ZEC held against fewer ZBNK — that
@@ -207,10 +245,10 @@ export default function Docs() {
               <span>03</span>ZINVEST — Investing
             </h2>
             <p>
-              ZINVEST turns a ZEC balance into a portfolio of Stock Tokens in a single flow.
-              Under the hood it is a router: ZEC is swapped to USDG, USDG is swapped into each
-              Stock Token at the portfolio's target weights, and the whole route is quoted
-              before anything executes.
+              ZINVEST turns USDG into a portfolio of Stock Tokens. It splits the input across
+              the target weights and swaps each leg through Uniswap v3. If you begin with ZEC,
+              ZLOOP is the ZEC-native path: it borrows USDG against that ZEC, then passes the
+              borrowed USDG into this same execution engine.
             </p>
             <Steps
               items={[
@@ -243,7 +281,7 @@ export default function Docs() {
             </h2>
             <p>
               ZINDEX is not a separate protocol — it is a set of named target allocations that
-              execute through ZINVEST. Selecting ZTECH and investing 10 ZEC is exactly
+              execute through ZINVEST. Selecting ZTECH and investing 1,000 USDG is exactly
               equivalent to entering that allocation by hand; the strategy layer just saves you
               the typing and gives the allocation a name.
             </p>
@@ -521,10 +559,50 @@ export default function Docs() {
             </p>
           </section>
 
-          {/* ============================== 12 FAQ ============================== */}
+          {/* ============================== 12 Agents ============================== */}
+          <section className="doc" id="agents">
+            <h2>
+              <span>12</span>APIs for agents
+            </h2>
+            <p>
+              Agents should never scrape display copy or guess a missing value. ZBANK exposes
+              a versioned, read-only interface with permissive CORS and explicit units.
+              Transaction execution remains wallet-controlled and requires user confirmation.
+            </p>
+            <div className="docs-api-grid">
+              <a href="/api/v1/protocol">
+                <span>GET</span>
+                <code>/api/v1/protocol</code>
+                <p>Canonical contracts, assets, product status, risk parameters, and strategies.</p>
+              </a>
+              <a href="/api/v1/market">
+                <span>GET</span>
+                <code>/api/v1/market</code>
+                <p>Cached live oracle and lending-market telemetry from Robinhood Chain.</p>
+              </a>
+              <a href="/.well-known/agent.json">
+                <span>DISCOVER</span>
+                <code>/.well-known/agent.json</code>
+                <p>Capability and endpoint discovery for automated clients.</p>
+              </a>
+              <a href="/llms.txt">
+                <span>CONTEXT</span>
+                <code>/llms.txt</code>
+                <p>Concise protocol context and safety rules for language models.</p>
+              </a>
+            </div>
+            <ul className="notes">
+              <li>API version 1 is additive: existing fields will not silently change meaning.</li>
+              <li>Amounts are returned as decimal strings to avoid floating-point loss.</li>
+              <li>Null means unavailable. It never means zero.</li>
+              <li>Beta, proposed, and pending-launch states must remain visible in agent output.</li>
+            </ul>
+          </section>
+
+          {/* ============================== 13 FAQ ============================== */}
           <section className="doc" id="faq">
             <h2>
-              <span>12</span>FAQ
+              <span>13</span>FAQ
             </h2>
             <dl className="docfaq">
               <dt>Why would I use ZCREDIT instead of just selling ZEC?</dt>
@@ -553,11 +631,11 @@ export default function Docs() {
                 proposed, not deployed — so today the honest answer is "designed to be, not
                 yet."
               </dd>
-              <dt>Why is everything labelled Preview?</dt>
+              <dt>What is live today?</dt>
               <dd>
-                Because the execution contracts don't exist yet, and pretending otherwise with
-                fake transactions or invented APYs would be worse than the label. The
-                interfaces are the real product surface; the statuses flip as the wiring lands.
+                ZINVEST and ZINDEX execute through Uniswap v3. The ZEC/USD oracle is live and
+                ZCREDIT, ZEARN, and ZLOOP are open beta because the ZBANK-authored lending
+                contract remains unaudited. ZBNK and treasury redemption are not launched.
               </dd>
               <dt>Is ZSWAP a privacy product?</dt>
               <dd>

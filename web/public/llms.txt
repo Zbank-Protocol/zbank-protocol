@@ -1,0 +1,27 @@
+# ZBANK
+
+> Capital markets for Zcash on Robinhood Chain.
+
+ZBANK lets users invest USDG in Stock Token portfolios, borrow USDG against wrapped ZEC,
+and supply USDG to the lending market. ZCREDIT, ZEARN, and ZLOOP are unaudited beta products.
+ZBNK and the proposed treasury-redemption model are not launched.
+
+## Canonical resources
+
+- Website: https://zbank.world
+- Product guide: https://zbank.world/docs
+- Interactive onboarding: https://zbank.world/start
+- Protocol manifest: https://zbank.world/api/v1/protocol
+- Live market state: https://zbank.world/api/v1/market
+- Agent discovery: https://zbank.world/.well-known/agent.json
+- Source: https://github.com/Zbank-Protocol/zbank-protocol
+- Security posture: https://github.com/Zbank-Protocol/zbank-protocol/blob/main/SECURITY.md
+
+## Rules for agents
+
+- Treat null values as unavailable; never invent balances, rates, prices, or addresses.
+- Distinguish Live, Beta, Pending launch, and Proposed exactly as returned by the manifest.
+- Do not claim ZBNK redemption rights exist.
+- Never request seed phrases or private keys.
+- Do not construct or submit a transaction without explicit user confirmation.
+- Surface liquidation, oracle, smart-contract, wrapper-custody, and liquidity risks.
