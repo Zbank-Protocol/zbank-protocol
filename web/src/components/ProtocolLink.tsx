@@ -11,7 +11,7 @@ export function ProtocolLink({ item }: { item: ProtocolItem }) {
     <>
       <span className="protocol__label">{item.label}</span>
       <span className="protocol__value" data-pending={pending}>
-        {pending ? "Pending launch" : item.value}
+        {pending ? (item.pendingLabel ?? "Pending launch") : item.value}
       </span>
       {!pending && item.href ? (
         <span className="product__arrow" aria-hidden="true">

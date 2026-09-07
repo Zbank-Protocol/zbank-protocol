@@ -583,24 +583,57 @@ export const ROADMAP: RoadmapPhase[] = [
 
 export type ProtocolItem = {
   label: string;
-  /** null renders as "Pending launch" — never a fake address. */
+  /** null renders as pending — never a fake address. */
   value: string | null;
   href?: string;
+  /** What a null value is actually waiting on. Defaults to "Pending launch". */
+  pendingLabel?: string;
 };
 
+const EXPLORER = "https://robinhoodchain.blockscout.com/address/";
+const PENDING_TOKEN = "Pending token launch";
+
+/**
+ * Live rows carry real, verifiable values — the deployed addresses, the public source, the
+ * accruing revenue. Rows gated on the ZBNK token launch (the treasury contract requires the
+ * token at construction) say so precisely instead of a vague "pending".
+ */
 export const PROTOCOL_ITEMS: ProtocolItem[] = [
-  { label: "ZEC Treasury Address", value: null },
-  { label: "ZBNK Contract", value: null },
-  { label: "Redeemable Treasury", value: null },
-  { label: "Strategic Treasury", value: null },
-  { label: "Eligible Supply", value: null },
-  { label: "Burn Address", value: null },
-  { label: "Cumulative Burns", value: null },
-  { label: "Treasury Purchases", value: null },
-  { label: "Protocol Revenue", value: null },
-  { label: "Revenue Allocation", value: null },
-  { label: "Redemption Contract", value: null },
-  { label: "Audit Status", value: null },
+  {
+    label: "ZCREDIT Market",
+    value: "0x77cc…151e · Live",
+    href: `${EXPLORER}0x77ccb77d1fd337b7027b3482ca365db57d92151e`,
+  },
+  {
+    label: "ZEC/USD Oracle",
+    value: "0x931F…3AF5 · Chainlink Data Streams",
+    href: `${EXPLORER}0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5`,
+  },
+  {
+    label: "Contract Source",
+    value: "GitHub · Sourcify exact match",
+    href: "https://github.com/Zbank-Protocol/contracts",
+  },
+  {
+    label: "Protocol Revenue",
+    value: "Accruing — 10% reserve factor on borrower interest",
+    href: `${EXPLORER}0x77ccb77d1fd337b7027b3482ca365db57d92151e`,
+  },
+  {
+    label: "Revenue Allocation",
+    value: "50% ZEC treasury · 30% ZBNK burn · 20% reserve — proposed",
+  },
+  {
+    label: "Audit Status",
+    value: "Unaudited — external audit pending",
+    href: "https://github.com/Zbank-Protocol/contracts/blob/main/SECURITY.md",
+  },
+  { label: "ZBNK Contract", value: null, pendingLabel: PENDING_TOKEN },
+  { label: "ZEC Treasury Address", value: null, pendingLabel: PENDING_TOKEN },
+  { label: "Redeemable Treasury", value: null, pendingLabel: PENDING_TOKEN },
+  { label: "Strategic Treasury", value: null, pendingLabel: PENDING_TOKEN },
+  { label: "Eligible Supply", value: null, pendingLabel: PENDING_TOKEN },
+  { label: "Cumulative Burns", value: null, pendingLabel: PENDING_TOKEN },
 ];
 
 export const INDEPENDENCE_NOTICE =
