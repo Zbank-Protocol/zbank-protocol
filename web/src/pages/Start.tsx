@@ -73,9 +73,9 @@ const CHAPTERS: Chapter[] = [
   },
   {
     kicker: "Earn · ZEARN",
-    title: ["Put your dollars to work."],
+    title: ["Fund the Zcash side of the market."],
     copy:
-      "The other side of the same market: supply USDG, and the interest borrowers pay flows to you, minus the protocol reserve. The rate is variable and set by utilization — when liquidity is scarce, rates rise to attract more. That is the entire yield story; there is no other source.",
+      "The other side of the same market: ZEC holders borrow USDG, and you supply it. The interest they pay flows to you, minus the protocol reserve. The rate is variable and set by utilization — when liquidity is scarce, rates rise to attract more. That is the entire yield story; there is no other source.",
     visual: <DiagramRateCurve />,
     facts: [
       ["Yield source", "Borrower interest — nothing else"],

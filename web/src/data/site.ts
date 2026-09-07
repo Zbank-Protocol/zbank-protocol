@@ -70,30 +70,35 @@ export const HERO = {
   headline: ["Zcash was built to be money.", "We\u2019re building its bank."],
   support: "Capital markets for Zcash.",
   copy:
-    "Invest ZEC into market portfolios. Borrow USDG against ZEC. Supply USDG and earn " +
-    "borrower interest.",
+    "Put market exposure behind your ZEC without selling it. Borrow USDG against it. Or fund " +
+    "the loans ZEC holders draw, and earn the interest they pay.",
   primaryCta: { label: "Open ZBANK", href: "/app" },
   secondaryCta: { label: "View Treasury", href: "/treasury" },
 } as const;
 
-/** The three fundamental actions, directly under the hero. Everything else composes these. */
+/**
+ * "What can your ZEC do" — the three moves, directly under the hero. Every action is framed
+ * from the ZEC holder's seat: even Earn, whose supplier funds the loans ZEC holders draw.
+ */
 export const ACTIONS = [
   {
     name: "Invest",
-    copy: "Turn ZEC into a portfolio.",
-    detail: "Custom allocations or prebuilt ZINDEX strategies, funded with ZEC.",
-    to: "/invest",
+    copy: "Market exposure. ZEC stays yours.",
+    detail:
+      "Borrow USDG against your ZEC through ZLOOP and route it into Stock Token portfolios — " +
+      "or invest USDG directly through ZINVEST.",
+    to: "/credit/loop",
   },
   {
     name: "Borrow",
-    copy: "Keep your ZEC and access USDG.",
-    detail: "ZEC-collateralized credit with liquidation risk always on screen.",
+    copy: "Your ZEC has borrowing power.",
+    detail: "Draw USDG against ZEC collateral, liquidation risk always on screen.",
     to: "/credit",
   },
   {
     name: "Earn",
-    copy: "Supply USDG to borrowers.",
-    detail: "Variable interest paid by ZCREDIT borrowers, minus the protocol reserve.",
+    copy: "Fund the loans ZEC holders draw.",
+    detail: "Supply USDG and earn the variable interest ZEC borrowers pay, minus the reserve.",
     to: "/earn",
   },
 ] as const;
@@ -111,14 +116,10 @@ export const ZLOOP_FEATURE = {
   cta: { label: "Open ZLOOP", to: "/credit/loop" },
 } as const;
 
-/** The institutional strip under the hero. "—" until each figure is real and onchain. */
-export const HERO_METRICS = [
-  { label: "ZEC Treasury", value: "—", unit: "" },
-  { label: "ZBNK Supply", value: "—", unit: "" },
-  { label: "ZEC / ZBNK", value: "—", unit: "" },
-  { label: "ZBNK Burned", value: "—", unit: "" },
-  { label: "1% Mission", value: "—", unit: "" },
-] as const;
+/*
+ * The institutional strip under the hero is now <LiveStrip /> — live reads from the deployed
+ * credit market and oracle, not a row of pre-launch dashes. See components/LiveStrip.tsx.
+ */
 
 /** The thesis, stated under the strip. The two forces in four words. */
 export const HERO_THESIS = {
@@ -169,15 +170,6 @@ export const TREASURY = {
     "and designed around long-term Zcash ownership.",
   /* Never claim "never sells" — policy language only, until enforced in contract code. */
   policy: "ZBANK\u2019s treasury strategy prioritizes accumulation over distribution.",
-  /** Dashboard cells. "—" everywhere until the treasury address holds real ZEC. */
-  stats: [
-    { label: "Total ZEC treasury", value: "—", unit: "" },
-    { label: "Redeemable ZEC", value: "—", unit: "" },
-    { label: "Strategic / reserved ZEC", value: "—", unit: "" },
-    { label: "Estimated value", value: "$—", unit: "" },
-    { label: "Acquired all-time", value: "—", unit: "" },
-    { label: "1% mission completed", value: "—", unit: "" },
-  ],
   /** The accounting rule the whole site follows. */
   accountingNote:
     "Treasury accounting will separate redeemable from strategic ZEC at launch. All backing " +
@@ -230,8 +222,8 @@ export const PRODUCTS: Product[] = [
   },
   {
     name: "ZEARN",
-    tagline: "Put your dollars to work.",
-    copy: "The simple face of ZCREDIT lending: deposit USDG, earn the variable borrower rate.",
+    tagline: "Fund the Zcash side of the market.",
+    copy: "Supply the USDG that ZEC holders borrow; earn the variable interest they pay.",
     status: PRODUCT_STATUS.zearn,
     href: "/earn",
   },
@@ -404,8 +396,6 @@ export type ProtocolItem = {
 };
 
 const EXPLORER = "https://robinhoodchain.blockscout.com/address/";
-const PENDING_TOKEN = "Pending token launch";
-
 /**
  * Live rows carry real, verifiable values — the deployed addresses, the public source, the
  * accruing revenue. Rows gated on the ZBNK token launch (the treasury contract requires the
@@ -441,12 +431,13 @@ export const PROTOCOL_ITEMS: ProtocolItem[] = [
     value: "Unaudited — external audit pending",
     href: "https://github.com/Zbank-Protocol/contracts/blob/main/SECURITY.md",
   },
-  { label: "ZBNK Contract", value: null, pendingLabel: PENDING_TOKEN },
-  { label: "ZEC Treasury Address", value: null, pendingLabel: PENDING_TOKEN },
-  { label: "Redeemable Treasury", value: null, pendingLabel: PENDING_TOKEN },
-  { label: "Strategic Treasury", value: null, pendingLabel: PENDING_TOKEN },
-  { label: "Eligible Supply", value: null, pendingLabel: PENDING_TOKEN },
-  { label: "Cumulative Burns", value: null, pendingLabel: PENDING_TOKEN },
+  {
+    label: "Token-Launch Registry",
+    value: null,
+    pendingLabel:
+      "ZBNK contract, treasury addresses, eligible supply, and burn data publish here at " +
+      "token launch",
+  },
 ];
 
 export const INDEPENDENCE_NOTICE =

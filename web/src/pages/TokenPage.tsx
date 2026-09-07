@@ -1,10 +1,11 @@
 import { PageHead } from "../components/app/PageHead";
 import { Rise } from "../components/Rise";
 import { TwoForces } from "../components/TwoForces";
+import { FlywheelDiagram } from "../components/FlywheelDiagram";
 import { TreasuryBackingCalculator } from "../components/TreasuryBackingCalculator";
 import { RedeemPanel } from "../components/RedeemPanel";
 import { Equation } from "../components/Equation";
-import { MODEL_DISCLAIMER, TOKENOMICS, TOKEN_FACTS } from "../data/site";
+import { FLYWHEEL, MODEL_DISCLAIMER, TOKENOMICS, TOKEN_FACTS } from "../data/site";
 
 /**
  * /token — ZBNK economics as an investor-relations page: the two forces, the interactive
@@ -32,6 +33,13 @@ export default function TokenPage() {
             </div>
             <Equation />
           </div>
+        </Rise>
+
+        <Rise delay={0.08}>
+          <section aria-label={FLYWHEEL.headline}>
+            <span className="metric__label">{FLYWHEEL.headline}</span>
+            <FlywheelDiagram />
+          </section>
         </Rise>
 
         <Rise delay={0.08}>

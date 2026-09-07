@@ -53,11 +53,15 @@ html {
   scroll-behavior: smooth;
   /* Anchored sections land below the fixed masthead rather than under it. */
   scroll-padding-top: 5rem;
+  /* Never let a stray wide element inflate the mobile layout viewport — that pushes the
+     fixed masthead (and its burger) past the screen edge. Clip, don't scroll. */
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
   min-height: 100svh;
+  overflow-x: clip;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
@@ -621,6 +625,16 @@ button {
   }
 }
 
+/* ---- The deployed interest-rate curve (ZEARN). ---- */
+
+.ratecurve {
+  display: block;
+  width: 100%;
+  max-width: 34rem;
+  height: auto;
+  margin-block: 0.75rem 0.25rem;
+}
+
 /* ============================== Buttons and chips ============================== */
 
 .btn {
@@ -962,6 +976,16 @@ button {
   position: absolute;
   right: 0;
   bottom: calc(100% + 0.5rem);
+}
+
+/* On phones the corner annotation becomes a caption: in flow, wrapping, never clipped. */
+@media (max-width: 40rem) {
+  .strip__note {
+    position: static;
+    grid-column: 1 / -1;
+    white-space: normal;
+    padding-top: 0.25rem;
+  }
 }
 
 /* ============================== Metrics ============================== */

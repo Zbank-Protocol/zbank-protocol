@@ -36,8 +36,8 @@ export default function Credit() {
         <PageHead
           kicker="ZCREDIT"
           status={PRODUCT_STATUS.zcredit}
-          title="Keep your ZEC. Access USDG."
-          lede="Deposit ZEC as collateral to borrow USDG — or supply USDG to borrowers and earn the variable interest they pay."
+          title="Your ZEC has borrowing power."
+          lede="Deposit ZEC as collateral and draw USDG against it — your ZEC stays yours unless liquidated. Or take the other side: supply the USDG that ZEC holders borrow, and earn the interest they pay."
           aside={<WalletButton />}
         />
         <div className="mode__tabs mode__tabs--page" role="tablist">

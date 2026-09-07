@@ -304,13 +304,18 @@ export class LedgerField {
   }
 
   resize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    // clientWidth, not innerWidth: if some element ever overflows on mobile, the layout
+    // viewport inflates and innerWidth reports the inflated value — sizing the canvas to it
+    // would then lock the inflation in permanently. clientWidth stays honest.
+    const w = document.documentElement.clientWidth;
+    const h = document.documentElement.clientHeight;
     const aspect = w / Math.max(1, h);
     this.camera.aspect = aspect;
     this.camera.updateProjectionMatrix();
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.setSize(w, h);
+    // The third argument stops three.js from writing inline width/height styles that would
+    // override the stylesheet's `width: 100%` and widen the page on phones.
+    this.renderer.setSize(w, h, false);
     this.composer.setSize(w, h);
     const u = this.material.uniforms;
     u.uAspect.value = aspect;

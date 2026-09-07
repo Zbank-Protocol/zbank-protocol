@@ -27,7 +27,7 @@ const NAV: NavEntry[] = [
     label: "Invest",
     to: "/invest",
     menu: [
-      { name: "ZINVEST", ticker: "ZINVEST", desc: "Turn ZEC into a Stock Token portfolio.", to: "/invest" },
+      { name: "ZINVEST", ticker: "ZINVEST", desc: "USDG into Stock Token portfolios, atomically.", to: "/invest" },
       { name: "ZINDEX", ticker: "ZINDEX", desc: "Prebuilt market strategies — ZTECH, ZAI, Z500.", to: "/invest/indexes" },
     ],
   },
@@ -35,15 +35,15 @@ const NAV: NavEntry[] = [
     label: "Credit",
     to: "/credit",
     menu: [
-      { name: "Borrow", ticker: "ZCREDIT", desc: "Keep your ZEC. Borrow USDG against it.", to: "/credit" },
-      { name: "ZLOOP", ticker: "ZLOOP", desc: "Borrow and invest in one guided flow.", to: "/credit/loop" },
+      { name: "ZLOOP", ticker: "ZLOOP", desc: "Keep your ZEC. Invest anyway — one guided flow.", to: "/credit/loop" },
+      { name: "Borrow", ticker: "ZCREDIT", desc: "Draw USDG against your ZEC, on your terms.", to: "/credit" },
     ],
   },
   {
     label: "Earn",
     to: "/earn",
     menu: [
-      { name: "ZEARN", ticker: "ZEARN", desc: "Supply USDG. Earn the borrower rate.", to: "/earn" },
+      { name: "ZEARN", ticker: "ZEARN", desc: "Supply USDG. Earn what ZEC borrowers pay.", to: "/earn" },
     ],
   },
   { label: "Treasury", to: "/treasury" },

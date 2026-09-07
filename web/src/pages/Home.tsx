@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
 import { Section } from "../components/Section";
 import { Rise } from "../components/Rise";
-import { MetricCard } from "../components/MetricCard";
 import { HeroPanel } from "../components/HeroPanel";
+import { LiveStrip } from "../components/LiveStrip";
 import { TreasuryTracker } from "../components/TreasuryTracker";
 import { ProductCard } from "../components/ProductCard";
-import { FlywheelDiagram } from "../components/FlywheelDiagram";
 import { RoadmapStage } from "../components/RoadmapStage";
 import { ProtocolLink } from "../components/ProtocolLink";
 import { TwoForces } from "../components/TwoForces";
@@ -13,7 +12,6 @@ import { Equation } from "../components/Equation";
 import { Logo } from "../components/Logo";
 import {
   HERO,
-  HERO_METRICS,
   HERO_THESIS,
   ACTIONS,
   ZLOOP_FEATURE,
@@ -21,7 +19,6 @@ import {
   TREASURY,
   PRODUCTS,
   LATER_PRODUCTS,
-  FLYWHEEL,
   TOKENOMICS,
   ROADMAP,
   PROTOCOL_ITEMS,
@@ -75,12 +72,7 @@ export default function Home() {
 
           <Rise delay={0.2}>
             <div className="container">
-              <div className="strip" aria-label="Key protocol metrics">
-                {HERO_METRICS.map((m) => (
-                  <MetricCard key={m.label} label={m.label} value={m.value} unit={m.unit} />
-                ))}
-                <span className="strip__note t-demo">Figures go live at token launch</span>
-              </div>
+              <LiveStrip />
 
               <div className="thesis">
                 <p className="thesis__lines">
@@ -96,13 +88,13 @@ export default function Home() {
           </Rise>
         </section>
 
-        {/* ========================= 02 · The three primitives ========================= */}
+        {/* ========================= 02 · What can your ZEC do ========================= */}
         <Section
           no="02"
           kicker="The Bank"
           id="actions"
-          title={["Three things a bank does."]}
-          lede="Invest, borrow, earn. Every ZBANK product composes these primitives."
+          title={["What can your ZEC do?"]}
+          lede="Three moves. Your ZEC stays yours through all of them — that is the point of a bank."
         >
           <div className="actions">
             {ACTIONS.map((a, i) => (
@@ -120,82 +112,8 @@ export default function Home() {
           </div>
         </Section>
 
-        {/* ============================== 03 · Mission ============================== */}
-        <Section
-          no="03"
-          kicker="The 1% Mission"
-          id="mission"
-          title={[...MISSION.headline]}
-          lede={MISSION.copy}
-        >
-          <Rise delay={0.08}>
-            <TreasuryTracker />
-          </Rise>
-          <Rise delay={0.12}>
-            <div className="why">
-              <div className="why__copy">
-                <h3 className="why__q">{MISSION.why.q}</h3>
-                <p>{MISSION.why.copy}</p>
-              </div>
-              <Equation />
-            </div>
-          </Rise>
-        </Section>
-
-        {/* ============================== 04 · Treasury ============================== */}
-        <Section
-          no="04"
-          kicker="ZEC Treasury"
-          id="treasury"
-          title={[TREASURY.headline]}
-          lede={TREASURY.copy}
-        >
-          <Rise delay={0.08}>
-            <div className="board">
-              <div className="board__grid">
-                {TREASURY.stats.map((s) => (
-                  <MetricCard key={s.label} label={s.label} value={s.value} unit={s.unit} />
-                ))}
-              </div>
-              <div className="board__foot">
-                <div className="board__address">
-                  <span className="metric__label">Treasury address</span>
-                  <span className="protocol__value" data-pending={TREASURY.address === null}>
-                    {TREASURY.address ?? "Pending launch"}
-                  </span>
-                </div>
-                <Link className="btn btn--line" to="/treasury">
-                  Open ZTREASURY
-                </Link>
-              </div>
-              <p className="t-note">{TREASURY.policy}</p>
-              <p className="t-note">{TREASURY.accountingNote}</p>
-            </div>
-          </Rise>
-        </Section>
-
-        {/* ============================== 05 · Products ============================== */}
-        <Section
-          no="05"
-          kicker="Launch Suite"
-          id="products"
-          title={["One ZEC balance.", "An entire financial system."]}
-          lede="Six products, three shared engines. Nothing is labelled live until its execution path is."
-        >
-          <div className="products">
-            {PRODUCTS.map((p, i) => (
-              <Rise key={p.name} delay={(i % 3) * 0.07}>
-                <ProductCard product={p} />
-              </Rise>
-            ))}
-          </div>
-          <p className="t-note container__note">
-            Beyond launch: {LATER_PRODUCTS.join(" · ")} — planned, in that order.
-          </p>
-        </Section>
-
-        {/* ============================== 06 · ZLOOP feature ============================== */}
-        <Section no="06" kicker="ZLOOP" id="zloop" title={[...ZLOOP_FEATURE.headline]} lede={ZLOOP_FEATURE.copy}>
+        {/* ==================== 03 · ZLOOP — the flagship ZEC-native flow ==================== */}
+        <Section no="03" kicker="ZLOOP" id="zloop" title={[...ZLOOP_FEATURE.headline]} lede={ZLOOP_FEATURE.copy}>
           <Rise delay={0.08}>
             <div className="loop-feature">
               <div className="flow-rail" role="img" aria-label="ZLOOP flow">
@@ -218,16 +136,68 @@ export default function Home() {
           </Rise>
         </Section>
 
-        {/* ============================= 07 · Flywheel ============================= */}
-        <Section no="07" kicker="The Flywheel" id="flywheel" title={[FLYWHEEL.headline]}>
+        {/* ============================== 04 · Products ============================== */}
+        <Section
+          no="04"
+          kicker="Launch Suite"
+          id="products"
+          title={["One ZEC balance.", "An entire financial system."]}
+          lede="Six products, three shared engines. Nothing is labelled live until its execution path is."
+        >
+          <div className="products">
+            {PRODUCTS.map((p, i) => (
+              <Rise key={p.name} delay={(i % 3) * 0.07}>
+                <ProductCard product={p} />
+              </Rise>
+            ))}
+          </div>
+          <p className="t-note container__note">
+            Beyond launch: {LATER_PRODUCTS.join(" · ")} — planned, in that order.
+          </p>
+        </Section>
+
+        {/* ==================== 05 · Mission & Treasury (one machine) ==================== */}
+        <Section
+          no="05"
+          kicker="The 1% Mission"
+          id="mission"
+          title={[...MISSION.headline]}
+          lede={MISSION.copy}
+        >
           <Rise delay={0.08}>
-            <FlywheelDiagram />
+            <TreasuryTracker />
+          </Rise>
+          <Rise delay={0.12}>
+            <div className="why">
+              <div className="why__copy">
+                <h3 className="why__q">{MISSION.why.q}</h3>
+                <p>{MISSION.why.copy}</p>
+              </div>
+              <Equation />
+            </div>
+          </Rise>
+          <Rise delay={0.14}>
+            <div className="board">
+              <div className="board__foot">
+                <div className="board__address">
+                  <span className="metric__label">Treasury address</span>
+                  <span className="protocol__value" data-pending={TREASURY.address === null}>
+                    {TREASURY.address ?? "Publishes at token launch"}
+                  </span>
+                </div>
+                <Link className="btn btn--line" to="/treasury">
+                  Open ZTREASURY
+                </Link>
+              </div>
+              <p className="t-note">{TREASURY.policy}</p>
+              <p className="t-note">{TREASURY.accountingNote}</p>
+            </div>
           </Rise>
         </Section>
 
-        {/* ============================== 08 · The Token ============================== */}
+        {/* ============================== 06 · The Token ============================== */}
         <Section
-          no="08"
+          no="06"
           kicker="The Token"
           id="token"
           title={[...TOKENOMICS.headline]}
@@ -246,8 +216,8 @@ export default function Home() {
           </Rise>
         </Section>
 
-        {/* ============================== 09 · Roadmap ============================== */}
-        <Section no="09" kicker="Roadmap" id="roadmap" title={["Build the bank."]}>
+        {/* ============================== 07 · Roadmap ============================== */}
+        <Section no="07" kicker="Roadmap" id="roadmap" title={["Build the bank."]}>
           <div className="roadmap">
             {ROADMAP.map((stage, i) => (
               <Rise key={stage.phase} delay={i * 0.05}>
@@ -257,8 +227,8 @@ export default function Home() {
           </div>
         </Section>
 
-        {/* ======================== 10 · Protocol / Transparency ======================== */}
-        <Section no="10" kicker="Protocol" id="protocol" title={["Verify the system."]}>
+        {/* ======================== 08 · Protocol / Transparency ======================== */}
+        <Section no="08" kicker="Protocol" id="protocol" title={["Verify the system."]}>
           <div className="protocol-grid">
             {PROTOCOL_ITEMS.map((item, i) => (
               <Rise key={item.label} delay={(i % 4) * 0.05}>
@@ -270,8 +240,8 @@ export default function Home() {
         </Section>
       </main>
 
-      {/* ============================ 11 · Disclaimer / Footer ============================ */}
-      <footer className="footer" data-sec="11">
+      {/* ============================ 09 · Disclaimer / Footer ============================ */}
+      <footer className="footer" data-sec="09">
         <div className="container">
           <div className="footer__top">
             <Logo />
