@@ -115,6 +115,13 @@ export default function Invest() {
               balance={balance}
             />
 
+            {/* The obvious question, answered where it's asked. */}
+            <p className="t-note">
+              Holding ZEC instead? Don't sell it — <Link to="/credit/loop">use ZLOOP</Link>:
+              borrow USDG against your ZEC and invest that, keeping your ZEC exposure. A direct
+              ZEC input arrives when a liquid zZEC market exists on Robinhood Chain.
+            </p>
+
             <div className="mode">
               <span className="metric__label">Investment mode</span>
               <div className="mode__tabs" role="tablist">

@@ -4,6 +4,8 @@ import { InterestRateBreakdown } from "./InterestRateBreakdown";
 import type { ZCreditMarket } from "../../hooks/useZCreditMarket";
 import type { ZCreditPosition } from "../../hooks/useZCreditPosition";
 import { useZCreditActions } from "../../hooks/useZCreditActions";
+import { useWallet } from "../../hooks/useWallet";
+import { NETWORK } from "../../config/protocol";
 import { fmtUsd } from "../../lib/economics";
 
 /**
@@ -25,9 +27,11 @@ export function SupplyPanel({
 }) {
   const [amount, setAmount] = useState("");
   const actions = useZCreditActions(account, position.refresh);
+  const wallet = useWallet();
+  const needsSwitch = account != null && wallet.chainId !== NETWORK.chainId;
   const parsed = Number(amount);
   const valid = Number.isFinite(parsed) && parsed > 0;
-  const canAct = market.live && actions.ready && !actions.busy;
+  const canAct = market.live && actions.ready && !actions.busy && !needsSwitch;
 
   return (
     <div className="panel-duo">
@@ -44,26 +48,34 @@ export function SupplyPanel({
         />
 
         <div className="panel__actions">
-          <button
-            className="btn btn--gold"
-            disabled={!canAct || !valid}
-            data-disabled={!canAct || !valid}
-            onClick={() => void actions.supply(parsed)}
-          >
-            {actions.status === "approving"
-              ? "Approving…"
-              : actions.status === "confirming"
-                ? "Confirming…"
-                : "Supply"}
-          </button>
-          <button
-            className="btn btn--line"
-            disabled={!canAct || !valid}
-            data-disabled={!canAct || !valid}
-            onClick={() => void actions.withdraw(parsed)}
-          >
-            Withdraw
-          </button>
+          {needsSwitch ? (
+            <button className="btn btn--gold" onClick={() => void wallet.switchChain()}>
+              Switch to {NETWORK.name}
+            </button>
+          ) : (
+            <>
+              <button
+                className="btn btn--gold"
+                disabled={!canAct || !valid}
+                data-disabled={!canAct || !valid}
+                onClick={() => void actions.supply(parsed)}
+              >
+                {actions.status === "approving"
+                  ? "Approving…"
+                  : actions.status === "confirming"
+                    ? "Confirming…"
+                    : "Supply"}
+              </button>
+              <button
+                className="btn btn--line"
+                disabled={!canAct || !valid}
+                data-disabled={!canAct || !valid}
+                onClick={() => void actions.withdraw(parsed)}
+              >
+                Withdraw
+              </button>
+            </>
+          )}
         </div>
 
         {actions.error && <p className="t-note t-note--error">{actions.error}</p>}

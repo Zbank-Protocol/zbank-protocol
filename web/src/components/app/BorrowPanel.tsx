@@ -5,6 +5,8 @@ import { HealthFactor } from "./HealthFactor";
 import type { ZCreditMarket } from "../../hooks/useZCreditMarket";
 import type { ZCreditPosition } from "../../hooks/useZCreditPosition";
 import { useZCreditActions } from "../../hooks/useZCreditActions";
+import { useWallet } from "../../hooks/useWallet";
+import { NETWORK } from "../../config/protocol";
 import { fmtRate, fmtUsd, fmtZec } from "../../lib/economics";
 
 /**
@@ -27,11 +29,13 @@ export function BorrowPanel({
   const [borrow, setBorrow] = useState("");
   const actions = useZCreditActions(account, position.refresh);
 
+  const wallet = useWallet();
+  const needsSwitch = account != null && wallet.chainId !== NETWORK.chainId;
   const collateralNum = Number(collateral);
   const borrowNum = Number(borrow);
   const collateralValid = Number.isFinite(collateralNum) && collateralNum > 0;
   const borrowValid = Number.isFinite(borrowNum) && borrowNum > 0;
-  const canAct = market.live && actions.ready && !actions.busy;
+  const canAct = market.live && actions.ready && !actions.busy && !needsSwitch;
   const hasDebt = (position.borrowedUsdg ?? 0) > 0;
 
   return (
@@ -57,8 +61,14 @@ export function BorrowPanel({
         />
 
         <div className="panel__actions">
+          {needsSwitch ? (
+            <button className="btn btn--gold" onClick={() => void wallet.switchChain()}>
+              Switch to {NETWORK.name}
+            </button>
+          ) : null}
           <button
             className="btn btn--gold"
+            hidden={needsSwitch}
             disabled={!canAct || !collateralValid}
             data-disabled={!canAct || !collateralValid}
             onClick={() => void actions.depositCollateral(collateralNum)}
@@ -67,6 +77,7 @@ export function BorrowPanel({
           </button>
           <button
             className="btn btn--line"
+            hidden={needsSwitch}
             disabled={!canAct || !borrowValid}
             data-disabled={!canAct || !borrowValid}
             onClick={() => void actions.borrow(borrowNum)}
@@ -75,6 +86,7 @@ export function BorrowPanel({
           </button>
           <button
             className="btn btn--line"
+            hidden={needsSwitch}
             disabled={!canAct || !hasDebt}
             data-disabled={!canAct || !hasDebt}
             onClick={() =>
@@ -88,6 +100,7 @@ export function BorrowPanel({
           </button>
           <button
             className="btn btn--line"
+            hidden={needsSwitch}
             disabled={!canAct || !collateralValid}
             data-disabled={!canAct || !collateralValid}
             onClick={() => void actions.withdrawCollateral(collateralNum)}
