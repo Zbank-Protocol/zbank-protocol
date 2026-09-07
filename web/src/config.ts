@@ -22,10 +22,24 @@ export const TESTNET = {
   explorer: "https://explorer.testnet.chain.robinhood.com",
 } as const;
 
-/** The token identity. Change these in one place to rebrand. */
+/**
+ * Brand identity. Change these in one place to rebrand.
+ *
+ * `zbank.world` rather than a `.com`: every strong `zbank` .com is registered. The financial TLDs
+ * that would have read better next to a Zcash product — `.cash` among them — turned out to hold
+ * "bank" on a registry blocklist and refuse registration outright, which is a restriction no
+ * availability lookup reports.
+ */
+export const BRAND = {
+  name: "ZBANK",
+  domain: "zbank.world",
+  tagline: "Capital markets for Zcash",
+} as const;
+
+/** The token identity. */
 export const TOKEN = {
-  name: "SHIELDED",
-  symbol: "SHLD",
+  name: "Zbank",
+  symbol: "ZBNK",
   /** Set once the Pons launch transaction confirms. */
   address: null as `0x${string}` | null,
 } as const;
@@ -63,6 +77,17 @@ export const ZEC_RESERVE = {
   address: null as string | null,
   explorerBase: "https://blockchair.com/zcash/address/",
 } as const;
+
+/**
+ * Explorer link for the token, or null before launch.
+ *
+ * Kept here rather than beside the chain client: it only formats a string, and importing it
+ * from the client would make every consumer — including the masthead — pull viem into the
+ * entry bundle.
+ */
+export function tokenExplorerUrl(): string | null {
+  return TOKEN.address ? `${CHAIN.explorer}/token/${TOKEN.address}` : null;
+}
 
 /** Where a holder converts ETH fees into ZEC. Documented so the route isn't a black box. */
 export const SWAP_ROUTES = [

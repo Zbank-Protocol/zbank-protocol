@@ -81,3 +81,45 @@ export async function checkZcashAddress(input: string): Promise<AddressCheck> {
 
   return { ok: true, kind: version === VERSION_P2PKH ? "P2PKH" : "P2SH" };
 }
+
+/**
+ * Re-encodes the 22 bytes the registry stores back into a displayable address.
+ *
+ * `PayoutRegistry` keeps only the version and hash160 so the record fits one storage slot,
+ * which means the original 35-character string exists nowhere on-chain. Anything that shows
+ * a holder their own saved address has to rebuild it, checksum included.
+ *
+ * @param versionedPayload 22 bytes as `0x`-prefixed hex: 2 version + 20 hash160.
+ */
+export async function encodeTransparentAddress(versionedPayload: string): Promise<string | null> {
+  const hex = versionedPayload.startsWith("0x") ? versionedPayload.slice(2) : versionedPayload;
+  if (hex.length !== 44 || !/^[0-9a-fA-F]+$/.test(hex)) return null;
+
+  const payload = new Uint8Array(22);
+  for (let i = 0; i < 22; i++) {
+    payload[i] = Number.parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+
+  // An all-zero slot means "unregistered", not "the zero address".
+  if (payload.every((byte) => byte === 0)) return null;
+
+  const checksum = await doubleSha256(payload);
+
+  let value = 0n;
+  for (const byte of payload) value = (value << 8n) | BigInt(byte);
+  for (let i = 0; i < 4; i++) value = (value << 8n) | BigInt(checksum[i]);
+
+  let encoded = "";
+  while (value > 0n) {
+    encoded = ALPHABET[Number(value % 58n)] + encoded;
+    value /= 58n;
+  }
+
+  return encoded;
+}
+
+/** Shortens an address for display without hiding the checksum characters. */
+export function abbreviate(address: string, lead = 10, tail = 6): string {
+  if (address.length <= lead + tail + 1) return address;
+  return `${address.slice(0, lead)}…${address.slice(-tail)}`;
+}

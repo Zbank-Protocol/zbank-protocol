@@ -4,35 +4,47 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#08060b" />
+    <meta name="theme-color" content="#050506" />
 
-    <title>SHIELDED — Trading fees become Zcash</title>
+    <title>ZBANK — Capital markets for Zcash</title>
     <meta
       name="description"
-      content="Every trade is watched. Every fee is not. SHIELDED routes its trading fees into Zcash and hands it back to holders — the ledger stays open, the value does not."
+      content="ZBANK is building a Zcash-native financial ecosystem on Robinhood Chain: ZEC-funded Stock Token portfolios, index baskets, credit, launches and payments — all feeding a transparent ZEC treasury with one mission: own 1% of Zcash."
     />
+    <link rel="canonical" href="https://zbank.world/" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="SHIELDED — Trading fees become Zcash" />
+    <meta property="og:site_name" content="ZBANK" />
+    <meta property="og:url" content="https://zbank.world/" />
+    <meta property="og:title" content="ZBANK — Capital markets for Zcash" />
     <meta
       property="og:description"
-      content="The ledger records everything. The reserve answers to no one."
+      content="Zcash was built to be money. We&#39;re building its bank."
     />
-    <meta property="og:image" content="/og.svg" />
+    <!--
+      PNG rather than SVG: X, Facebook and LinkedIn silently drop SVG og:images. The raster is
+      produced from scripts/og.html by `npm run og`.
+    -->
+    <meta property="og:image" content="https://zbank.world/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="ZBANK — capital markets for Zcash" />
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="icon" type="image/svg+xml" href="/mark.svg" />
+    <link rel="apple-touch-icon" href="/icon-180.png" />
   </head>
   <body>
     <div id="root"></div>
     <noscript>
-      <div style="padding: 3rem; font-family: system-ui; color: #f2ece0; background: #08060b">
-        <h1>SHIELDED</h1>
+      <div style="padding: 3rem; font-family: system-ui; color: #f2f3f5; background: #050506">
+        <h1>ZBANK</h1>
         <p>
-          Trading fees on SHIELDED are routed into Zcash and returned to holders pro rata.
-          The reserve address is published so anyone can verify it without trusting this page.
+          ZBANK is building a Zcash-native financial ecosystem on Robinhood Chain: ZEC-funded
+          Stock Token portfolios, index baskets, credit, launches and payments — all designed to
+          grow a transparent ZEC treasury toward 1% of circulating Zcash.
         </p>
-        <p>This page uses JavaScript for the descent into the shielded pool.</p>
+        <p>This page uses JavaScript for the interactive product previews.</p>
       </div>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>

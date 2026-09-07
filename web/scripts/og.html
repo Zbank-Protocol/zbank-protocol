@@ -1,0 +1,511 @@
+<!doctype html>
+<!--
+  Source artwork for every brand raster: the social card, the home-screen icon, and the X profile
+  picture and banner.
+
+  Rendered rather than hand-exported: `npm run og` opens this through the dev server (so the real
+  variable fonts are used, at the real axis settings from the design system) and captures each
+  block by element bounds, which guarantees each PNG is exactly the size its platform demands and
+  cannot drift out of sync with the site's type.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script type="module">
+      import "@fontsource-variable/fraunces/full.css";
+      import "@fontsource-variable/fraunces/full-italic.css";
+      import "@fontsource-variable/archivo/wdth.css";
+      import "@fontsource-variable/jetbrains-mono/wght.css";
+      // Signals to the capture script that the faces are resolved and layout has settled.
+      await document.fonts.ready;
+      document.documentElement.dataset.fontsReady = "true";
+    </script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      body {
+        background: #17171d;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 40px;
+        padding: 40px;
+        font-family: "Archivo Variable", sans-serif;
+        font-synthesis: none;
+      }
+
+      /* ---------- 1200x630 social card ---------- */
+
+      #og {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        padding: 72px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+        background:
+          radial-gradient(70% 80% at 88% 92%, #f4b7281f 0%, #f4b72800 100%),
+          radial-gradient(90% 70% at 12% 4%, #bcd8f512 0%, #bcd8f500 100%),
+          #050509;
+        color: #f4f6fa;
+      }
+
+      /* The same hairline viewfinder the page frames itself with. */
+      #og::before {
+        content: "";
+        position: absolute;
+        inset: 28px;
+        border: 1px solid #ffffff1a;
+      }
+
+      .og__head {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .og__head svg {
+        display: block;
+        width: 40px;
+        height: 40px;
+      }
+
+      .og__word {
+        font-variation-settings: "wdth" 100, "wght" 680;
+        font-size: 30px;
+        letter-spacing: -0.014em;
+      }
+
+      /* Matches `.t-display` on the site, so the card and the page share one display voice. */
+      .og__title {
+        position: relative;
+        max-width: 15ch;
+        font-family: "Fraunces Variable", Georgia, serif;
+        font-variation-settings: "opsz" 144, "wght" 620, "SOFT" 0, "WONK" 1;
+        font-size: 96px;
+        line-height: 0.96;
+        letter-spacing: -0.02em;
+      }
+
+      /*
+       * The italic's left sidebearing is far smaller than the roman's, so the word space in the
+       * markup disappears optically. The margin puts it back; without it the headline reads
+       * "becomeZcash".
+       */
+      .og__title em {
+        font-style: italic;
+        letter-spacing: -0.01em;
+        margin: 0 0.06em 0 0.09em;
+        color: #f4b728;
+      }
+
+      .og__foot {
+        position: relative;
+        display: flex;
+        align-items: baseline;
+        gap: 22px;
+        font-family: "JetBrains Mono Variable", monospace;
+        font-size: 17px;
+        font-feature-settings: "zero" 1;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #8b96a8;
+      }
+
+      .og__foot b {
+        font-weight: 500;
+        color: #f4b728;
+      }
+
+      .og__foot span {
+        color: #5a6270;
+      }
+
+      /* ---------- 180x180 home-screen icon ---------- */
+
+      #icon {
+        display: grid;
+        place-items: center;
+        width: 180px;
+        height: 180px;
+        background: #050509;
+      }
+
+      #icon svg {
+        display: block;
+        width: 116px;
+        height: 116px;
+      }
+
+      /* ---------- 400x400 profile picture ---------- */
+
+      /*
+       * Exported square because X wants a square upload, but it is only ever *displayed* as a
+       * circle, so nothing may rely on the corners and the mark needs real margin: at the 32px
+       * this renders at in a timeline, anything near the edge is simply clipped away.
+       */
+      .pfp {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 400px;
+        height: 400px;
+        overflow: hidden;
+      }
+
+      /* Styled by class, not id: the circular previews are the same artwork and must not drift. */
+      .pfp--dark {
+        background:
+          radial-gradient(70% 70% at 50% 34%, #f4b72826 0%, #f4b72800 100%),
+          #050509;
+      }
+
+      /*
+       * A hairline ring, inset to sit just inside the circle X crops to.
+       *
+       * Not decoration. A near-black avatar on X's dark theme has no edge at all and dissolves into
+       * the timeline background; the ring is what makes it read as an object.
+       */
+      .pfp--dark::after {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid #f4b72840;
+        border-radius: 50%;
+      }
+
+      .pfp--dark svg {
+        display: block;
+        width: 208px;
+        height: 208px;
+      }
+
+      /* The louder alternative: brand colour full-bleed, counter knocked out of it. */
+      .pfp--gold {
+        background: #f4b728;
+      }
+
+      .pfp--gold svg {
+        display: block;
+        width: 232px;
+        height: 232px;
+      }
+
+      /* Shows what the timeline actually shows, so the crop is judged rather than assumed. */
+      .pfp-preview {
+        border-radius: 50%;
+      }
+
+      /* ---------- 1500x500 profile banner ---------- */
+
+      /*
+       * Type is held to the right half and vertically centred, which is a constraint X imposes
+       * rather than a composition choice: the profile picture is overlaid on the banner's
+       * bottom-left corner, and clients crop height before they crop width. Anything important
+       * low or left is either covered by the avatar or cut off.
+       */
+      #banner {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        width: 1500px;
+        height: 500px;
+        padding: 0 96px;
+        overflow: hidden;
+        color: #f4f6fa;
+        background: #050509;
+      }
+
+      /*
+       * The left of the banner is a photograph of the actual product, not an impression of it.
+       *
+       * A stack of radial gradients was tried first and read as a brown smudge: the field's whole
+       * character is granular structure, which is the one thing a gradient cannot fake. The render
+       * script photographs the live WebGL field and injects it here, so the banner cannot depict
+       * something the site does not actually do.
+       *
+       * An <img> rather than a background, because it has to be mirrored — the field throws this
+       * mass to the right of frame and the banner needs its right half for type. `object-position`
+       * is above centre because the plate is captured at the aspect the field was composed for and
+       * then cropped to 3:1, and the mass sits above the middle of that taller frame.
+       */
+      .banner__field {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 44%;
+        transform: scaleX(-1);
+      }
+
+      /* Takes the right half to near-solid, so the headline sits on flat ground, not on particles. */
+      .banner__scrim {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          #05050900 0%,
+          #05050933 30%,
+          #050509b8 50%,
+          #050509f2 64%,
+          #050509 78%
+        );
+      }
+
+      .banner__type {
+        position: relative;
+        grid-column: 2;
+      }
+
+      .banner__title {
+        font-family: "Fraunces Variable", Georgia, serif;
+        font-variation-settings: "opsz" 144, "wght" 620, "SOFT" 0, "WONK" 1;
+        font-size: 78px;
+        line-height: 0.98;
+        letter-spacing: -0.02em;
+      }
+
+      .banner__title em {
+        font-style: italic;
+        letter-spacing: -0.01em;
+        margin: 0 0.06em 0 0.09em;
+        color: #f4b728;
+      }
+
+      /*
+       * Sized to fit three facts on one line inside the right-hand half, with margin to spare.
+       *
+       * It was 16px/20px gap, which fitted `zbank.cash` and then wrapped the moment the domain
+       * gained a character — the row was sitting within a few pixels of the column width. `nowrap`
+       * is the guard: without it the overflow breaks mid-phrase, which reads as a mistake rather
+       * than as a second line.
+       */
+      .banner__foot {
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+        margin-top: 30px;
+        font-family: "JetBrains Mono Variable", monospace;
+        font-size: 14px;
+        font-feature-settings: "zero" 1;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: #8b96a8;
+      }
+
+      .banner__foot b {
+        font-weight: 500;
+        color: #f4b728;
+      }
+
+      .banner__foot span {
+        color: #5a6270;
+      }
+
+      /* ---------- 1500x500 profile banner, warm ---------- */
+
+      /*
+       * The same composition as the field banner, lit instead of unlit.
+       *
+       * The cool version reads as sombre — a silver ribbon dissolving into black is elegant and, on
+       * a token account, looks like a wake. This one photographs the field at the conversion act,
+       * where the mass is gold and hot, and warms the ground under it so the whole frame looks lit
+       * rather than empty.
+       */
+      #banner-warm {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        width: 1500px;
+        height: 500px;
+        padding: 0 96px;
+        overflow: hidden;
+        color: #f4f6fa;
+        background:
+          radial-gradient(900px 620px at 22% 54%, #f4b7281f 0%, #f4b72800 100%),
+          radial-gradient(700px 500px at 78% 92%, #f4b72814 0%, #f4b72800 100%),
+          #07060a;
+      }
+
+      /*
+       * `screen` rather than a plain stack: the plate is a dark frame with bright particles on it,
+       * so laid over the warm ground normally its own black would cover the glow. Screening keeps
+       * only what is brighter than the ground, which is exactly the particles.
+       */
+      #banner-warm .banner__field {
+        mix-blend-mode: screen;
+        /*
+         * Not mirrored, unlike the stream plate. The field deliberately alternates which side the
+         * mass occupies act by act, and the conversion core is the one thrown hard to the left —
+         * flipping it moved the mass onto the right half and hid it behind the headline.
+         */
+        transform: none;
+        object-position: center 46%;
+      }
+
+      .banner__scrim--warm {
+        background: linear-gradient(
+          90deg,
+          #07060a00 0%,
+          #07060a26 30%,
+          #07060aad 48%,
+          #07060aeb 62%,
+          #07060a 76%
+        );
+      }
+
+      /* ---------- 1500x500 profile banner, minimal ---------- */
+
+      /*
+       * Centred rather than composed against anything, and carrying no mark.
+       *
+       * The omission is the point: the avatar is overlaid on this banner's bottom-left corner, so a
+       * logo in the artwork sits a few pixels from the same logo at larger size. Centring also side-
+       * steps the crop entirely — clients trim height and the edges of the width, and the middle is
+       * the one region every client shows.
+       */
+      #banner-min {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        /* Tight enough that the line and the domain read as one object rather than two. */
+        gap: 24px;
+        width: 1500px;
+        height: 500px;
+        /* Not flat black. A barely-there lift behind the type keeps it from looking like a fill. */
+        background:
+          radial-gradient(760px 420px at 50% 46%, #ffffff0a 0%, #ffffff00 100%),
+          #050509;
+        color: #f4f6fa;
+      }
+
+      .banner-min__title {
+        font-family: "Fraunces Variable", Georgia, serif;
+        font-variation-settings: "opsz" 144, "wght" 600, "SOFT" 0, "WONK" 1;
+        font-size: 72px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+
+      .banner-min__title em {
+        font-style: italic;
+        letter-spacing: -0.01em;
+        margin: 0 0.06em 0 0.09em;
+        color: #f4b728;
+      }
+
+      /*
+       * Sized and lightened from 15px/#6f7889. Wide tracking on a small dark grey looked correct in
+       * isolation and vanished at the size a banner is actually seen — the domain is the one piece
+       * of information on this artwork, so it cannot be the least legible thing on it.
+       */
+      .banner-min__foot {
+        font-family: "JetBrains Mono Variable", monospace;
+        font-size: 17px;
+        font-feature-settings: "zero" 1;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: #97a2b4;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="og">
+      <div class="og__head">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M14 2H46V34L34 46H2V14Z" fill="#f4b728" />
+          <path d="M13 13H35V17.4L21 30.2H35V35H13V30.2L27 17.4H13Z" fill="#050509" />
+        </svg>
+        <span class="og__word">Zbank</span>
+      </div>
+
+      <h1 class="og__title">Every trade buys <em>Zcash</em>.</h1>
+
+      <div class="og__foot">
+        <b>zbank.world</b>
+        <span>Robinhood Chain</span>
+        <span>Reserve published on Zcash</span>
+      </div>
+    </div>
+
+    <div id="icon">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M14 2H46V34L34 46H2V14Z" fill="#f4b728" />
+        <path d="M13 13H35V17.4L21 30.2H35V35H13V30.2L27 17.4H13Z" fill="#050509" />
+      </svg>
+    </div>
+
+    <div class="pfp pfp--dark" id="pfp-dark">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M14 2H46V34L34 46H2V14Z" fill="#f4b728" />
+        <path d="M13 13H35V17.4L21 30.2H35V35H13V30.2L27 17.4H13Z" fill="#050509" />
+      </svg>
+    </div>
+
+    <!--
+      Cropped to the Z alone. The plate's cut corners are the mark's silhouette, and a circle
+      already supplies a silhouette — keeping both fights, so the full-bleed variant drops the plate
+      and lets the circle be the shape.
+    -->
+    <div class="pfp pfp--gold" id="pfp-gold">
+      <svg viewBox="10 10 28 28" aria-hidden="true">
+        <path d="M13 13H35V17.4L21 30.2H35V35H13V30.2L27 17.4H13Z" fill="#050509" />
+      </svg>
+    </div>
+
+    <div class="pfp pfp--dark pfp-preview" id="pfp-dark-circle">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M14 2H46V34L34 46H2V14Z" fill="#f4b728" />
+        <path d="M13 13H35V17.4L21 30.2H35V35H13V30.2L27 17.4H13Z" fill="#050509" />
+      </svg>
+    </div>
+
+    <div class="pfp pfp--gold pfp-preview" id="pfp-gold-circle">
+      <svg viewBox="10 10 28 28" aria-hidden="true">
+        <path d="M13 13H35V17.4L21 30.2H35V35H13V30.2L27 17.4H13Z" fill="#050509" />
+      </svg>
+    </div>
+
+    <div id="banner">
+      <img class="banner__field" id="banner-field" alt="" />
+      <div class="banner__scrim"></div>
+      <div class="banner__type">
+        <h2 class="banner__title">Every trade buys <em>Zcash</em>.</h2>
+        <div class="banner__foot">
+          <b>zbank.world</b>
+          <span>Robinhood Chain</span>
+          <span>Reserve published on Zcash</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="banner-warm">
+      <img class="banner__field" id="banner-gold-field" alt="" />
+      <div class="banner__scrim banner__scrim--warm"></div>
+      <div class="banner__type">
+        <h2 class="banner__title">Every trade buys <em>Zcash</em>.</h2>
+        <div class="banner__foot">
+          <b>zbank.world</b>
+          <span>Robinhood Chain</span>
+          <span>Reserve published on Zcash</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="banner-min">
+      <h2 class="banner-min__title">Every trade buys <em>Zcash</em>.</h2>
+      <div class="banner-min__foot">zbank.world</div>
+    </div>
+  </body>
+</html>

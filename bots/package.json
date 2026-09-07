@@ -1,0 +1,12 @@
+{
+  "name": "zbank-bots",
+  "private": true,
+  "type": "module",
+  "description": "ZBANK keepers: ZEC/USD oracle relay + ZCREDIT liquidation watch. One pass per run.",
+  "scripts": {
+    "keeper": "node keeper.mjs"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
+  }
+}

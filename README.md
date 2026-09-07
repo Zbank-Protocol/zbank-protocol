@@ -1,3 +1,9 @@
+# ZBANK
+
+A Zcash-native financial ecosystem on Robinhood Chain. The website lives in `web/`; the
+economic model — pro-rata ZEC treasury redemption plus protocol-funded ZBNK buyback and burn
+("More ZEC. Fewer ZBNK.") — is documented in [docs/tokenomics.md](docs/tokenomics.md).
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**

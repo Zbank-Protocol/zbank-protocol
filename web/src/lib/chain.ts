@@ -1,5 +1,5 @@
 import { createPublicClient, defineChain, formatEther, http, parseAbi } from "viem";
-import { CHAIN, CONTRACTS, PONS, TOKEN, ZEC_RESERVE } from "../config";
+import { CHAIN, CONTRACTS, PONS, ZEC_RESERVE } from "../config";
 
 export const robinhoodChain = defineChain({
   id: CHAIN.id,
@@ -128,6 +128,6 @@ export async function readZecReserve(): Promise<number | null> {
   }
 }
 
-export function tokenExplorerUrl(): string | null {
-  return TOKEN.address ? `${CHAIN.explorer}/token/${TOKEN.address}` : null;
-}
+// `tokenExplorerUrl` lives in `config.ts`. It only builds a string, and exporting it from here
+// meant the masthead imported this module, which statically pulls in viem and put the whole
+// chain client in the entry chunk.

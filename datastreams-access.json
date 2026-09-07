@@ -1,0 +1,62 @@
+{
+  "search_id": "search_d591a96c5b6c1d32b3ae3ce9e535943e",
+  "session_id": "session_d591a96c5b6c1d32b3ae3ce9e535943e",
+  "status": "ok",
+  "results": [
+    {
+      "url": "https://docs.chain.link/data-streams",
+      "title": "Chainlink Data Streams - Chainlink Documentation",
+      "publish_date": null,
+      "excerpts": [
+        "You can access Chainlink Data Streams through SDKs and APIs, allowing you to build custom solutions with low-latency, high-frequency data. Fetch reports or subscribe to report updates from the Data Streams Aggregation Network and verify their authenticity onchain.\n\nChainlink Data Streams - On-Demand Offchain Workflows\n\nChainlink Data Streams - On-Demand Offchain Workflows\n\n### Integration options\n\nAccess data directly through REST APIs or WebSocket connections using our SDKs:\n\n* **Go SDK** \\- Full-featured SDK with comprehensive examples\n* **Rust SDK** \\- High-performance SDK for Rust applications\n* **TypeScript SDK** \\- Type-safe SDK for TypeScript applications\n* **REST API** or **WebSocket** \\- Direct access to Data Streams endpoints\n\n### Getting started\n\n1. Understand the Architecture: Review the system components and data flow to understand how Data Streams works.\n2."
+      ]
+    },
+    {
+      "url": "https://docs.chain.link/data-streams/reference/data-streams-api/interface-api",
+      "title": "Data Streams REST API | Chainlink Documentation",
+      "publish_date": "2026-07-31",
+      "excerpts": [
+        "Contact us to talk to an expert about integrating Chainlink Data Streams with your applications. <strong>All requests to the Data Streams REST API require authentication</strong>."
+      ]
+    },
+    {
+      "url": "https://docs.chain.link/data-streams/sign-up",
+      "title": "Sign Up for Data Streams | Chainlink Documentation",
+      "publish_date": "2026-08-27",
+      "excerpts": [
+        "Click **Data Streams** in the sidebar under the CRE section.\n\nThe Data Streams section has three tabs: **Home** , **Credentials** , and **Billing** .\n\n* * *\n\n## Step 3: Generate API credentials\n\nData Streams uses HMAC authentication. You must generate credentials before making API requests.\n\n1. On the **Home** tab, click **Create API Key** .\n2. In the modal that opens, read through the **Chainlink Data Streams Terms of Service** .\n3. Check the box: **I accept the Chainlink Data Streams Terms of Service** .\n4. Click **Generate** .\n\n### Copy your credentials immediately\n\nAfter the key is generated, the **Credentials** tab displays a **one-time private view** of your credentials:\n\n|Field |Description |\n| --- | --- |\n|**Data Streams Username** |Your user ID \u2014 used for both the core Data Streams service and the Candlestick API |\n|**HMAC Secret** |Your password for the core Data Streams service \u2014 click the copy icon to copy |\n|**API Key** |Your API key for the Candlestick API \u2014 click the copy icon to copy |\n\ncaution\n\nCredentials are shown only once\n\nThe Password and API Key are not stored in the portal. Copy both values and store them securely before clicking **Dismiss** . If you lose them, you must rotate your credentials to generate new ones.\n\n#### Two services, one username, two passwords\n\nYour Data Streams account provides access to two separate services, each with its own password:\n\n* **Core Data Streams service** \u2014 uses your username and the **Password** shown on the Credentials tab. See the Go SDK fetch tutorial to get started.\n* **Candlestick API** \u2014 uses the same username but a **separate password** generated for that service. See the Candlestick API reference for details.\n\nMake sure you save both passwords. They are issued separately and are not interchangeable.\n\n### Rotating credentials\n\nClick **Rotate Credentials** to generate new secrets. This immediately invalidates the previous ones."
+      ]
+    },
+    {
+      "url": "https://docs.chain.link/data-streams/reference/data-streams-api/authentication",
+      "title": "Data Streams Authentication | Chainlink Documentation",
+      "publish_date": "2026-09-01",
+      "excerpts": [
+        "# Data Streams Authentication\n\nnote\n\nGet started\n\nData Streams is self-serve, no sales call required.  to get started, or follow the sign-up guide .\n\nThis page explains how to authenticate with the Chainlink Data Streams API, covering both REST API and WebSocket connections. It includes detailed information about the required authentication headers, how to generate an HMAC signature, and examples in multiple programming languages.\n\nnote\n\nData Streams SDKs\n\nThe Data Streams SDKs handle authentication automatically. If you're using the Go SDK , Rust SDK ,\nor TypeScript SDK , you don't need to implement the authentication\nlogic manually.\n\n## Authentication Requirements\n\nAll requests to the Data Streams API (both REST and WebSocket) require three authentication headers:\n\n|Header |Description |\n| --- | --- |\n|`Authorization` |Your API key (UUID format) |\n|`X-Authorization-Timestamp` |Current timestamp with millisecond precision |\n|`X-Authorization-Signature-SHA256` |HMAC signature generated using SHA-256 |\n\nThese headers authenticate your request and ensure data integrity.\n\n### Authorization Header\n\nThe `Authorization` header contains your API key, which is provided to you when you sign up for Chainlink Data Streams access. It follows this format:\n\n```\nAuthorization: YOUR_API_KEY\n```\n\nYour API key is a UUID string that identifies your account. Keep it secure and do not share it publicly.\n\n### X-Authorization-Timestamp Header\n\nThe `X-Authorization-Timestamp` header contains the current timestamp in milliseconds since the Unix epoch (January 1, 1970, 00:00:00 UTC). It follows this format:\n\n```\nX-Authorization-Timestamp: 1716211845123\n```\n\nThe timestamp must be within 5 seconds of the server time to prevent replay attacks. This means your system clock must be synchronized with a reliable time source.\n\n### X-Authorization-Signature-SHA256 Header\nThe `X-Authorization-Signature-SHA256` header contains the HMAC-SHA256 signature of your request. It's created using your API secret (provided along with your API key) and follows this format:\n\n```\nX-Authorization-Signature-SHA256: YOUR_HMAC_SIGNATURE\n```\n\n## Generating the HMAC Signature\n\nTo generate the HMAC signature correctly:\n\n1. **Create the string to sign:**\n   \n    + For REST API: Combine the HTTP method, endpoint path with query parameters, body hash, API key, and timestamp\n    + For WebSocket: Same format as REST API requests, using `GET` as the method\n2. **Generate the signature:**\n   \n    + Use HMAC-SHA256 algorithm with your API secret as the key\n    + Sign the string created in step 1\n    + Hex encode the resulting binary hash\n\n### String to Sign Format\n\nThe string to sign follows this format (for both REST API and WebSocket connections):\n\n```\nMETHOD FULL_PATH BODY_HASH API_KEY TIMESTAMP\n```\n\nWhere:\n\n* `METHOD` : The HTTP method in uppercase (e.g.\n\n...\n\nBelow are complete examples for authenticating with the Data Streams API in various languages. Each example shows how to properly generate the required headers and make a request.\n\n* JavaScript examples\n* TypeScript examples\n* Go examples\n* Rust examples\n\n## Common Authentication Errors\n\nWhen working with the Data Streams API, the most common authentication issues include:\n\n* **Signature Mismatch** : The HMAC signature generated by your client doesn't match what the server expects, often due to incorrect string-to-sign format or hash encoding\n* **Timestamp Issues** : Your system time isn't synchronized with the server (must be within 5 seconds)\n* **Missing or Malformed Headers** : Required authentication headers are missing or have incorrect format\n* **Insufficient Permissions** : Your API key doesn't have access to the requested feed ID\n\nFor complete information on all possible error responses:\n\n* REST API Error Response Codes\n* WebSocket Error Response Codes"
+      ]
+    },
+    {
+      "url": "https://docs.chain.link/data-streams/reference/data-streams-api/authentication.md",
+      "title": "Data Streams Authentication",
+      "publish_date": null,
+      "excerpts": [
+        "All requests to the Data Streams API (both REST and WebSocket) require three authentication headers:\n\n| Header                             | Description                                  |\n| ---------------------------------- | -------------------------------------------- |\n| `Authorization`                    | Your API key (UUID format)                   |\n| `X-Authorization-Timestamp`        | Current timestamp with millisecond precision |\n| `X-Authorization-Signature-SHA256` | HMAC signature generated using SHA-256       |\n\nThese headers authenticate your request and ensure data integrity.\n\n### Authorization Header\n\nThe `Authorization` header contains your API key, which is provided to you when you sign up for Chainlink Data Streams access. It follows this format:\n\n```\nAuthorization: YOUR_API_KEY\n```\n\nYour API key is a UUID string that identifies your account. Keep it secure and do not share it publicly.\n\n### X-Authorization-Timestamp Header\nThe `X-Authorization-Timestamp` header contains the current timestamp in milliseconds since the Unix epoch (January 1, 1970, 00:00:00 UTC). It follows this format:\n\n```\nX-Authorization-Timestamp: 1716211845123\n```\n\nThe timestamp must be within 5 seconds of the server time to prevent replay attacks. This means your system clock must be synchronized with a reliable time source.\n\n### X-Authorization-Signature-SHA256 Header\n\nThe `X-Authorization-Signature-SHA256` header contains the HMAC-SHA256 signature of your request. It's created using your API secret (provided along with your API key) and follows this format:\n\n```\nX-Authorization-Signature-SHA256: YOUR_HMAC_SIGNATURE\n```\n\n## Generating the HMAC Signature\n\nTo generate the HMAC signature correctly:\n\n1. **Create the string to sign:**\n   - For REST API: Combine the HTTP method, endpoint path with query parameters, body hash, API key, and timestamp\n   - For WebSocket: Same format as REST API requests, using `GET` as the method\n\n2.\n**Generate the signature:**\n   - Use HMAC-SHA256 algorithm with your API secret as the key\n   - Sign the string created in step 1\n   - Hex encode the resulting binary hash\n\n### String to Sign Format\n\nThe string to sign follows this format (for both REST API and WebSocket connections):\n\n```\nMETHOD FULL_PATH BODY_HASH API_KEY TIMESTAMP\n```\n\nWhere:\n\n- `METHOD`: The HTTP method in uppercase (e.g., `GET`, `POST`) (use `GET` for WebSocket connections)\n- `FULL_PATH`: The endpoint path including query parameters (e.g., `/api/v1/reports/latest?feedID=0x123...`)\n- `BODY_HASH`: SHA-256 hash of the request body, hex encoded (use empty string hash for GET requests or WebSocket connections)\n- `API_KEY`: Your API key (same as in the `Authorization` header)\n- `TIMESTAMP`: The timestamp in milliseconds since the Unix epoch (same as in the `X-Authorization-Timestamp` header)\n\nNote that the elements are joined with a single space character, not newlines.\n\n#### Body Hash Calculation"
+      ]
+    },
+    {
+      "url": "https://chain.link/data-streams",
+      "title": "Data Streams: Low-Latency Market Data for DeFi & Beyond | Chainlink",
+      "publish_date": null,
+      "excerpts": [
+        "Access low-latency, real-time market data tailored for decentralized applications. Chainlink Data Streams powers onchain innovation with reliable updates at sub-second speed."
+      ]
+    }
+  ],
+  "usage": [
+    {
+      "name": "sku_search",
+      "count": 1
+    }
+  ],
+  "warnings": []
+}

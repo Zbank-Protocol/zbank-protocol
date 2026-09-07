@@ -1,0 +1,8 @@
+# Development artefacts. Neither is an input to the build, and the first deploy spent 36MB of its
+# 37MB upload on screenshots.
+#
+# `shots/` is the capture output from `npm run shots`. `brand/` is the X avatar and banners, which
+# are uploaded by hand to a platform rather than served — the assets the site actually references
+# (og.png, icon-180.png, mark.svg) live in `public/` and are deliberately not listed here.
+shots/
+brand/

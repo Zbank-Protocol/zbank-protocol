@@ -1,15 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" fill="#08060b"/>
-  <!-- Upper half: the transparent ledger, individual records legible. -->
-  <g stroke="#b0cee0" stroke-width="1.4" opacity="0.75">
-    <path d="M7 9h7M18 9h7M7 13h4M15 13h10"/>
-  </g>
-  <!-- Lower half: shielded, the records indistinguishable, warmed to gold. -->
-  <g fill="#f4b728">
-    <circle cx="9" cy="20" r="1.5"/>
-    <circle cx="14.5" cy="21" r="1.5"/>
-    <circle cx="20" cy="20" r="1.5"/>
-    <circle cx="25" cy="21" r="1.5"/>
-  </g>
-  <path d="M5 25.5h22" stroke="#f4b728" stroke-width="1.6" opacity="0.9"/>
+<!--
+  Zbank mark.
+
+  A chamfered plate — a seal or a stamped bar rather than a coin — with a Z cut out of it.
+  The two chamfers are on the top-left and bottom-right corners specifically, because a cut
+  across those corners runs parallel to the Z's diagonal: the whole mark then shares a single
+  diagonal axis instead of a letter sitting inside an unrelated container.
+
+  Everything is drawn as flat fills on a 48-unit grid with no strokes, gradients or filters, so
+  it stays exact at 16px in a browser tab. The Z's diagonal is cut slightly heavier than its
+  horizontals (5.4 against 4.4/4.8) and the top horizontal slightly lighter than the bottom,
+  which is the usual optical correction — equal weights read as top-heavy and bottom-light.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="Zbank">
+  <path d="M14 2H46V34L34 46H2V14Z" fill="#f4b728" />
+  <path
+    d="M13 13H35V17.4L21 30.2H35V35H13V30.2L27 17.4H13Z"
+    fill="#050509"
+  />
 </svg>

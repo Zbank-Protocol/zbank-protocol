@@ -5,3 +5,4 @@ broadcast/
 .env
 .DS_Store
 web/dist/
+.secrets/

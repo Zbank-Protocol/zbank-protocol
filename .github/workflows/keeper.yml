@@ -1,0 +1,34 @@
+name: keeper
+
+# ZBANK keeper: relays ZEC/USD Data Streams reports onchain and liquidates
+# underwater ZCREDIT positions. One pass per run; the oracle's 30-minute
+# staleness window tolerates GitHub's best-effort cron timing.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: keeper
+  cancel-in-progress: false
+
+jobs:
+  keeper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: bots
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: bots/package-lock.json
+      - run: npm ci
+      - run: node keeper.mjs
+        env:
+          KEEPER_PRIVATE_KEY: ${{ secrets.KEEPER_PRIVATE_KEY }}
+          DATASTREAMS_API_KEY: ${{ secrets.DATASTREAMS_API_KEY }}
+          DATASTREAMS_API_SECRET: ${{ secrets.DATASTREAMS_API_SECRET }}
