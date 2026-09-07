@@ -117,8 +117,7 @@ export default function AppDashboard() {
           </div>
         </div>
         <p className="t-note container__note">
-          Figures marked "—" populate when the corresponding contracts are deployed. Treasury
-          value shown is an illustrative pre-launch figure.
+          Figures marked "—" populate when the corresponding contracts are deployed.
         </p>
       </div>
     </main>

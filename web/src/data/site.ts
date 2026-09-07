@@ -1,13 +1,13 @@
 /**
  * All site content and every pre-launch placeholder, in one file.
  *
- * ============================== PLACEHOLDER / DEMO DATA ==============================
- * Nothing in this file is read from a contract or an API yet. Values marked `demo` are
- * illustrative figures for pre-launch presentation; values shown as "—" or "Pending launch"
- * are deliberately unstated because no honest number exists yet. When contracts go live,
- * replace the constants here with reads from `lib/chain.ts` — components consume this file
- * only, so nothing else should need to change.
- * =====================================================================================
+ * ================================== DATA POLICY ==================================
+ * No fabricated figures. Anything not yet real and onchain renders "—" or "Pending launch".
+ * The only numeric values allowed here are real deployed facts, stated targets (the 1%
+ * mission), and clearly-labelled worked examples (EXAMPLE_MODEL / REDEMPTION) that teach the
+ * proposed math. When token-launch data goes live, replace constants with reads from
+ * `lib/chain.ts` — components consume this file only.
+ * ==================================================================================
  */
 
 import { PRODUCT_STATUS } from "../config/protocol";
@@ -19,14 +19,14 @@ export type ProductStatus = "Live" | "Coming soon" | "Planned" | "Research";
 /* --------------------------- The economic model --------------------------- */
 
 /**
- * Live protocol state. Pre-launch, almost everything is honestly null — the treasury figure is
- * the one illustrative demo value, consistent with the rest of the site.
+ * Live protocol state. Pre-token-launch, everything is honestly null.
  *
  * The redeemable/strategic split is deliberately null until treasury accounting is defined
  * onchain: assuming total = redeemable would overstate the proposed backing.
  */
 export const TREASURY_STATE: TreasuryState = {
-  totalZec: 12_481.37, // DEMO
+  // The treasury funds at token launch. Until a real onchain balance exists, no number does.
+  totalZec: null,
   redeemableZec: null,
   strategicZec: null,
   currentZecPrice: null,
@@ -111,13 +111,13 @@ export const ZLOOP_FEATURE = {
   cta: { label: "Open ZLOOP", to: "/credit/loop" },
 } as const;
 
-/** DEMO DATA — the institutional strip under the hero. "—" where no honest number exists yet. */
+/** The institutional strip under the hero. "—" until each figure is real and onchain. */
 export const HERO_METRICS = [
-  { label: "ZEC Treasury", value: "12,481.37", unit: "ZEC" },
+  { label: "ZEC Treasury", value: "—", unit: "" },
   { label: "ZBNK Supply", value: "—", unit: "" },
   { label: "ZEC / ZBNK", value: "—", unit: "" },
   { label: "ZBNK Burned", value: "—", unit: "" },
-  { label: "1% Mission", value: "7.4", unit: "%" },
+  { label: "1% Mission", value: "—", unit: "" },
 ] as const;
 
 /** The thesis, stated under the strip. The two forces in four words. */
@@ -126,15 +126,15 @@ export const HERO_THESIS = {
   support: "Every ZBANK product is designed to strengthen the same economic system.",
 } as const;
 
-/** DEMO DATA — the concept account panel in the hero visual. Denominated in ZEC, not USD. */
+/** The hero visual panel — real, verifiable protocol facts. No invented balances. */
 export const HERO_ACCOUNT = {
-  title: "ZBANK Account",
-  badge: "Concept preview",
+  title: "ZBANK Protocol",
+  badge: "Onchain",
   rows: [
-    { label: "Portfolio value", value: "128.40 ZEC" },
-    { label: "ZEC balance", value: "42.00 ZEC" },
-    { label: "Stock Token allocation", value: "62%" },
-    { label: "Credit available", value: "18.60 ZEC" },
+    { label: "Network", value: "Robinhood Chain" },
+    { label: "Credit market", value: "Live" },
+    { label: "Execution", value: "Uniswap v3" },
+    { label: "ZEC/USD oracle", value: "Chainlink" },
   ],
 } as const;
 
@@ -143,17 +143,17 @@ export const HERO_FLOW = ["ZEC", "ZBANK", "Robinhood Chain", "Stocks / Indexes /
 
 /* ------------------------------ 02 · Mission ------------------------------ */
 
-/** DEMO DATA — mission tracker. 1% of circulating ZEC ≈ 168,500 ZEC at these placeholder figures. */
+/** Mission tracker. Owned/progress stay "—" until the treasury holds real onchain ZEC. */
 export const MISSION = {
   headline: ["1% isn\u2019t a slogan.", "It\u2019s the target."],
   copy:
     "We\u2019re buying 1% of Zcash. ZBANK products generate protocol revenue; a defined portion " +
     "acquires ZEC for the treasury, and a defined portion — under the proposed model — buys " +
     "ZBNK from the market for permanent burn.",
-  owned: "12,481.37 ZEC",
+  owned: "—",
   target: "~168,500 ZEC",
-  progressPct: 7.4,
-  remaining: "~156,018 ZEC",
+  progressPct: 0,
+  remaining: "~168,500 ZEC",
   footnote: "Every product feeds the treasury.",
   why: {
     q: "Why does it matter?",
@@ -172,14 +172,14 @@ export const TREASURY = {
     "and designed around long-term Zcash ownership.",
   /* Never claim "never sells" — policy language only, until enforced in contract code. */
   policy: "ZBANK\u2019s treasury strategy prioritizes accumulation over distribution.",
-  /** DEMO DATA — dashboard cells. "—" where no honest pre-launch number exists. */
+  /** Dashboard cells. "—" everywhere until the treasury address holds real ZEC. */
   stats: [
-    { label: "Total ZEC treasury", value: "12,481.37", unit: "ZEC" },
+    { label: "Total ZEC treasury", value: "—", unit: "" },
     { label: "Redeemable ZEC", value: "—", unit: "" },
     { label: "Strategic / reserved ZEC", value: "—", unit: "" },
     { label: "Estimated value", value: "$—", unit: "" },
-    { label: "Acquired all-time", value: "12,481.37", unit: "ZEC" },
-    { label: "1% mission completed", value: "7.4", unit: "%" },
+    { label: "Acquired all-time", value: "—", unit: "" },
+    { label: "1% mission completed", value: "—", unit: "" },
   ],
   /** The accounting rule the whole site follows. */
   accountingNote:
@@ -255,193 +255,7 @@ export const PRODUCTS: Product[] = [
 /** Beyond launch — kept honest, kept off the main grid. */
 export const LATER_PRODUCTS = ["ZVAULT", "ZLAUNCH", "ZPAY"] as const;
 
-/* ------------------------------ 05 · ZINVEST ------------------------------ */
-
-export type Allocation = { symbol: string; weight: number };
-
-/**
- * DEMO DATA — example allocations per template. Illustrative compositions only; weights are
- * design placeholders and none of this is investment guidance or a live strategy.
- */
-export const PORTFOLIO_TEMPLATES: { name: string; allocation: Allocation[] }[] = [
-  {
-    name: "Technology",
-    allocation: [
-      { symbol: "NVDA", weight: 25 },
-      { symbol: "AAPL", weight: 20 },
-      { symbol: "MSFT", weight: 20 },
-      { symbol: "META", weight: 15 },
-      { symbol: "SPY", weight: 10 },
-      { symbol: "ZEC", weight: 10 },
-    ],
-  },
-  {
-    name: "AI",
-    allocation: [
-      { symbol: "NVDA", weight: 30 },
-      { symbol: "AMD", weight: 20 },
-      { symbol: "MSFT", weight: 15 },
-      { symbol: "GOOGL", weight: 15 },
-      { symbol: "TSM", weight: 10 },
-      { symbol: "ZEC", weight: 10 },
-    ],
-  },
-  {
-    name: "Broad Market",
-    allocation: [
-      { symbol: "SPY", weight: 40 },
-      { symbol: "QQQ", weight: 25 },
-      { symbol: "IWM", weight: 10 },
-      { symbol: "DIA", weight: 10 },
-      { symbol: "ZEC", weight: 15 },
-    ],
-  },
-  {
-    name: "Dividends",
-    allocation: [
-      { symbol: "JNJ", weight: 20 },
-      { symbol: "KO", weight: 20 },
-      { symbol: "PG", weight: 15 },
-      { symbol: "XOM", weight: 15 },
-      { symbol: "VZ", weight: 15 },
-      { symbol: "ZEC", weight: 15 },
-    ],
-  },
-  {
-    name: "ZEC 50/50",
-    allocation: [
-      { symbol: "ZEC", weight: 50 },
-      { symbol: "SPY", weight: 20 },
-      { symbol: "QQQ", weight: 15 },
-      { symbol: "NVDA", weight: 15 },
-    ],
-  },
-  {
-    // Custom holds no preset weights: the empty state is the honest render.
-    name: "Custom",
-    allocation: [],
-  },
-];
-
-export const ZINVEST = {
-  headline: "Turn Zcash into a portfolio.",
-  copy:
-    "Choose an allocation, fund it with ZEC, and access supported Robinhood Chain Stock Tokens " +
-    "through one investment flow.",
-  /** DEMO DATA — builder amount. */
-  amount: "10.00 ZEC",
-} as const;
-
-/* ------------------------------ 06 · ZINDEX ------------------------------ */
-
-export type IndexCardData = {
-  name: string;
-  category: string;
-  assets: string;
-  target: string;
-  components: string;
-};
-
-/** No performance figures anywhere here, by design: nothing has traded, so nothing is claimed. */
-export const INDEXES: IndexCardData[] = [
-  {
-    name: "ZTECH 10",
-    category: "Technology",
-    assets: "10 assets",
-    target: "90% Stock Tokens · 10% ZEC",
-    components: "NVDA · AAPL · MSFT · META · AVGO",
-  },
-  {
-    name: "ZAI",
-    category: "AI + Semiconductors",
-    assets: "8 assets",
-    target: "85% Stock Tokens · 15% ZEC",
-    components: "NVDA · AMD · TSM · ASML · MSFT",
-  },
-  {
-    name: "Z500",
-    category: "Broad U.S. market",
-    assets: "3 assets",
-    target: "80% Stock Tokens · 20% ZEC",
-    components: "SPY · QQQ · IWM",
-  },
-  {
-    name: "ZDIV",
-    category: "Dividend-focused",
-    assets: "12 assets",
-    target: "85% Stock Tokens · 15% ZEC",
-    components: "JNJ · KO · PG · XOM · VZ",
-  },
-  {
-    name: "Z50",
-    category: "Balanced",
-    assets: "4 assets",
-    target: "50% ZEC · 50% Stock Tokens",
-    components: "ZEC · SPY · QQQ · NVDA",
-  },
-  {
-    name: "ZCUSTOM",
-    category: "User-defined",
-    assets: "Variable",
-    target: "Set by the allocator",
-    components: "Any supported Stock Token · ZEC",
-  },
-];
-
-/* ------------------------------ 07 · ZCREDIT ------------------------------ */
-
-export const ZCREDIT = {
-  headline: ["Keep your ZEC.", "Access liquidity."],
-  copy:
-    "ZCREDIT is designed to explore ZEC-backed credit products on Robinhood Chain. Eligible " +
-    "collateral could support borrowing in USDG or other approved assets without requiring " +
-    "users to exit their ZEC exposure.",
-  /** DEMO DATA — concept calculator. Dollar figures stay "—" until an oracle exists. */
-  mock: {
-    collateral: "100 ZEC",
-    collateralValue: "$—",
-    targetLtv: 25,
-    borrow: "$—",
-    health: "—",
-  },
-} as const;
-
-/* ------------------------------ 08 · ZLAUNCH ------------------------------ */
-
-export const ZLAUNCH = {
-  headline: "A Zcash-native capital market.",
-  copy:
-    "Projects should be able to launch, raise, and trade around ZEC-based liquidity instead of " +
-    "treating Zcash as a passive asset.",
-  notes: [
-    "Launches funded in ZEC",
-    "Liquidity pairs against ZEC-derived assets",
-    "A portion of platform revenue acquires ZEC for the treasury",
-    "A portion funds ZBNK buyback and burn, under the proposed model",
-  ],
-  /** DEMO DATA — an empty launch slate, rendered as the template it is. */
-  mockRow: {
-    project: "—",
-    ticker: "—",
-    raised: "— ZEC",
-    participants: "—",
-    status: "Pending launch",
-  },
-} as const;
-
-/* ------------------------------- 09 · ZPAY ------------------------------- */
-
-export const ZPAY = {
-  headline: ["ZEC in.", "Settlement out."],
-  copy: "ZPAY is a payment-routing layer for converting ZEC into supported settlement assets on Robinhood Chain.",
-  flow: [
-    { label: "Customer", detail: "10 ZEC" },
-    { label: "ZPAY Router", detail: "Route + convert" },
-    { label: "Merchant", detail: "USDG / supported asset" },
-  ],
-} as const;
-
-/* ------------------------------ 10 · Flywheel ------------------------------ */
+/* ------------------------------ 05 · Flywheel ------------------------------ */
 
 export const FLYWHEEL = {
   headline: "Every product feeds the same machine.",

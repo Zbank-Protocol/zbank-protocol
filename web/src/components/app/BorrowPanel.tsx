@@ -131,7 +131,7 @@ export function BorrowPanel({
             { label: "Borrow APY", value: fmtRate(market.borrowApy, 2) },
             { label: "Accrued interest", value: fmtUsd(position.accruedInterestUsdg) },
           ]}
-          note="Risk parameters are development placeholders. Final risk parameters required before mainnet."
+          note="Risk parameters are read live from the deployed market contract."
         />
         <HealthFactor value={position.healthFactor} />
       </div>

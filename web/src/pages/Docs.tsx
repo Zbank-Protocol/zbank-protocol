@@ -332,8 +332,8 @@ export default function Docs() {
               ]}
             />
             <p className="t-note">
-              All parameters above are development placeholders (TODO: final risk parameters
-              required before mainnet). Collateral is valued exclusively by the onchain ZEC/USD
+              These are the launch parameters of the deployed market; they can be adjusted only
+              within hard onchain rails. Collateral is valued exclusively by the onchain ZEC/USD
               oracle; stale, zero, or invalid prices halt borrowing.
             </p>
           </section>

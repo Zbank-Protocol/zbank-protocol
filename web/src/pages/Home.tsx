@@ -79,7 +79,7 @@ export default function Home() {
                 {HERO_METRICS.map((m) => (
                   <MetricCard key={m.label} label={m.label} value={m.value} unit={m.unit} />
                 ))}
-                <span className="strip__note t-demo">Pre-launch figures</span>
+                <span className="strip__note t-demo">Figures go live at token launch</span>
               </div>
 
               <div className="thesis">

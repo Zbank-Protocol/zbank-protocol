@@ -1,10 +1,8 @@
 import { HERO_ACCOUNT, HERO_FLOW } from "../data/site";
 
 /**
- * The hero visual: a ZBANK account panel beside the ZEC → markets transaction flow.
- *
- * Product-driven on purpose — this is a mock of the interface being built, labelled as a
- * concept preview, not a decorative graphic. All figures are demo data from data/site.ts.
+ * The hero visual: real protocol facts beside the ZEC → markets transaction flow.
+ * Every row is a verifiable statement about the deployed system — no invented balances.
  */
 export function HeroPanel() {
   return (

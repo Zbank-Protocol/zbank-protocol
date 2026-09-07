@@ -50,7 +50,7 @@ export function TreasuryTracker() {
 
       <div className="tracker__foot">
         <span className="t-note">{MISSION.footnote}</span>
-        <span className="t-demo">Illustrative pre-launch figures</span>
+        <span className="t-demo">Treasury accumulation begins at token launch</span>
       </div>
     </div>
   );

@@ -122,8 +122,8 @@ export default function Credit() {
           <p className="t-note">
             Collateral is valued exclusively by the onchain {market.oracle.label} oracle — never
             by a frontend price. Stale, invalid, or zero prices halt borrowing. Risk parameters
-            shown are development placeholders; final risk parameters are required before
-            mainnet.
+            are read live from the deployed market and may be adjusted, within onchain rails, as
+            the protocol matures.
           </p>
         </div>
         <BetaNote />
