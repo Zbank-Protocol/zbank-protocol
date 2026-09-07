@@ -4343,6 +4343,36 @@ a.protocol:hover {
   .docs-api-grid {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .docfig {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+
+  .docfig::before {
+    content: "SWIPE DIAGRAM →";
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    display: block;
+    width: fit-content;
+    margin-bottom: 0.6rem;
+    padding: 0.3rem 0.5rem;
+    background: var(--gold);
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    color: #080808;
+  }
+
+  .docfig svg {
+    width: 36rem;
+    max-width: none;
+  }
+
+  .docfig__cap {
+    min-width: 36rem;
+  }
 }
 
 /* ---- Disabled actions must read as disabled — execution honesty is visual too. ---- */

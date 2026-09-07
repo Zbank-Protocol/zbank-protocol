@@ -85,6 +85,8 @@ function Arrow({
   const angle = Math.atan2(y2 - y1, x2 - x1);
   const ah = 5;
   const c = gold ? GOLD_DIM : INK_DIM;
+  const labelWidth = label ? Math.min(112, label.length * 5.1 + 10) : 0;
+  const labelY = my + labelDy;
   return (
     <g>
       <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={c} strokeWidth="1" />
@@ -95,9 +97,18 @@ function Arrow({
         fill="none"
       />
       {label ? (
-        <text x={mx} y={my + labelDy} textAnchor="middle" fontSize="8" fill={gold ? GOLD : INK_DIM} style={mono}>
-          {label}
-        </text>
+        <g>
+          <rect
+            x={mx - labelWidth / 2}
+            y={labelY - 8.5}
+            width={labelWidth}
+            height={12}
+            fill={PANEL}
+          />
+          <text x={mx} y={labelY} textAnchor="middle" fontSize="8" fill={gold ? GOLD : INK_DIM} style={mono}>
+            {label}
+          </text>
+        </g>
       ) : null}
     </g>
   );
@@ -130,7 +141,7 @@ export function DiagramCreditMarket() {
       <Arrow x1={130} y1={105} x2={223} y2={105} label="deposit ZEC" gold />
       <Arrow x1={223} y1={135} x2={130} y2={135} label="borrow USDG" />
       <Arrow x1={430} y1={135} x2={337} y2={135} label="supply USDG" gold />
-      <Arrow x1={337} y1={105} x2={430} y2={105} label="interest − reserve" />
+      <Arrow x1={337} y1={105} x2={430} y2={105} label="net interest" />
       {/* Interest origination */}
       <text x={280} y={186} textAnchor="middle" fontSize="9" fill={INK} style={mono}>
         BORROWERS PAY INTEREST → LENDERS EARN IT
@@ -158,9 +169,9 @@ export function DiagramInvestRoute() {
   return (
     <Figure title="A ZINVEST execution: one input, one route, a weighted basket out" viewBox="0 0 560 210">
       <Box x={20} y={80} w={90} h={44} label="USDG" sub="your input" gold />
-      <Arrow x1={110} y1={102} x2={168} y2={102} label="split by weight" />
+      <Arrow x1={110} y1={102} x2={168} y2={102} label="weights" />
       <Box x={170} y={80} w={90} h={44} label="ALLOCATOR" sub="ZTECH targets" />
-      <Arrow x1={260} y1={102} x2={318} y2={102} label="swap per leg" />
+      <Arrow x1={260} y1={102} x2={318} y2={102} label="each leg" />
       <Box x={320} y={68} w={100} h={68} label="UNISWAP V3" sub="atomic multicall" gold />
       {outs.map(([sym, w], i) => {
         const y = 18 + i * 36;
@@ -195,7 +206,7 @@ export function DiagramLoop() {
       <Box x={30} y={120} w={120} h={48} label="ZCREDIT VAULT" />
       <Arrow x1={150} y1={144} x2={218} y2={144} label="borrow" gold />
       <Box x={220} y={120} w={120} h={48} label="USDG" sub="this is debt" />
-      <Arrow x1={340} y1={144} x2={408} y2={144} label="invest via ZINVEST" gold />
+      <Arrow x1={340} y1={144} x2={408} y2={144} label="invest" gold />
       <Box x={410} y={120} w={120} h={48} label="PORTFOLIO" sub="e.g. ZTECH" gold />
       {/* Debt reminder rail */}
       <line x1={280} y1={168} x2={280} y2={200} stroke={DANGER} strokeWidth="1" strokeDasharray="3 3" />
