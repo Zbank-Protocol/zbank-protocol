@@ -1,49 +1,93 @@
 import { Link } from "react-router-dom";
 import type { Product } from "../data/site";
 
-/** Minimal geometric marks, one per product. Line icons, never illustration. */
+/**
+ * The ZBANK glyph system — one bespoke mark per product, drawn on a shared 24px grid.
+ *
+ * The grammar: every mark carries the brand's Z-diagonal (upper-right → lower-left) and one
+ * solid gold "node" — the same particle that builds the wordmark. Thin rounded strokes,
+ * consistent optical weight. Drawn by hand for this system; not from any stock set.
+ */
 export function ProductIcon({ name }: { name: string }) {
-  const stroke = "currentColor";
-  const common = { fill: "none", stroke, strokeWidth: 1.5 } as const;
+  const line = {
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.5,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+  } as const;
+  const node = { fill: "currentColor", stroke: "none" } as const;
 
   switch (name) {
-    case "ZINVEST": // rising steps: an allocation being built
+    case "ZINVEST": // the ascent: capital rising along the Z-diagonal, ticks marking entries
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path {...common} d="M3 20h4v-6H3zM10 20h4V9h-4zM17 20h4V4h-4z" />
+          <path {...line} d="M4 20.5h16" />
+          <path {...line} d="M6 17.5 17.5 6" />
+          <path {...line} d="M12.5 6h5v5" />
+          <path {...line} d="M8 20.5v-2.4M12.5 20.5v-2.4M17 20.5v-2.4" />
+          <circle {...node} cx="6" cy="17.5" r="1.5" />
         </svg>
       );
-    case "ZINDEX": // grid: a basket of names
+    case "ZINDEX": // the strata: allocation layers stepped along the diagonal
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path {...common} d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" />
+          <path {...line} d="M8.5 5.5H19" />
+          <path {...line} d="M19 5.5 5 18.5" />
+          <path {...line} d="M5 18.5h10.5" />
+          <circle {...node} cx="14.3" cy="9.9" r="1.35" />
+          <circle {...node} cx="9.7" cy="14.1" r="1.35" />
         </svg>
       );
-    case "ZCREDIT": // scale beam: collateral against credit
+    case "ZCREDIT": // the vault: a dial whose keyway is the diagonal
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path {...common} d="M12 4v16M4 8h16M6 8l-2.5 5h5zM18 8l-2.5 5h5z" />
+          <rect {...line} x="3.5" y="3.5" width="17" height="17" rx="3.4" />
+          <circle {...line} cx="12" cy="12" r="4.4" />
+          <path {...line} d="M14.4 9.6 9.6 14.4" />
+          <circle {...node} cx="14.4" cy="9.6" r="1.3" />
         </svg>
       );
-    case "ZEARN": // coin stack: dollars at work
+    case "ZEARN": // the rate: a percent sign rebuilt from the diagonal and two nodes
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <ellipse {...common} cx="12" cy="6" rx="7" ry="3" />
-          <path {...common} d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" />
+          <path {...line} d="M17 6 7 18" />
+          <circle {...line} cx="7.6" cy="7.6" r="2.7" />
+          <circle {...node} cx="16.4" cy="16.4" r="2.7" />
         </svg>
       );
-    case "ZLOOP": // loop: borrow and reinvest
+    case "ZLOOP": // the cycle: borrow → invest → repeat, the node riding the loop
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path {...common} d="M20 12a8 8 0 10-2.3 5.7M20 12v-5M20 12h-5" />
+          <path {...line} d="M19.5 12a7.5 7.5 0 1 1-2.7-5.77" />
+          <path {...line} d="M17.2 3.2l-.4 3.3 3.3.5" />
+          <path {...line} d="M14.4 9.6 9.6 14.4" />
+          <circle {...node} cx="19.5" cy="12" r="1.5" />
         </svg>
       );
-    default: // ZTREASURY — vault block
+    case "START": // the ignition: a compass needle set on the diagonal
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect {...common} x="4" y="5" width="16" height="14" />
-          <circle {...common} cx="12" cy="12" r="3.5" />
-          <path {...common} d="M12 8.5v-2M12 17.5v-2M8.5 12h-2M17.5 12h-2" />
+          <circle {...line} cx="12" cy="12" r="8.5" />
+          <path {...node} d="M15.8 8.2l-2.3 5.6-5.3 2 2.3-5.6z" />
+        </svg>
+      );
+    case "DOCS": // the ledger: a page whose fold is the diagonal
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...line} d="M6 3.5h8.5L19 8v12.5H6z" />
+          <path {...line} d="M14.5 3.5V8H19" />
+          <path {...line} d="M9 12.5h7M9 16h7" />
+          <circle {...node} cx="9" cy="9" r="1.3" />
+        </svg>
+      );
+    default: // ZTREASURY — the reserve: pediment and columns, the node as the keystone
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...line} d="M4 20.5h16" />
+          <path {...line} d="M4.5 9.5 12 4l7.5 5.5" />
+          <path {...line} d="M7 20.5v-7.5M12 20.5v-7.5M17 20.5v-7.5" />
+          <circle {...node} cx="12" cy="8.4" r="1.5" />
         </svg>
       );
   }

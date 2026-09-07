@@ -296,9 +296,14 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.55rem 0.95rem;
-  font-size: 0.9rem;
-  letter-spacing: 0.005em;
+  padding: 0.6rem 0.95rem;
+  /* The institutional register: the same mono-uppercase voice as the site's kickers and
+     metric labels — the masthead speaks the terminal language, not default UI sans. */
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
   color: var(--ink-2);
   border-radius: 999px;
   transition: color 0.22s var(--ease);
@@ -419,8 +424,11 @@ button {
 }
 
 .menu__name {
-  font-size: 0.875rem;
-  font-variation-settings: "wght" 600;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
   color: var(--ink);
 }
 

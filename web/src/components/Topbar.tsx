@@ -52,8 +52,8 @@ const NAV: NavEntry[] = [
     label: "Learn",
     to: "/start",
     menu: [
-      { name: "Start here", ticker: "ZINVEST", desc: "The seven-chapter tour of how ZBANK works.", to: "/start" },
-      { name: "Docs", ticker: "ZINDEX", desc: "The full protocol reference, mechanism by mechanism.", to: "/docs" },
+      { name: "Start here", ticker: "START", desc: "The seven-chapter tour of how ZBANK works.", to: "/start" },
+      { name: "Docs", ticker: "DOCS", desc: "The full protocol reference, mechanism by mechanism.", to: "/docs" },
     ],
   },
 ];
