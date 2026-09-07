@@ -498,9 +498,10 @@ export default function Docs() {
               Uniswap v3's audited public contracts on Robinhood Chain. ZCREDIT, ZEARN, and
               ZLOOP run in <strong>open beta</strong>: the lending market and ZEC/USD oracle
               are deployed on mainnet, but the market contract is ZBANK-authored and unaudited,
-              admin is a single key until the multisig migration, and collateral is capped
-              onchain while that holds. A status changes only when the wiring underneath
-              changes — it is a deliberate config change, not a copy edit.
+              administration uses a disclosed temporary 1-of-1 Safe, and collateral is capped
+              onchain. Independent Safe signers and an external audit remain launch gates. A
+              status changes only when the wiring underneath changes — it is a deliberate
+              config change, not a copy edit.
             </p>
             <Params
               rows={[

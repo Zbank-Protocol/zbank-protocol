@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { encodeAbiParameters } from "viem";
-import { decodeReport, generateAuthHeaders, shouldRefresh } from "./lib.mjs";
+import {
+  decodeReport,
+  generateAuthHeaders,
+  makeApprovedHashSignature,
+  shouldRefresh,
+} from "./lib.mjs";
 
 test("generateAuthHeaders matches the Chainlink HMAC contract", () => {
   const headers = generateAuthHeaders(
@@ -41,6 +46,15 @@ test("shouldRefresh requires age or deviation to cross its threshold", () => {
     shouldRefresh({ ageSec: 600, deviationBps: 51, refreshSeconds: 900, maxDeviationBps: 50 }),
     true,
   );
+});
+
+test("makeApprovedHashSignature encodes owner in r with v=1", () => {
+  const owner = "0x367fC81A2205587DF2ae6F9BA0af28EF75A88b07";
+  const signature = makeApprovedHashSignature(owner);
+  assert.equal(signature.length, 132);
+  assert.equal(signature.slice(2, 66), owner.slice(2).toLowerCase().padStart(64, "0"));
+  assert.equal(signature.slice(66, 130), "0".repeat(64));
+  assert.equal(signature.slice(130), "01");
 });
 
 test("decodeReport returns the canonical price, not bid or ask", () => {

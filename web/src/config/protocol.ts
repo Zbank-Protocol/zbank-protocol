@@ -26,8 +26,8 @@ export const PRODUCT_STATUS: Record<ProductKey, LaunchStatus> = {
   // liquidity confirmed onchain 2026-09-07. No ZBANK custody contract sits in the path.
   zinvest: "Live",
   zindex: "Live",
-  // ZCredit deployed to Robinhood Chain mainnet 2026-09-07 (unaudited beta, single-key
-  // admin, 5,000 zZEC collateral cap). Beta — not Live — until the external audit lands.
+  // ZCredit deployed to Robinhood Chain mainnet 2026-09-07 (unaudited beta, temporary
+  // 1-of-1 Safe admin, 5,000 zZEC collateral cap). Beta — not Live — until the audit lands.
   zcredit: "Beta",
   zearn: "Beta",
   // ZLOOP composes the live ZCREDIT market with ZINVEST execution. Beta because the
@@ -159,7 +159,7 @@ export const ORACLES = {
     verifierProxy: "0xcE73c8ad08CBDEaCa6078BF0627C8fe0a9a536E7" as `0x${string}`,
     streamFeedId:
       "0x00039f8a144f4a62715ca60aec1cf848c4821375c57e2259c6c90b7fa49db693" as `0x${string}`,
-    status: "pending-launch" as "pending-launch" | "live" | "stale" | "error",
+    status: "live" as "pending-launch" | "live" | "stale" | "error",
     /** Max age before a price is treated as stale (matches the contract's maxAge). */
     maxStalenessSeconds: 1800,
   },
@@ -169,11 +169,11 @@ export const ORACLES = {
 
 /**
  * Safe v1.4.1 is deployed on Robinhood Chain at its canonical addresses (verified onchain
- * 2026-09-07). The protocol multisig is created via script/CreateSafe.s.sol; its address
- * lands here and becomes the owner of every contract at deployment.
+ * 2026-09-07). The temporary solo Safe was deployed and made ZCredit owner on 2026-09-08.
+ * It remains single-signature administration until independent signers are added.
  */
 export const GOVERNANCE = {
-  multisig: null as `0x${string}` | null,
+  multisig: "0x31837999D9E463B2EB4327CEb4BD7CCa2a500480" as `0x${string}` | null,
   safeProxyFactory: "0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67" as `0x${string}`,
   safeSingletonL2: "0x29fcB43b46531BcA003ddC8FCB67FFE91900C762" as `0x${string}`,
 } as const;

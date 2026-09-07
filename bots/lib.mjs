@@ -19,6 +19,12 @@ export function shouldRefresh({ ageSec, deviationBps, refreshSeconds, maxDeviati
   return ageSec > refreshSeconds || deviationBps > maxDeviationBps;
 }
 
+/** Safe prevalidated signature for an owner that submits execTransaction itself. */
+export function makeApprovedHashSignature(owner) {
+  if (!/^0x[a-fA-F0-9]{40}$/.test(owner)) throw new Error("invalid Safe owner");
+  return `0x${owner.slice(2).toLowerCase().padStart(64, "0")}${"0".repeat(64)}01`;
+}
+
 /** Decode observationsTimestamp + price out of a Chainlink V3 full report blob. */
 export function decodeReport(fullReport) {
   const [, reportData] = decodeAbiParameters(

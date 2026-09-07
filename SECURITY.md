@@ -10,12 +10,12 @@ has been externally audited. ZCREDIT, ZEARN, and ZLOOP remain explicitly Beta.
 | --- | --- |
 | `ZcashAddress.sol` (t-address validation library) | Implemented, unit-tested, **not audited** |
 | `PayoutRegistry.sol` (address registry) | Implemented, unit-tested, **not audited, not deployed** |
-| `ZCredit.sol` (ZCREDIT lending market) | **Deployed** at `0x77ccb77d1fd337b7027b3482ca365db57d92151e`, unit-tested, **not audited**, single-EOA owner |
+| `ZCredit.sol` (ZCREDIT lending market) | **Deployed** at `0x77ccb77d1fd337b7027b3482ca365db57d92151e`, unit-tested, **not audited**, owned by temporary 1-of-1 Safe `0x31837999D9E463B2EB4327CEb4BD7CCa2a500480` |
 | `InvestRouter.sol` (ZINVEST execution router) | Implemented, unit-tested, **not audited, not deployed** — requires a real venue adapter |
 | `ZBankTreasury.sol` (revenue split / buckets / burn) | Implemented, unit-tested, **not audited, not deployed** |
 | `ZBNK.sol` (fixed-supply burnable token) | Implemented, unit-tested, **not launched** — superseded if launched via Pons |
 | `ChainlinkOracleAdapter.sol` (push-feed adapter, fallback) | Implemented, unit-tested |
-| `ZecUsdDataStreamFeed.sol` (ZEC/USD via Chainlink Data Streams verifier) | **Deployed** at `0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5`, unit-tested, **not audited**; no report relayed yet (`lastObservedAt = 0`) |
+| `ZecUsdDataStreamFeed.sol` (ZEC/USD via Chainlink Data Streams verifier) | **Deployed and receiving verified reports** at `0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5`, unit-tested, **not audited** |
 | `script/Deploy.s.sol` | Full-stack deploy; defaults to verified mainnet addresses (zZEC, USDG, verifier, feed id) |
 | `script/CreateSafe.s.sol` | Creates the protocol Safe via the canonical v1.4.1 factory (verified deployed on chain 4663) |
 
@@ -104,16 +104,15 @@ The frontend mirror lives in `web/src/config/protocol.ts` (`ZCREDIT_RISK`,
 
 ## Admin permissions
 
-- **Launch-phase compromise, recorded 2026-09-07:** the protocol is a single-developer
-  operation, so `script/DeployLending.s.sol` deploys with a single-EOA owner instead of a
-  multisig. This is a real risk (one key controls pause, parameters, and reserve sweeps) and
-  it is bounded by the onchain rails: the owner cannot touch user collateral or supplied
-  funds, cannot set parameters outside the hard bounds, and pause never blocks repay or
-  lender withdrawal. Migrate ownership to a Safe (script/CreateSafe.s.sol — contracts are
-  live on this chain). A temporary 1-of-1 Safe is permitted only when its signer is a separate
-  cold or hardware-wallet key from the automated keeper; this separates administration from
-  operations and creates an upgrade path, but remains single-key administration and must be
-  described that way. Add independent signers and raise the threshold before public launch.
+- **Temporary solo administration, recorded 2026-09-08:** ZCredit ownership was transferred
+  from the automated keeper EOA to Safe `0x31837999D9E463B2EB4327CEb4BD7CCa2a500480`.
+  Its sole owner is the separate address `0x367fC81A2205587DF2ae6F9BA0af28EF75A88b07`
+  and its threshold is 1. This separates the keeper from administration and creates a Safe
+  upgrade path, but it remains single-signature administration. Add independent signers,
+  verify an emergency Safe transaction, and raise the threshold before public launch.
+- The admin risk is bounded by onchain rails: the Safe cannot touch user collateral or
+  supplied funds, cannot set parameters outside the hard bounds, and pause never blocks
+  repay or lender withdrawal.
 - The full-stack script (`script/Deploy.s.sol`) still requires `MULTISIG` and remains the
   standard path once co-signers exist.
 - Privileged surface, enumerated:

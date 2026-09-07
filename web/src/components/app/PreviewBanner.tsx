@@ -4,7 +4,7 @@ import type { ProductKey } from "../../config/protocol";
 /**
  * The honesty banner for Preview products only — the interface is real, execution is not,
  * and here is exactly what it waits on. Live and Beta products render nothing here; the
- * Beta risk disclosure (unaudited contracts, single-key admin, collateral cap) lives as
+ * Beta risk disclosure (unaudited contracts, temporary solo Safe, collateral cap) lives as
  * fine print beside the deposit actions instead, per SECURITY.md.
  */
 export function PreviewBanner({ product }: { product: ProductKey }) {
@@ -28,9 +28,9 @@ export function PreviewBanner({ product }: { product: ProductKey }) {
 export function BetaNote() {
   return (
     <p className="t-note container__note" role="note">
-      Beta: the lending market contracts are unaudited and admin is a single key pending the
-      multisig migration; collateral is capped onchain at 5,000 zZEC. Deposit only what you
-      can afford to lose.
+      Beta: the lending market contracts are unaudited and administered by a disclosed
+      temporary 1-of-1 Safe; collateral is capped onchain at 5,000 zZEC. Deposit only what
+      you can afford to lose.
     </p>
   );
 }
