@@ -1,11 +1,10 @@
-import { ASSETS, FEES, PROTOCOL_CONTRACTS } from "../config/protocol";
+import { useEffect, useRef, useState } from "react";
+import { ASSETS } from "../config/protocol";
+import { quoteBasket, type BasketQuote } from "../lib/zinvest";
 
 /**
- * A ZINVEST execution quote for a given input amount and allocation.
- *
- * Pre-launch there is no router and no pricing, so every estimated figure is null and
- * `executable` is false with the reason attached. The interface stays fully functional in
- * preview mode; the quote becomes real when the router address lands in config.
+ * A live ZINVEST quote: debounced QuoterV2 pricing for every leg of the requested basket.
+ * Quotes come from Uniswap v3 pools onchain — never from a frontend price table.
  */
 
 export type ZInvestQuote = {
@@ -13,27 +12,66 @@ export type ZInvestQuote = {
   blockedBy: string | null;
   route: string[];
   estimatedReceived: { symbol: string; amount: number | null }[];
-  priceImpact: number | null; // fraction
-  networkFeeEth: number | null;
-  protocolFeeBps: number | null;
-  /** Slippage tolerance is user-set; default shown in the panel. */
-  defaultSlippageBps: number;
+  /** Symbols requested but not in the investable universe. */
+  unsupported: string[];
+  quoting: boolean;
+  /** The raw quote object handed to executeBasket. */
+  basket: BasketQuote | null;
 };
 
 export function useZInvestQuote(
-  amountZec: number | null,
+  amountUsdg: number | null,
   allocation: { symbol: string; weight: number }[],
 ): ZInvestQuote {
-  const routerReady = PROTOCOL_CONTRACTS.investRouter != null;
+  const [basket, setBasket] = useState<BasketQuote | null>(null);
+  const [quoting, setQuoting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const seq = useRef(0);
+
+  const allocationKey = allocation.map((a) => `${a.symbol}:${a.weight}`).join(",");
+
+  useEffect(() => {
+    if (amountUsdg == null || amountUsdg <= 0 || allocation.length === 0) {
+      setBasket(null);
+      setError(null);
+      return;
+    }
+    const id = ++seq.current;
+    setQuoting(true);
+    const timer = window.setTimeout(async () => {
+      try {
+        const q = await quoteBasket(amountUsdg, allocation);
+        if (seq.current !== id) return;
+        setBasket(q);
+        setError(null);
+      } catch {
+        if (seq.current !== id) return;
+        setBasket(null);
+        setError("Quoting failed — pools unreachable. Retry in a moment.");
+      } finally {
+        if (seq.current === id) setQuoting(false);
+      }
+    }, 350);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amountUsdg, allocationKey]);
+
+  const hasLegs = basket != null && basket.legs.length > 0;
+  const blockedBy =
+    error ??
+    (basket && basket.unsupported.length > 0
+      ? `Unsupported symbols: ${basket.unsupported.join(", ")}`
+      : null);
 
   return {
-    executable: routerReady && amountZec != null && amountZec > 0 && allocation.length > 0,
-    blockedBy: routerReady ? null : "Execution router not deployed",
-    route: [ASSETS.ZEC.symbol, ASSETS.USDG.symbol, "Stock Tokens"],
-    estimatedReceived: allocation.map((a) => ({ symbol: a.symbol, amount: null })),
-    priceImpact: null,
-    networkFeeEth: null,
-    protocolFeeBps: FEES.zinvestExecutionBps,
-    defaultSlippageBps: 50,
+    executable: hasLegs && blockedBy == null,
+    blockedBy,
+    route: [ASSETS.USDG.symbol, "Stock Tokens"],
+    estimatedReceived:
+      basket?.legs.map((l) => ({ symbol: l.symbol, amount: l.quotedOut })) ??
+      allocation.map((a) => ({ symbol: a.symbol.toUpperCase(), amount: null })),
+    unsupported: basket?.unsupported ?? [],
+    quoting,
+    basket,
   };
 }

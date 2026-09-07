@@ -21,24 +21,31 @@ export type LaunchStatus = "Live" | "Beta" | "Preview" | "Coming soon" | "Propos
  * in the codebase may claim liveness.
  */
 export const PRODUCT_STATUS: Record<ProductKey, LaunchStatus> = {
-  zinvest: "Preview",
-  zindex: "Preview",
+  // ZINVEST/ZINDEX execute through Uniswap v3 on Robinhood Chain — audited public
+  // infrastructure (SwapRouter02 + QuoterV2), verified canonical Stock Tokens, live pool
+  // liquidity confirmed onchain 2026-09-07. No ZBANK custody contract sits in the path.
+  zinvest: "Live",
+  zindex: "Live",
   // ZCredit deployed to Robinhood Chain mainnet 2026-09-07 (unaudited beta, single-key
   // admin, 5,000 zZEC collateral cap). Beta — not Live — until the external audit lands.
   zcredit: "Beta",
   zearn: "Beta",
-  zloop: "Preview",
-  ztreasury: "Preview",
+  // ZLOOP composes the live ZCREDIT market with ZINVEST execution. Beta because the
+  // credit leg carries the same unaudited-market caveats as ZCREDIT.
+  zloop: "Beta",
+  // Read-only dashboard over live market + oracle data; token metrics label themselves
+  // "Pending token launch" until ZBNK exists.
+  ztreasury: "Live",
 };
 
 /** What each product is waiting on. Shown verbatim in the product's preview banner. */
 export const EXECUTION_DEPENDENCIES: Record<ProductKey, string[]> = {
-  zinvest: ["Stock Token routing contracts", "ZEC/USDG route liquidity", "Execution router deployment"],
-  zindex: ["ZINVEST execution (ZINDEX routes through it)"],
-  zcredit: ["Lending market deployment (audited stack)", "ZEC/USD oracle", "Liquidation infrastructure"],
-  zearn: ["ZCREDIT market deployment (ZEARN is its lender side)"],
-  zloop: ["ZCREDIT market deployment", "ZINVEST execution"],
-  ztreasury: ["Treasury accounting contracts", "ZBNK token launch"],
+  zinvest: [],
+  zindex: [],
+  zcredit: [],
+  zearn: [],
+  zloop: [],
+  ztreasury: [],
 };
 
 /* ------------------------------- Assets ------------------------------- */
@@ -86,6 +93,51 @@ export const PROTOCOL_CONTRACTS = {
   /** The burn address once burns are live. */
   burn: null as `0x${string}` | null,
 } as const;
+
+/* ------------------------------- Uniswap (execution venue) ------------------------------- */
+
+/**
+ * ZINVEST executes through Uniswap v3 on Robinhood Chain — Uniswap's audited, canonical
+ * deployment (addresses cross-checked against Uniswap/contracts deployments/4663.md and
+ * verified onchain 2026-09-07). User funds never touch a ZBANK-authored contract on this
+ * path: approvals go to Uniswap's SwapRouter02, swaps settle in the user's wallet.
+ */
+export const UNISWAP = {
+  swapRouter02: "0xCaf681a66D020601342297493863E78C959E5cb2" as `0x${string}`,
+  quoterV2: "0x33e885eD0Ec9bF04EcfB19341582aADCb4c8A9E7" as `0x${string}`,
+  v3Factory: "0x1f7d7550B1b028f7571E69A784071F0205FD2EfA" as `0x${string}`,
+} as const;
+
+/**
+ * The ZINVEST investable universe: canonical Robinhood Stock Tokens with live Uniswap v3
+ * USDG liquidity. Every entry was verified onchain 2026-09-07: token name matches the
+ * "• Robinhood Token" issuer pattern, and `fee` is the token's deepest USDG pool tier at
+ * verification time (depth noted). All Stock Tokens are 18 decimals.
+ */
+export type StockToken = {
+  symbol: string;
+  name: string;
+  address: `0x${string}`;
+  /** Fee tier (bps ×100) of the deepest USDG pool. */
+  fee: 100 | 500 | 3000 | 10000;
+  /** Approximate USDG-side pool depth at verification, for display honesty. */
+  poolDepthUsd: number;
+};
+
+export const STOCK_TOKENS: Record<string, StockToken> = {
+  NVDA: { symbol: "NVDA", name: "NVIDIA", address: "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC", fee: 500, poolDepthUsd: 6_900_000 },
+  SPY: { symbol: "SPY", name: "SPDR S&P 500 ETF", address: "0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", fee: 3000, poolDepthUsd: 10_100_000 },
+  QQQ: { symbol: "QQQ", name: "Invesco QQQ", address: "0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", fee: 500, poolDepthUsd: 1_370_000 },
+  GOOGL: { symbol: "GOOGL", name: "Alphabet Class A", address: "0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3", fee: 500, poolDepthUsd: 463_000 },
+  AAPL: { symbol: "AAPL", name: "Apple", address: "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", fee: 500, poolDepthUsd: 327_000 },
+  SGOV: { symbol: "SGOV", name: "iShares 0-3 Month Treasury Bond", address: "0x92FD66527192E3e61d4DDd13322Aa222DE86F9B5", fee: 3000, poolDepthUsd: 3_870_000 },
+  MSFT: { symbol: "MSFT", name: "Microsoft", address: "0xe93237C50D904957Cf27E7B1133b510C669c2e74", fee: 3000, poolDepthUsd: 588_000 },
+  TSLA: { symbol: "TSLA", name: "Tesla", address: "0x322F0929c4625eD5bAd873c95208D54E1c003b2d", fee: 3000, poolDepthUsd: 1_360_000 },
+  AMZN: { symbol: "AMZN", name: "Amazon", address: "0x12f190a9F9d7D37a250758b26824B97CE941bF54", fee: 3000, poolDepthUsd: 1_150_000 },
+  META: { symbol: "META", name: "Meta Platforms", address: "0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35", fee: 3000, poolDepthUsd: 207_000 },
+  GME: { symbol: "GME", name: "GameStop", address: "0x1b0E319c6A659F002271B69dB8A7df2F911c153E", fee: 500, poolDepthUsd: 712_000 },
+  HIMS: { symbol: "HIMS", name: "Hims & Hers Health", address: "0xCceE82fE024c36fA15E1005edE3E9e4787e23D09", fee: 3000, poolDepthUsd: 1_755_000 },
+};
 
 /* ------------------------------- Oracles ------------------------------- */
 
@@ -219,33 +271,35 @@ export type IndexStrategy = {
 
 const REBALANCE = "Target allocation strategy — no automated rebalancing" as const;
 
+/**
+ * Every strategy below is fully executable today: each component is a verified canonical
+ * Stock Token in STOCK_TOKENS with live Uniswap v3 USDG liquidity. No placeholder tickers.
+ */
 export const INDEX_STRATEGIES: IndexStrategy[] = [
   {
     ticker: "ZTECH",
     name: "Technology",
-    description: "Large-cap technology Stock Tokens with a ZEC sleeve.",
+    description: "Large-cap technology Stock Tokens.",
     targets: [
       { symbol: "NVDA", weight: 25 },
-      { symbol: "AAPL", weight: 20 },
       { symbol: "MSFT", weight: 20 },
+      { symbol: "AAPL", weight: 20 },
       { symbol: "META", weight: 15 },
-      { symbol: "AVGO", weight: 10 },
-      { symbol: "ZEC", weight: 10 },
+      { symbol: "GOOGL", weight: 10 },
+      { symbol: "QQQ", weight: 10 },
     ],
     rebalancePolicy: REBALANCE,
     status: PRODUCT_STATUS.zindex,
   },
   {
     ticker: "ZAI",
-    name: "AI + Semiconductors",
-    description: "AI and semiconductor exposure, ZEC-funded.",
+    name: "AI Leaders",
+    description: "Concentrated exposure to the companies building AI.",
     targets: [
-      { symbol: "NVDA", weight: 30 },
-      { symbol: "AMD", weight: 20 },
-      { symbol: "TSM", weight: 15 },
-      { symbol: "ASML", weight: 10 },
-      { symbol: "MSFT", weight: 15 },
-      { symbol: "ZEC", weight: 10 },
+      { symbol: "NVDA", weight: 35 },
+      { symbol: "MSFT", weight: 25 },
+      { symbol: "GOOGL", weight: 20 },
+      { symbol: "META", weight: 20 },
     ],
     rebalancePolicy: REBALANCE,
     status: PRODUCT_STATUS.zindex,
@@ -255,38 +309,38 @@ export const INDEX_STRATEGIES: IndexStrategy[] = [
     name: "Broad Market",
     description: "Broad U.S. market exposure through index Stock Tokens.",
     targets: [
-      { symbol: "SPY", weight: 45 },
-      { symbol: "QQQ", weight: 25 },
-      { symbol: "IWM", weight: 10 },
-      { symbol: "ZEC", weight: 20 },
+      { symbol: "SPY", weight: 50 },
+      { symbol: "QQQ", weight: 30 },
+      { symbol: "AMZN", weight: 10 },
+      { symbol: "TSLA", weight: 10 },
     ],
     rebalancePolicy: REBALANCE,
     status: PRODUCT_STATUS.zindex,
   },
   {
-    ticker: "ZDIV",
-    name: "Dividend",
-    description: "Dividend-oriented Stock Tokens with a ZEC sleeve.",
+    ticker: "ZYLD",
+    name: "Treasury + Market",
+    description: "Short-duration Treasury ETF ballast with a broad-market sleeve.",
     targets: [
-      { symbol: "JNJ", weight: 20 },
-      { symbol: "KO", weight: 20 },
-      { symbol: "PG", weight: 15 },
-      { symbol: "XOM", weight: 15 },
-      { symbol: "VZ", weight: 15 },
-      { symbol: "ZEC", weight: 15 },
-    ],
-    rebalancePolicy: REBALANCE,
-    status: PRODUCT_STATUS.zindex,
-  },
-  {
-    ticker: "Z50",
-    name: "ZEC 50/50",
-    description: "Half ZEC, half broad-market Stock Tokens.",
-    targets: [
-      { symbol: "ZEC", weight: 50 },
+      { symbol: "SGOV", weight: 60 },
       { symbol: "SPY", weight: 25 },
       { symbol: "QQQ", weight: 15 },
-      { symbol: "NVDA", weight: 10 },
+    ],
+    rebalancePolicy: REBALANCE,
+    status: PRODUCT_STATUS.zindex,
+  },
+  {
+    ticker: "ZMAG",
+    name: "Mega Cap",
+    description: "The seven mega-cap names, equal-leaning weights.",
+    targets: [
+      { symbol: "NVDA", weight: 16 },
+      { symbol: "AAPL", weight: 14 },
+      { symbol: "MSFT", weight: 14 },
+      { symbol: "GOOGL", weight: 14 },
+      { symbol: "AMZN", weight: 14 },
+      { symbol: "META", weight: 14 },
+      { symbol: "TSLA", weight: 14 },
     ],
     rebalancePolicy: REBALANCE,
     status: PRODUCT_STATUS.zindex,
@@ -294,7 +348,7 @@ export const INDEX_STRATEGIES: IndexStrategy[] = [
   {
     ticker: "CUSTOM",
     name: "Custom",
-    description: "Your own allocation across supported Stock Tokens and ZEC.",
+    description: "Your own allocation across supported Stock Tokens.",
     targets: [],
     rebalancePolicy: REBALANCE,
     status: PRODUCT_STATUS.zindex,

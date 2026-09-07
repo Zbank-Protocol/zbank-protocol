@@ -210,15 +210,15 @@ export type Product = {
 export const PRODUCTS: Product[] = [
   {
     name: "ZINVEST",
-    tagline: "Turn Zcash into a portfolio.",
-    copy: "Use ZEC to access supported Robinhood Chain Stock Token portfolios.",
+    tagline: "One balance. An entire market.",
+    copy: "Invest USDG into Stock Token portfolios, executed atomically through Uniswap v3.",
     status: PRODUCT_STATUS.zinvest,
     href: "/invest",
   },
   {
     name: "ZINDEX",
     tagline: "One click. An entire market strategy.",
-    copy: "Target-allocation strategies — ZTECH, ZAI, Z500, ZDIV, Z50 — executed through ZINVEST.",
+    copy: "Target-allocation strategies — ZTECH, ZAI, Z500, ZYLD, ZMAG — executed through ZINVEST.",
     status: PRODUCT_STATUS.zindex,
     href: "/invest/indexes",
   },

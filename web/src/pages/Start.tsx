@@ -117,16 +117,16 @@ const CHAPTERS: Chapter[] = [
   },
   {
     kicker: "Where things stand",
-    title: ["The bank is built.", "The wiring is next."],
+    title: ["The bank is live.", "The token is next."],
     copy:
-      "Every interface you just saw is real and live in preview mode. Execution stays disabled until the contracts underneath exist — the lending market on an audited stack, the ZEC/USD oracle, the execution router, the treasury contracts, and the ZBNK launch. Nothing here fakes a transaction or invents a number, and statuses flip only when the wiring is deployed and tested.",
+      "Investing executes today through Uniswap v3 against verified Stock Token liquidity — no ZBANK contract custodies funds on that path. The lending market and ZEC/USD oracle are deployed on Robinhood Chain mainnet and run in open beta: real contracts, real funds, unaudited until the external review lands, and capped while it does. Nothing here fakes a transaction or invents a number — statuses flip only when the wiring is deployed and tested.",
     visual: (
       <div className="tour__status">
         {[
-          ["ZINVEST · ZINDEX", "Preview — router pending"],
-          ["ZCREDIT · ZEARN", "Preview — market + oracle pending"],
-          ["ZLOOP", "Preview — composes both"],
-          ["ZTREASURY", "Preview — contracts pending"],
+          ["ZINVEST · ZINDEX", "Live — Uniswap v3 execution"],
+          ["ZCREDIT · ZEARN", "Beta — market + oracle deployed"],
+          ["ZLOOP", "Beta — composes both, live"],
+          ["ZTREASURY", "Live dashboard — token metrics pending"],
           ["ZBNK", "Token launch pending"],
         ].map(([k, v]) => (
           <div className="txpreview__row" key={k}>

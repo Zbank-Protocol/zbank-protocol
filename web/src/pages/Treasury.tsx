@@ -16,7 +16,7 @@ function WindowTable({ title, rows }: { title: string; rows: TreasuryWindow[] })
           <div className="txpreview__row" key={r.window}>
             <span className="txpreview__label">{r.window}</span>
             <span className="txpreview__value" data-pending={r.value == null}>
-              {r.value == null ? "Pending launch" : fmtAmount(r.value)}
+              {r.value == null ? "Pending token launch" : fmtAmount(r.value)}
             </span>
           </div>
         ))}
@@ -114,13 +114,13 @@ export default function Treasury() {
           <div className="panel">
             <span className="metric__label">Recent treasury transactions</span>
             <p className="protocol__value" data-pending="true">
-              Pending launch
+              Pending token launch
             </p>
           </div>
           <div className="panel">
             <span className="metric__label">Recent burns</span>
             <p className="protocol__value" data-pending="true">
-              Pending launch
+              Pending token launch
             </p>
           </div>
         </div>

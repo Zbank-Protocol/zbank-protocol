@@ -215,7 +215,7 @@ export default function Docs() {
             <Steps
               items={[
                 "Connect a wallet on Robinhood Chain.",
-                "Enter the ZEC amount to invest.",
+                "Enter the USDG amount to invest.",
                 "Choose a mode: a prebuilt ZINDEX strategy, or a custom allocation you define asset-by-asset (weights must total 100%).",
                 "Review the quote: route, price impact, network fee, protocol fee, slippage tolerance, and the estimated amount of each token received.",
                 "Execute. The transaction status and explorer link appear in the same panel.",
@@ -228,9 +228,11 @@ export default function Docs() {
               execution, the transaction reverts rather than filling at a worse price.
             </p>
             <p className="t-note">
-              Current status: preview. The interface is complete, but the execution router and
-              Stock Token route liquidity are not deployed, so the execute action is disabled
-              and estimates render as "—". No transaction is simulated or faked.
+              Current status: live. Baskets execute as one atomic multicall against Uniswap
+              v3's audited SwapRouter02 on Robinhood Chain — every component token is a
+              verified canonical Stock Token with live USDG pool liquidity, quotes come from
+              QuoterV2 onchain, and each leg carries its own slippage guard. No ZBANK-authored
+              contract custodies funds on this path.
             </p>
           </section>
 
@@ -491,20 +493,22 @@ export default function Docs() {
               <span>11</span>Launch status &amp; security
             </h2>
             <p>
-              Every product currently runs in <strong>preview mode</strong>: the interfaces are
-              complete and the data layer is real, but execution is disabled because the
-              contracts underneath do not exist yet. Each product's banner names its exact
-              blockers. A status changes to Live only when the execution path is deployed and
-              tested — it is a deliberate config change, not a copy edit.
+              ZINVEST and ZINDEX are <strong>live</strong>: execution runs entirely through
+              Uniswap v3's audited public contracts on Robinhood Chain. ZCREDIT, ZEARN, and
+              ZLOOP run in <strong>open beta</strong>: the lending market and ZEC/USD oracle
+              are deployed on mainnet, but the market contract is ZBANK-authored and unaudited,
+              admin is a single key until the multisig migration, and collateral is capped
+              onchain while that holds. A status changes only when the wiring underneath
+              changes — it is a deliberate config change, not a copy edit.
             </p>
             <Params
               rows={[
-                ["ZCREDIT lending market", "Not deployed — audited stack to be selected"],
-                ["ZEC/USD oracle", "Not selected — the hardest launch dependency"],
-                ["ZINVEST execution router", "Not deployed"],
-                ["Treasury contracts", "Not deployed"],
+                ["ZINVEST / ZINDEX execution", "Live — Uniswap v3 SwapRouter02 + QuoterV2 (audited public infra)"],
+                ["ZCREDIT lending market", "Deployed on mainnet — open beta, unaudited, collateral capped"],
+                ["ZEC/USD oracle", "Deployed — Chainlink Data Streams, verified onchain, keeper-relayed"],
+                ["Treasury contracts", "Not deployed — ship with the ZBNK token launch"],
                 ["ZBNK token", "Not launched"],
-                ["Audits", "None yet — and none claimed"],
+                ["Audits", "None yet — and none claimed; beta products say so where deposits happen"],
               ]}
             />
             <p>

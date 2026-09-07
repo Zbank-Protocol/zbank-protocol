@@ -1,25 +1,26 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { PageHead } from "../components/app/PageHead";
 import { PreviewBanner } from "../components/app/PreviewBanner";
 import { AssetAmountInput } from "../components/app/AssetAmountInput";
 import { TransactionPreview } from "../components/app/TransactionPreview";
-import { INDEX_STRATEGIES, PRODUCT_STATUS } from "../config/protocol";
+import { INDEX_STRATEGIES, NETWORK, PRODUCT_STATUS } from "../config/protocol";
 import { useZInvestQuote } from "../hooks/useZInvestQuote";
+import { useZInvestActions } from "../hooks/useZInvestActions";
 import { useWallet } from "../hooks/useWallet";
 import { WalletButton } from "../components/app/WalletButton";
+import { supportedSymbols, usdgBalance } from "../lib/zinvest";
 
 type Mode = "index" | "custom";
 
 type CustomRow = { symbol: string; weight: string };
 
 /**
- * ZINVEST — the flagship investing interface. Connect → ZEC in → choose a prebuilt ZINDEX
- * strategy or build a custom allocation → review the full quote → execute.
+ * ZINVEST — the flagship investing interface, live on Robinhood Chain.
  *
- * Execution is enabled exclusively by the quote's `executable` flag, which is false until the
- * router exists. The interface is complete and functional in preview mode; the button says
- * exactly why it is disabled. No transaction is ever faked.
+ * USDG in → choose a prebuilt ZINDEX strategy or a custom allocation → live QuoterV2
+ * pricing per leg → one atomic Uniswap v3 multicall, every leg slippage-guarded, tokens
+ * settle straight to the connected wallet. No ZBANK contract custodies funds on this path.
  */
 export default function Invest() {
   const wallet = useWallet();
@@ -36,12 +37,29 @@ export default function Invest() {
   const [mode, setMode] = useState<Mode>(requested === "CUSTOM" ? "custom" : "index");
   const [strategyIdx, setStrategyIdx] = useState(initialIndex);
   const [slippageBps, setSlippageBps] = useState(50);
+  const [balance, setBalance] = useState<number | null>(null);
   const [custom, setCustom] = useState<CustomRow[]>([
     { symbol: "SPY", weight: "50" },
-    { symbol: "ZEC", weight: "50" },
+    { symbol: "NVDA", weight: "50" },
   ]);
 
   const strategy = INDEX_STRATEGIES[strategyIdx];
+
+  useEffect(() => {
+    if (!wallet.address) {
+      setBalance(null);
+      return;
+    }
+    let cancelled = false;
+    usdgBalance(wallet.address as `0x${string}`)
+      .then((b) => {
+        if (!cancelled) setBalance(b);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [wallet.address]);
 
   const allocation = useMemo(() => {
     if (mode === "index") return strategy.targets;
@@ -53,6 +71,25 @@ export default function Invest() {
   const customTotal = custom.reduce((sum, r) => sum + (Number(r.weight) || 0), 0);
   const amountNum = Number(amount.replace(/[,\s]/g, "")) || null;
   const quote = useZInvestQuote(amountNum, allocation);
+  const actions = useZInvestActions(wallet.address);
+
+  const connected = wallet.address != null;
+  const onChain = wallet.chainId === NETWORK.chainId;
+  const needsSwitch = connected && !onChain;
+  const customValid = mode === "index" || customTotal === 100;
+  const overBalance = balance != null && amountNum != null && amountNum > balance;
+  const canExecute =
+    wallet.ready && quote.executable && customValid && !overBalance && !actions.busy;
+
+  const executeLabel = !connected
+    ? "Connect wallet to continue"
+    : needsSwitch
+      ? "Switch to Robinhood Chain"
+      : actions.status === "approving"
+        ? "Approving USDG…"
+        : actions.status === "confirming"
+          ? "Confirm in wallet…"
+          : "Execute";
 
   return (
     <main className="page">
@@ -60,8 +97,8 @@ export default function Invest() {
         <PageHead
           kicker="ZINVEST"
           status={PRODUCT_STATUS.zinvest}
-          title="Turn Zcash into a portfolio."
-          lede="Use ZEC to access supported Robinhood Chain Stock Token portfolios — custom allocations or prebuilt ZINDEX strategies, in one flow."
+          title="One balance. An entire market."
+          lede="Invest USDG into Robinhood Chain Stock Token portfolios — custom allocations or prebuilt ZINDEX strategies, executed atomically through Uniswap v3."
           aside={<WalletButton />}
         />
         <PreviewBanner product="zinvest" />
@@ -71,11 +108,10 @@ export default function Invest() {
           <div className="panel">
             <AssetAmountInput
               label="You invest"
-              symbol="ZEC"
+              symbol="USDG"
               value={amount}
               onChange={setAmount}
-              balance={null}
-              disabled={false}
+              balance={balance}
             />
 
             <div className="mode">
@@ -144,6 +180,7 @@ export default function Invest() {
                       placeholder="Symbol"
                       value={row.symbol}
                       aria-label={`Asset ${i + 1} symbol`}
+                      list="zinvest-symbols"
                       onChange={(e) =>
                         setCustom(custom.map((r, j) => (j === i ? { ...r, symbol: e.target.value } : r)))
                       }
@@ -167,6 +204,11 @@ export default function Invest() {
                     </button>
                   </div>
                 ))}
+                <datalist id="zinvest-symbols">
+                  {supportedSymbols().map((s) => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
                 <div className="custom-foot">
                   <button
                     className="btn btn--line"
@@ -178,6 +220,7 @@ export default function Invest() {
                     Total: {customTotal}%
                   </span>
                 </div>
+                <span className="t-note">Supported: {supportedSymbols().join(" · ")}</span>
               </div>
             )}
 
@@ -198,49 +241,85 @@ export default function Invest() {
             </div>
           </div>
 
-          {/* ---- Right: the quote. ---- */}
+          {/* ---- Right: the quote, live from QuoterV2. ---- */}
           <div className="panel">
             <TransactionPreview
               rows={[
                 { label: "Route", value: quote.route.join(" → ") },
-                { label: "Price impact", value: quote.priceImpact == null ? "—" : `${(quote.priceImpact * 100).toFixed(2)}%` },
-                { label: "Network fee", value: quote.networkFeeEth == null ? "—" : `${quote.networkFeeEth} ETH` },
-                {
-                  label: "Protocol fee",
-                  value: quote.protocolFeeBps == null ? "— (not set)" : `${(quote.protocolFeeBps / 100).toFixed(2)}%`,
-                },
-                { label: "Slippage tolerance", value: `${(slippageBps / 100).toFixed(2)}%` },
+                { label: "Execution", value: "Uniswap v3 · atomic multicall" },
+                { label: "Legs", value: String(quote.estimatedReceived.length) },
+                { label: "Slippage guard", value: `${(slippageBps / 100).toFixed(2)}% per leg` },
               ]}
             />
 
             <div className="txpreview">
-              <span className="metric__label">Estimated received</span>
+              <span className="metric__label">
+                {quote.quoting ? "Quoting…" : "Estimated received (live quote)"}
+              </span>
               <div className="txpreview__rows">
                 {quote.estimatedReceived.map((r) => (
                   <div className="txpreview__row" key={r.symbol}>
                     <span className="txpreview__label">{r.symbol}</span>
-                    <span className="txpreview__value">{r.amount == null ? "—" : r.amount}</span>
+                    <span className="txpreview__value">
+                      {r.amount == null
+                        ? "—"
+                        : r.amount.toLocaleString("en-US", { maximumFractionDigits: 6 })}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <button className="btn btn--gold panel__execute" disabled data-disabled="true">
-              {wallet.ready ? "Execute" : "Connect wallet to continue"}
+            <button
+              className="btn btn--gold panel__execute"
+              disabled={needsSwitch ? false : !canExecute}
+              data-disabled={needsSwitch ? false : !canExecute}
+              onClick={() => {
+                if (needsSwitch) {
+                  void wallet.switchChain();
+                  return;
+                }
+                if (quote.basket) void actions.invest(quote.basket, slippageBps);
+              }}
+            >
+              {executeLabel}
             </button>
+
+            {actions.status === "success" && actions.txHash ? (
+              <p className="t-note" role="status">
+                Executed.{" "}
+                <a
+                  href={`${NETWORK.explorer}/tx/${actions.txHash}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View transaction →
+                </a>
+              </p>
+            ) : null}
+            {actions.status === "error" ? (
+              <p className="t-note t-note--error" role="alert">
+                {actions.error}
+              </p>
+            ) : null}
+            {overBalance ? (
+              <p className="t-note t-note--error" role="alert">
+                Amount exceeds your USDG balance.
+              </p>
+            ) : null}
             {quote.blockedBy ? (
               <p className="t-note" role="note">
-                Execution disabled: {quote.blockedBy}. Estimates populate when routing and
-                pricing are live. Transaction status and the explorer link appear here after
-                execution.
+                {quote.blockedBy}
               </p>
             ) : null}
           </div>
         </div>
 
         <p className="t-note container__note">
-          Stock Tokens are Robinhood Chain tokenized equity products. Holding a Stock Token is
-          not ownership of the underlying share. Nothing on this page is investment advice.
+          Stock Tokens are Robinhood Chain tokenized equity products issued by Robinhood Assets
+          (Jersey) Limited. Holding a Stock Token is not ownership of the underlying share.
+          Swaps execute against public Uniswap v3 liquidity; quotes move with the market.
+          Nothing on this page is investment advice.
         </p>
       </div>
     </main>
