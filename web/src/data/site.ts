@@ -208,7 +208,9 @@ export const PRODUCTS: Product[] = [
   {
     name: "ZINVEST",
     tagline: "One balance. An entire market.",
-    copy: "Invest USDG into Stock Token portfolios, executed atomically through Uniswap v3.",
+    copy:
+      "The invest leg of the bank: USDG — yours, or borrowed against ZEC — into Stock Token " +
+      "portfolios through Uniswap v3.",
     status: PRODUCT_STATUS.zinvest,
     href: "/invest",
   },

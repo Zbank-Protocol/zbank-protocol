@@ -99,7 +99,7 @@ export default function Invest() {
           kicker="ZINVEST"
           status={PRODUCT_STATUS.zinvest}
           title="One balance. An entire market."
-          lede="Invest USDG into Robinhood Chain Stock Token portfolios — custom allocations or prebuilt ZINDEX strategies, executed atomically through Uniswap v3."
+          lede="The invest leg of the Zcash bank. Put USDG — yours, or borrowed against your ZEC through ZLOOP — into Stock Token portfolios, executed atomically through Uniswap v3. Your ZEC stays yours; the dollars do the buying."
           aside={<WalletButton />}
         />
         <PreviewBanner product="zinvest" />
