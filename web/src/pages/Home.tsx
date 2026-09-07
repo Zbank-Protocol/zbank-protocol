@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { useField } from "../hooks/useField";
 import { Section } from "../components/Section";
 import { Rise } from "../components/Rise";
 import { MetricCard } from "../components/MetricCard";
@@ -37,18 +36,13 @@ import { BRAND, CHAIN } from "../config";
  * that a visitor understands ZBANK in ten seconds and knows where to click.
  */
 export default function Home() {
-  const { canvasRef, ready } = useField();
-
   return (
     <>
       <a className="skip-link" href="#actions">
         Skip to content
       </a>
 
-      {/* The ledger field: 150k particles spelling ZBANK, morphing as the reader scrolls. */}
-      <canvas ref={canvasRef} className="field" data-ready={ready} aria-hidden="true" />
-      <div className="veil" aria-hidden="true" />
-
+      {/* The ledger field runs behind this page (and every page) from the app shell. */}
       <main>
         {/* ================================ 01 · Hero ================================ */}
         <section className="hero" data-sec="01">

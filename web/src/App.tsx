@@ -3,6 +3,7 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Topbar } from "./components/Topbar";
 import { Cursor } from "./components/Cursor";
 import { Boot } from "./components/Boot";
+import { FieldBackdrop } from "./components/FieldBackdrop";
 import Home from "./pages/Home";
 import AppDashboard from "./pages/AppDashboard";
 import Invest from "./pages/Invest";
@@ -47,8 +48,8 @@ function FirstVisitGate() {
 /**
  * ZBANK — the marketing page at `/`, the application everywhere else.
  *
- * The particle field belongs to the homepage only; product pages are a financial application
- * and keep a still ground. Cursor and masthead are global.
+ * The particle field is the site's permanent ground: mounted once here, it runs behind every
+ * route and survives navigation. Cursor and masthead are global too.
  */
 export default function App() {
   return (
@@ -56,6 +57,7 @@ export default function App() {
       <Boot />
       <FirstVisitGate />
       <ScrollToTop />
+      <FieldBackdrop />
       <Cursor />
       <Topbar />
       <Routes>
