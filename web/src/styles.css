@@ -774,128 +774,150 @@ button {
   margin-top: var(--sp-3);
 }
 
-/* ---- The hero visual: account panel + flow. ---- */
+/* ---- The hero visual: the protocol as a live system console. ---- */
 
-.hero-panel {
-  display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  border: 1px solid var(--line-strong);
-  background: var(--panel);
-}
-
-.hero-panel__account {
-  padding: var(--sp-3);
-  border-right: 1px solid var(--line);
-}
-
-.hero-panel__head {
+.syspanel {
+  position: relative;
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  border: 1px solid var(--line-strong);
+  background: linear-gradient(180deg, #0c0c10, #08080b);
+  overflow: hidden;
+}
+
+/* A hairline of gold along the top edge — the console's power light. */
+.syspanel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 30%, var(--gold) 50%, var(--gold-dim) 70%, transparent);
+  opacity: 0.8;
+}
+
+.syspanel__head {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: var(--sp-2);
-  margin-bottom: var(--sp-3);
+  padding: 0.85rem var(--sp-3);
+  border-bottom: 1px solid var(--line);
 }
 
-.hero-panel__title {
+.syspanel__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-2);
   white-space: nowrap;
 }
 
-.hero-panel__rows {
-  display: grid;
-  gap: 0;
+.syspanel__live {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 0 rgb(231 179 72 / 0.5);
+  animation: syspulse 2.4s var(--ease) infinite;
 }
 
-.hero-panel__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-2);
-  padding-block: 0.8rem;
-  border-top: 1px solid var(--line);
-}
-
-.hero-panel__row dt {
-  font-size: 0.875rem;
-  color: var(--ink-3);
-}
-
-.hero-panel__row dd {
+.syspanel__chip {
   font-family: var(--font-mono);
-  font-size: 0.9375rem;
-  font-variation-settings: "wght" 460;
-  color: var(--ink);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-4);
   white-space: nowrap;
-  text-align: right;
 }
 
-/* The first row carries the headline fact — gold, but sized like its siblings, because the
-   values are words (network names) now, not short figures. */
-.hero-panel__row:first-child {
-  border-top: 0;
+.syspanel__fig {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: var(--sp-2) var(--sp-2) 0;
+  box-sizing: border-box;
 }
 
-.hero-panel__row:first-child dd {
-  color: var(--gold);
+/* Current moving through the circuit. */
+.flowline {
+  stroke-dasharray: 5 7;
+  animation: sysflow 1.6s linear infinite;
 }
 
-.hero-panel__flow {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: var(--sp-3);
-  background: var(--panel-2);
+.flowline--slow {
+  animation-duration: 3.2s;
+  opacity: 0.7;
 }
 
-.hero-panel__flow-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.syspanel__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: var(--sp-2) 0 0;
+  border-top: 1px solid var(--line);
+  background: var(--line);
 }
 
-.hero-panel__flow-arrow {
-  padding-block: 0.35rem;
+.syspanel__cell {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.8rem var(--sp-3);
+  background: #0a0a0e;
+  margin: 0;
+}
+
+.syspanel__cell dt {
   font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
   color: var(--ink-4);
 }
 
-.hero-panel__flow-node {
-  width: 100%;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--line-strong);
+.syspanel__cell dd {
+  margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-align: center;
-  color: var(--ink-2);
-  background: var(--panel);
+  font-size: 0.84rem;
+  color: var(--ink);
+  white-space: nowrap;
 }
 
-.hero-panel__flow-node[data-hub="true"] {
-  border-color: var(--gold-dim);
+.syspanel__cell dd[data-live] {
   color: var(--gold);
-  background: var(--gold-ghost);
+}
+
+@keyframes syspulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(231 179 72 / 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgb(231 179 72 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(231 179 72 / 0);
+  }
+}
+
+@keyframes sysflow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowline,
+  .syspanel__live {
+    animation: none;
+  }
 }
 
 @media (max-width: 56rem) {
   .hero__grid {
     grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 40rem) {
-  .hero-panel {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .hero-panel__account {
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
   }
 }
 
@@ -3616,10 +3638,6 @@ a.protocol:hover {
   filter: saturate(0.55);
 }
 
-.has-cursor .btn:disabled {
-  cursor: none;
-}
-
 /* ============================================================================
    The tour — /start. One chapter on screen at a time, diagram beside the copy,
    a progress rail above, prev/next below.
@@ -3898,46 +3916,6 @@ main,
 .footer {
   position: relative;
   z-index: 2;
-}
-
-/* ============================== The cursor ============================== */
-
-.has-cursor,
-.has-cursor a,
-.has-cursor button,
-.has-cursor input,
-.has-cursor select,
-.has-cursor textarea,
-.has-cursor [role="button"] {
-  cursor: none;
-}
-
-.cursor-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 200;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--gold);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s var(--ease);
-}
-
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 200;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid rgb(244 183 40 / 0.55);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s var(--ease);
 }
 
 /* ============================== Motion fallback ============================== */

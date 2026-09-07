@@ -138,9 +138,6 @@ export const HERO_ACCOUNT = {
   ],
 } as const;
 
-/** The hero transaction flow, left to right. */
-export const HERO_FLOW = ["ZEC", "ZBANK", "Robinhood Chain", "Stocks / Indexes / Credit"] as const;
-
 /* ------------------------------ 02 · Mission ------------------------------ */
 
 /** Mission tracker. Owned/progress stay "—" until the treasury holds real onchain ZEC. */

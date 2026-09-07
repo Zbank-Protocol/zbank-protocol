@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Topbar } from "./components/Topbar";
-import { Cursor } from "./components/Cursor";
 import { Boot } from "./components/Boot";
 import { FieldBackdrop } from "./components/FieldBackdrop";
 import Home from "./pages/Home";
@@ -58,7 +57,6 @@ export default function App() {
       <FirstVisitGate />
       <ScrollToTop />
       <FieldBackdrop />
-      <Cursor />
       <Topbar />
       <Routes>
         <Route path="/" element={<Home />} />
