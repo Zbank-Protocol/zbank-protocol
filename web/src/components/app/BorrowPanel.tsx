@@ -6,7 +6,8 @@ import type { ZCreditMarket } from "../../hooks/useZCreditMarket";
 import type { ZCreditPosition } from "../../hooks/useZCreditPosition";
 import { useZCreditActions } from "../../hooks/useZCreditActions";
 import { useWallet } from "../../hooks/useWallet";
-import { NETWORK } from "../../config/protocol";
+import { useTokenBalance } from "../../hooks/useTokenBalance";
+import { ASSETS, NETWORK } from "../../config/protocol";
 import { fmtRate, fmtUsd, fmtZec } from "../../lib/economics";
 
 /**
@@ -31,6 +32,16 @@ export function BorrowPanel({
 
   const wallet = useWallet();
   const needsSwitch = account != null && wallet.chainId !== NETWORK.chainId;
+  const zecBalance = useTokenBalance(
+    account,
+    ASSETS.ZEC.address as `0x${string}`,
+    ASSETS.ZEC.decimals,
+  );
+  const usdgBalance = useTokenBalance(
+    account,
+    ASSETS.USDG.address as `0x${string}`,
+    ASSETS.USDG.decimals,
+  );
   const collateralNum = Number(collateral);
   const borrowNum = Number(borrow);
   const collateralValid = Number.isFinite(collateralNum) && collateralNum > 0;
@@ -48,7 +59,7 @@ export function BorrowPanel({
           symbol="ZEC"
           value={collateral}
           onChange={setCollateral}
-          balance={null}
+          balance={zecBalance.balance}
           disabled={!market.live}
         />
         <AssetAmountInput
@@ -56,7 +67,7 @@ export function BorrowPanel({
           symbol="USDG"
           value={borrow}
           onChange={setBorrow}
-          balance={null}
+          balance={usdgBalance.balance}
           disabled={!market.live}
         />
 

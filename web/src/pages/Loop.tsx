@@ -9,6 +9,7 @@ import { TickerIcon, tickerName } from "../components/app/TickerIcon";
 import { INDEX_STRATEGIES, NETWORK, PRODUCT_STATUS } from "../config/protocol";
 import { useZCreditMarket } from "../hooks/useZCreditMarket";
 import { useZCreditPosition } from "../hooks/useZCreditPosition";
+import { useTokenBalance } from "../hooks/useTokenBalance";
 import { useWallet } from "../hooks/useWallet";
 import { fmtRate, fmtUsd, fmtZec } from "../lib/economics";
 import { ASSETS } from "../config/protocol";
@@ -44,6 +45,11 @@ export default function Loop() {
   const wallet = useWallet();
   const market = useZCreditMarket();
   const position = useZCreditPosition(wallet.address);
+  const zecBalance = useTokenBalance(
+    wallet.address,
+    ASSETS.ZEC.address as `0x${string}`,
+    ASSETS.ZEC.decimals,
+  );
   const [collateral, setCollateral] = useState("100");
   const [ltvPct, setLtvPct] = useState(25);
   const [strategyIdx, setStrategyIdx] = useState(0);
@@ -113,6 +119,7 @@ export default function Loop() {
       setTxHash(hash);
       setStep("done");
       position.refresh();
+      zecBalance.refresh();
     } catch (err) {
       const message =
         err instanceof Error ? err.message.split("\n")[0].slice(0, 160) : "Transaction failed";
@@ -141,7 +148,7 @@ export default function Loop() {
               symbol="zZEC"
               value={collateral}
               onChange={setCollateral}
-              balance={null}
+              balance={zecBalance.balance}
             />
 
             <div className="mode__body">

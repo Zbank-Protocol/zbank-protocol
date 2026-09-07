@@ -5,7 +5,8 @@ import type { ZCreditMarket } from "../../hooks/useZCreditMarket";
 import type { ZCreditPosition } from "../../hooks/useZCreditPosition";
 import { useZCreditActions } from "../../hooks/useZCreditActions";
 import { useWallet } from "../../hooks/useWallet";
-import { NETWORK } from "../../config/protocol";
+import { useTokenBalance } from "../../hooks/useTokenBalance";
+import { ASSETS, NETWORK } from "../../config/protocol";
 import { fmtUsd } from "../../lib/economics";
 
 /**
@@ -29,6 +30,11 @@ export function SupplyPanel({
   const actions = useZCreditActions(account, position.refresh);
   const wallet = useWallet();
   const needsSwitch = account != null && wallet.chainId !== NETWORK.chainId;
+  const usdgBalance = useTokenBalance(
+    account,
+    ASSETS.USDG.address as `0x${string}`,
+    ASSETS.USDG.decimals,
+  );
   const parsed = Number(amount);
   const valid = Number.isFinite(parsed) && parsed > 0;
   const canAct = market.live && actions.ready && !actions.busy && !needsSwitch;
@@ -43,7 +49,7 @@ export function SupplyPanel({
           symbol="USDG"
           value={amount}
           onChange={setAmount}
-          balance={null}
+          balance={usdgBalance.balance}
           disabled={!market.live}
         />
 
