@@ -30,6 +30,7 @@ interface ISafeSetup {
 ///         Required environment:
 ///           SAFE_OWNERS     comma-separated owner addresses (hardware keys, ≥3 recommended)
 ///           SAFE_THRESHOLD  signatures required (e.g. 2 for a 2-of-3)
+///           ALLOW_TEMPORARY_1_OF_1=true only for a disclosed solo-developer cold-key Safe
 ///
 ///         Usage:
 ///           SAFE_OWNERS=0xA...,0xB...,0xC... SAFE_THRESHOLD=2 \
@@ -43,8 +44,14 @@ contract CreateSafe is Script {
     function run() external {
         address[] memory owners = vm.envAddress("SAFE_OWNERS", ",");
         uint256 threshold = vm.envUint("SAFE_THRESHOLD");
-        require(owners.length >= 2, "safe: need at least 2 owners");
-        require(threshold >= 2 && threshold <= owners.length, "safe: bad threshold");
+        bool allowTemporarySingleSigner = vm.envOr("ALLOW_TEMPORARY_1_OF_1", false);
+        require(owners.length > 0, "safe: need an owner");
+        if (owners.length == 1) {
+            require(allowTemporarySingleSigner, "safe: explicitly allow temporary 1-of-1");
+            require(threshold == 1, "safe: 1 owner requires threshold 1");
+        } else {
+            require(threshold >= 2 && threshold <= owners.length, "safe: bad threshold");
+        }
 
         bytes memory initializer = abi.encodeCall(
             ISafeSetup.setup, (owners, threshold, address(0), "", FALLBACK_HANDLER, address(0), 0, payable(address(0)))
@@ -57,6 +64,9 @@ contract CreateSafe is Script {
 
         console2.log("Protocol Safe:", safe);
         console2.log("Owners:", owners.length, "Threshold:", threshold);
+        if (owners.length == 1) {
+            console2.log("WARNING: temporary 1-of-1 Safe; add independent signers before public launch");
+        }
         console2.log("Use this address as MULTISIG for script/Deploy.s.sol");
     }
 }

@@ -110,8 +110,10 @@ The frontend mirror lives in `web/src/config/protocol.ts` (`ZCREDIT_RISK`,
   it is bounded by the onchain rails: the owner cannot touch user collateral or supplied
   funds, cannot set parameters outside the hard bounds, and pause never blocks repay or
   lender withdrawal. Migrate ownership to a Safe (script/CreateSafe.s.sol — contracts are
-  live on this chain) the moment a second signer exists, and say "single-key admin" plainly
-  anywhere users are asked to deposit.
+  live on this chain). A temporary 1-of-1 Safe is permitted only when its signer is a separate
+  cold or hardware-wallet key from the automated keeper; this separates administration from
+  operations and creates an upgrade path, but remains single-key administration and must be
+  described that way. Add independent signers and raise the threshold before public launch.
 - The full-stack script (`script/Deploy.s.sol`) still requires `MULTISIG` and remains the
   standard path once co-signers exist.
 - Privileged surface, enumerated:
