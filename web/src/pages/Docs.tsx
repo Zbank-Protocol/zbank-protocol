@@ -291,12 +291,12 @@ export default function Docs() {
               borrow $1,500 (30% LTV):
             </p>
             <Formula
-              parts={["$5,000 × 65%", "÷", "$1,500", "=", "2.17 health factor"]}
+              parts={["$5,000 × 70%", "÷", "$1,500", "=", "2.33 health factor"]}
               note="Example only — placeholder parameters, illustrative price"
             />
             <p>
               Your position is liquidatable when the health factor reaches 1.0 — here, when
-              collateral value falls to about $2,308, i.e. ZEC at roughly $23. The interface
+              collateral value falls to about $2,143, i.e. ZEC at roughly $21.43. The interface
               shows this liquidation price and the health band at all times.
             </p>
 
@@ -386,12 +386,12 @@ export default function Docs() {
             <h3>The same worked example, levered — example only</h3>
             <p>
               Take the ZCREDIT example: 100 ZEC at an illustrative $50, $1,500 borrowed, health
-              factor 2.17. You invest the $1,500 in ZTECH. If the portfolio falls 20%, you hold
+              factor 2.33. You invest the $1,500 in ZTECH. If the portfolio falls 20%, you hold
               $1,200 of Stock Tokens and still owe $1,500 plus accrued interest. If ZEC also
               halves to $25, collateral value is $2,500 and the health factor is:
             </p>
             <Formula
-              parts={["$2,500 × 65%", "÷", "$1,500", "=", "1.08 — High risk"]}
+              parts={["$2,500 × 70%", "÷", "$1,500", "=", "1.17 — High risk"]}
               note="Example only — one repay or price move from liquidatable"
             />
             <p>

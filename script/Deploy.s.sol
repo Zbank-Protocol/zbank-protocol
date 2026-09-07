@@ -37,8 +37,7 @@ contract Deploy is Script {
     address constant DEFAULT_ZZEC = 0x0b151Ff7a7c5250130EC16C275790961d558E402;
     address constant DEFAULT_USDG = 0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168;
     address constant DEFAULT_STREAM_VERIFIER = 0xcE73c8ad08CBDEaCa6078BF0627C8fe0a9a536E7;
-    bytes32 constant DEFAULT_STREAM_FEED_ID =
-        0x00039f8a144f4a62715ca60aec1cf848c4821375c57e2259c6c90b7fa49db693;
+    bytes32 constant DEFAULT_STREAM_FEED_ID = 0x00039f8a144f4a62715ca60aec1cf848c4821375c57e2259c6c90b7fa49db693;
 
     function run() external {
         address multisig = vm.envAddress("MULTISIG");

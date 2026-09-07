@@ -1,8 +1,8 @@
 # ZBANK — Launch Readiness & Security Posture
 
-Status date: 2026-09-07. This document is the honest register of what exists, what does not,
-and what must be resolved before any mainnet execution path is enabled. Nothing in this
-repository has been audited. **No product may be labelled LIVE while its items below are open.**
+Status date: 2026-09-08. This document is the honest register of what exists, what does not,
+and what must be resolved before the capped mainnet beta expands. Nothing in this repository
+has been externally audited. ZCREDIT, ZEARN, and ZLOOP remain explicitly Beta.
 
 ## Current onchain surface
 
@@ -10,12 +10,12 @@ repository has been audited. **No product may be labelled LIVE while its items b
 | --- | --- |
 | `ZcashAddress.sol` (t-address validation library) | Implemented, unit-tested, **not audited** |
 | `PayoutRegistry.sol` (address registry) | Implemented, unit-tested, **not audited, not deployed** |
-| `ZCredit.sol` (ZCREDIT lending market) | Implemented, unit-tested, **not audited, not deployed** |
+| `ZCredit.sol` (ZCREDIT lending market) | **Deployed** at `0x77ccb77d1fd337b7027b3482ca365db57d92151e`, unit-tested, **not audited**, single-EOA owner |
 | `InvestRouter.sol` (ZINVEST execution router) | Implemented, unit-tested, **not audited, not deployed** — requires a real venue adapter |
 | `ZBankTreasury.sol` (revenue split / buckets / burn) | Implemented, unit-tested, **not audited, not deployed** |
 | `ZBNK.sol` (fixed-supply burnable token) | Implemented, unit-tested, **not launched** — superseded if launched via Pons |
 | `ChainlinkOracleAdapter.sol` (push-feed adapter, fallback) | Implemented, unit-tested |
-| `ZecUsdDataStreamFeed.sol` (ZEC/USD via Chainlink Data Streams verifier) | Implemented, unit-tested, **not audited, not deployed** |
+| `ZecUsdDataStreamFeed.sol` (ZEC/USD via Chainlink Data Streams verifier) | **Deployed** at `0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5`, unit-tested, **not audited**; no report relayed yet (`lastObservedAt = 0`) |
 | `script/Deploy.s.sol` | Full-stack deploy; defaults to verified mainnet addresses (zZEC, USDG, verifier, feed id) |
 | `script/CreateSafe.s.sol` | Creates the protocol Safe via the canonical v1.4.1 factory (verified deployed on chain 4663) |
 
@@ -29,14 +29,14 @@ Verified external addresses (Robinhood Chain mainnet, checked onchain 2026-09-07
 | ZEC/USD stream feed id | `0x00039f8a144f4a62715ca60aec1cf848c4821375c57e2259c6c90b7fa49db693` | Chainlink crypto-streams catalog |
 | Safe v1.4.1 factory / L2 singleton | `0x4e1DCf7…ec67` / `0x29fcB43…C762` | canonical addresses, code verified onchain |
 
-Test suite: `forge test` — 50 tests, all passing (supply/borrow/repay lifecycle, interest
+Test suite: `forge test` — 64 tests discovered, 63 passing and the RPC-dependent fork test
+skipped when no fork endpoint is available (supply/borrow/repay lifecycle, interest
 accrual to lenders and reserves, close-factor liquidation, stale/zero oracle rejection,
 parameter rails, pause semantics, revenue split accounting, burn tracking, basket routing).
 
-The frontend reflects this: every product renders in Preview mode with execution disabled and
-its dependencies listed (`web/src/config/protocol.ts` → `PRODUCT_STATUS`,
-`EXECUTION_DEPENDENCIES`). Flipping a status to Live is a deliberate config change that must
-reference this document.
+The frontend reflects this with ZCREDIT, ZEARN, and ZLOOP in Beta and blocks new borrower
+exposure whenever the oracle is stale or uninitialized. ZINVEST/ZINDEX execute non-custodial
+Uniswap v3 routes. Token and treasury metrics remain pending launch.
 
 ## Unresolved contract risks
 
@@ -52,14 +52,15 @@ reference this document.
 2. **Liquidation system.** Depends on the lending stack chosen. Requirements: keeper
    incentives (liquidation bonus), partial liquidations, and behavior under oracle downtime.
 3. **Interest model.** Variable utilization-based model. Parameters in
-   `web/src/config/protocol.ts` (`ZCREDIT_RISK.interestModel`) are development placeholders.
+   `web/src/config/protocol.ts` mirror the deployed beta configuration but are not read
+   dynamically; the deployed contract is authoritative.
 4. **ZINVEST router.** Swap routing ZEC → USDG → Stock Tokens. Risks: slippage handling,
    token approval scope, MEV exposure on multi-hop routes, Stock Token transfer restrictions.
 5. **Treasury contracts.** Revenue collection, ZEC acquisition, buyback + burn. Risk: any
    discretionary control over treasury funds must be transparent and time-locked.
-6. **Reentrancy / pause / upgradeability.** Not yet applicable (nothing deployed). Whatever
-   stack is chosen must document reentrancy protections, emergency pause authority, and
-   whether proxies are used — and the frontend must disclose upgradeability and admin scope.
+6. **Reentrancy / pause / upgradeability.** ZCredit uses `ReentrancyGuard` and `Pausable` and
+   is not upgradeable. Its owner can tune bounded parameters, sweep accrued reserves, and
+   pause new exposure; repay and lender withdrawal remain available while paused.
 
 ## Oracle dependencies — RESOLVED PATH (verified 2026-09-07)
 
@@ -88,19 +89,18 @@ reference this document.
   peg monitoring against the zZEC/ETH Uniswap market, or waiting for zZEC's trust-minimized
   custody phase.
 
-## Liquidation assumptions (placeholders — NOT final)
+## Deployed beta parameters (not externally reviewed)
 
-`TODO: FINAL RISK PARAMETERS REQUIRED BEFORE MAINNET`
-
-| Parameter | Placeholder | Note |
+| Parameter | Deployed beta value | Note |
 | --- | --- | --- |
 | Max LTV | 50% | Conservative for a volatile collateral; needs risk modeling |
-| Liquidation threshold | 65% | Gap to max LTV must absorb ZEC's realistic daily moves |
+| Liquidation threshold | 70% | Onchain value; gap to max LTV must absorb ZEC's realistic daily moves |
 | Liquidation bonus | 8% | Must clear keeper gas + slippage on the chain's real liquidity |
 | Reserve factor | 10% | Protocol share of borrower interest |
 | Min borrow / min collateral | 10 USDG / 0.1 ZEC | Dust prevention |
 
-These live in one place: `web/src/config/protocol.ts` (`ZCREDIT_RISK`, `finalized: false`).
+The frontend mirror lives in `web/src/config/protocol.ts` (`ZCREDIT_RISK`,
+`finalized: false`). The deployed contract is authoritative and drift is checked in CI.
 
 ## Admin permissions
 

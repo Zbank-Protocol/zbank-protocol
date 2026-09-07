@@ -47,14 +47,12 @@ contract CreateSafe is Script {
         require(threshold >= 2 && threshold <= owners.length, "safe: bad threshold");
 
         bytes memory initializer = abi.encodeCall(
-            ISafeSetup.setup,
-            (owners, threshold, address(0), "", FALLBACK_HANDLER, address(0), 0, payable(address(0)))
+            ISafeSetup.setup, (owners, threshold, address(0), "", FALLBACK_HANDLER, address(0), 0, payable(address(0)))
         );
 
         vm.startBroadcast();
-        address safe = ISafeProxyFactory(PROXY_FACTORY).createProxyWithNonce(
-            SINGLETON_L2, initializer, uint256(keccak256("zbank.protocol.safe.v1"))
-        );
+        address safe = ISafeProxyFactory(PROXY_FACTORY)
+            .createProxyWithNonce(SINGLETON_L2, initializer, uint256(keccak256("zbank.protocol.safe.v1")));
         vm.stopBroadcast();
 
         console2.log("Protocol Safe:", safe);

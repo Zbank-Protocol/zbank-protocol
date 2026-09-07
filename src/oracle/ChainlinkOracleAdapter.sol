@@ -49,7 +49,7 @@ contract ChainlinkOracleAdapter is IPriceOracle {
     /// @inheritdoc IPriceOracle
     function priceUsd() external view returns (uint256) {
         checkSequencer(sequencerFeed);
-        (uint80 roundId, int256 answer, , uint256 updatedAt, uint80 answeredInRound) = feed.latestRoundData();
+        (uint80 roundId, int256 answer,, uint256 updatedAt, uint80 answeredInRound) = feed.latestRoundData();
         if (answer <= 0) revert InvalidPrice(answer);
         if (answeredInRound < roundId || updatedAt == 0) revert IncompleteRound();
         if (block.timestamp - updatedAt > maxAge) revert StalePrice(updatedAt, maxAge);

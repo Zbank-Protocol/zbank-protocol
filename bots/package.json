@@ -4,7 +4,8 @@
   "type": "module",
   "description": "ZBANK keepers: ZEC/USD oracle relay + ZCREDIT liquidation watch. One pass per run.",
   "scripts": {
-    "keeper": "node keeper.mjs"
+    "keeper": "node keeper.mjs",
+    "test": "node --test"
   },
   "dependencies": {
     "viem": "^2.21.0"

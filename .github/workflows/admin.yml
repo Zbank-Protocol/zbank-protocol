@@ -1,0 +1,56 @@
+name: protocol-admin
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Fixed ZCredit safety action
+        required: true
+        type: choice
+        options:
+          - pause
+          - unpause
+          - set-collateral-cap
+          - transfer-ownership
+      confirmation:
+        description: Type ZBANK_PAUSE, ZBANK_UNPAUSE, ZBANK_SET-COLLATERAL-CAP, or ZBANK_TRANSFER-OWNERSHIP
+        required: true
+        type: string
+      collateral_cap_zec:
+        description: zZEC cap for set-collateral-cap only
+        required: false
+        type: string
+      new_owner:
+        description: New owner for transfer-ownership only
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: protocol-admin
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    environment: mainnet
+    defaults:
+      run:
+        working-directory: bots
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: bots/package-lock.json
+      - run: npm ci
+      - run: node admin.mjs
+        env:
+          KEEPER_PRIVATE_KEY: ${{ secrets.KEEPER_PRIVATE_KEY }}
+          ADMIN_ACTION: ${{ inputs.action }}
+          ADMIN_CONFIRMATION: ${{ inputs.confirmation }}
+          COLLATERAL_CAP_ZEC: ${{ inputs.collateral_cap_zec }}
+          NEW_OWNER: ${{ inputs.new_owner }}

@@ -41,9 +41,7 @@ contract ZCredit is Ownable, Pausable, ReentrancyGuard {
     event CollateralWithdrawn(address indexed borrower, uint256 amount);
     event Borrowed(address indexed borrower, uint256 amount);
     event Repaid(address indexed borrower, address indexed payer, uint256 amount);
-    event Liquidated(
-        address indexed borrower, address indexed liquidator, uint256 repaid, uint256 collateralSeized
-    );
+    event Liquidated(address indexed borrower, address indexed liquidator, uint256 repaid, uint256 collateralSeized);
     event ReservesSwept(address indexed to, uint256 amount);
     event RiskParamsSet(uint16 maxLtvBps, uint16 liqThresholdBps, uint16 liqBonusBps, uint16 reserveFactorBps);
     event RateParamsSet(uint64 baseRate, uint64 slopeLow, uint64 slopeHigh, uint16 kinkBps);
@@ -96,12 +94,7 @@ contract ZCredit is Ownable, Pausable, ReentrancyGuard {
     uint256 public collateralCap;
     event CollateralCapSet(uint256 cap);
 
-    constructor(
-        address collateral_,
-        address debt_,
-        address oracle_,
-        address owner_
-    ) Ownable(owner_) {
+    constructor(address collateral_, address debt_, address oracle_, address owner_) Ownable(owner_) {
         collateralToken = IERC20(collateral_);
         debtToken = IERC20(debt_);
         oracle = IPriceOracle(oracle_);
@@ -111,7 +104,7 @@ contract ZCredit is Ownable, Pausable, ReentrancyGuard {
 
         // Development defaults — TODO: FINAL RISK PARAMETERS REQUIRED BEFORE MAINNET.
         _setRiskParams(5_000, 7_000, 800, 1_000);
-        _setRateParams(0, 0.04e18, 0.60e18, 8_000);
+        _setRateParams(0, 0.04e18, 0.6e18, 8_000);
         // Conservative launch cap: 5,000 collateral units. Raised deliberately, by the
         // multisig, as zZEC custody risk is assessed (see SECURITY.md).
         collateralCap = 5_000 * (10 ** IERC20Metadata(collateral_).decimals());
@@ -124,8 +117,7 @@ contract ZCredit is Ownable, Pausable, ReentrancyGuard {
     function supply(uint256 amount) external nonReentrant whenNotPaused {
         if (amount == 0) revert ZeroAmount();
         accrue();
-        uint256 shares =
-            (amount * (totalSupplyShares + VIRTUAL_SHARES)) / (_poolAssets() + VIRTUAL_ASSETS);
+        uint256 shares = (amount * (totalSupplyShares + VIRTUAL_SHARES)) / (_poolAssets() + VIRTUAL_ASSETS);
         totalSupplyShares += shares;
         supplyShares[msg.sender] += shares;
         debtToken.safeTransferFrom(msg.sender, address(this), amount);
@@ -139,8 +131,7 @@ contract ZCredit is Ownable, Pausable, ReentrancyGuard {
         accrue();
         uint256 cash = debtToken.balanceOf(address(this));
         if (amount > cash) revert InsufficientLiquidity(amount, cash);
-        uint256 shares =
-            _ceilDiv(amount * (totalSupplyShares + VIRTUAL_SHARES), _poolAssets() + VIRTUAL_ASSETS);
+        uint256 shares = _ceilDiv(amount * (totalSupplyShares + VIRTUAL_SHARES), _poolAssets() + VIRTUAL_ASSETS);
         supplyShares[msg.sender] -= shares; // reverts on underflow: can't overdraw
         totalSupplyShares -= shares;
         debtToken.safeTransfer(msg.sender, amount);
@@ -149,7 +140,7 @@ contract ZCredit is Ownable, Pausable, ReentrancyGuard {
 
     /// @notice A lender's current claim on the pool, in debt-token units.
     function balanceOfSupplied(address lender) external view returns (uint256) {
-        (uint256 borrows,, ) = _accruedTotals();
+        (uint256 borrows,,) = _accruedTotals();
         uint256 assets = debtToken.balanceOf(address(this)) + borrows - _accruedReserves(borrows);
         return (supplyShares[lender] * (assets + VIRTUAL_ASSETS)) / (totalSupplyShares + VIRTUAL_SHARES);
     }
@@ -275,8 +266,7 @@ contract ZCredit is Ownable, Pausable, ReentrancyGuard {
         if (u <= kinkBps) {
             return baseRatePerYear + (uint256(slopeLowPerYear) * u) / kinkBps;
         }
-        return baseRatePerYear + slopeLowPerYear
-            + (uint256(slopeHighPerYear) * (u - kinkBps)) / (BPS - kinkBps);
+        return baseRatePerYear + slopeLowPerYear + (uint256(slopeHighPerYear) * (u - kinkBps)) / (BPS - kinkBps);
     }
 
     /// @notice Lender APR in WAD: borrow rate * utilization * (1 - reserve factor).
@@ -365,13 +355,13 @@ contract ZCredit is Ownable, Pausable, ReentrancyGuard {
                 || reserveFactor_ > 5_000
         ) revert ParamOutOfBounds();
         (maxLtvBps, liqThresholdBps, liqBonusBps, reserveFactorBps) =
-            (maxLtv_, liqThreshold_, liqBonus_, reserveFactor_);
+        (maxLtv_, liqThreshold_, liqBonus_, reserveFactor_);
         emit RiskParamsSet(maxLtv_, liqThreshold_, liqBonus_, reserveFactor_);
     }
 
     function _setRateParams(uint64 base_, uint64 slopeLow_, uint64 slopeHigh_, uint16 kink_) private {
         // Rails: max 10% base, 50% low slope, 500% jump slope, kink strictly inside (0, 100%).
-        if (base_ > 0.10e18 || slopeLow_ > 0.50e18 || slopeHigh_ > 5e18 || kink_ == 0 || kink_ >= BPS) {
+        if (base_ > 0.1e18 || slopeLow_ > 0.5e18 || slopeHigh_ > 5e18 || kink_ == 0 || kink_ >= BPS) {
             revert ParamOutOfBounds();
         }
         (baseRatePerYear, slopeLowPerYear, slopeHighPerYear, kinkBps) = (base_, slopeLow_, slopeHigh_, kink_);

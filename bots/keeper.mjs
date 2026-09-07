@@ -16,17 +16,16 @@
  *   RPC_URL (default Robinhood Chain mainnet), REFRESH_SECONDS (900),
  *   DEVIATION_BPS (50), MAX_LIQUIDATIONS (3)
  */
-import crypto from "node:crypto";
 import {
   createPublicClient,
   createWalletClient,
-  decodeAbiParameters,
   formatUnits,
   http,
   parseAbi,
   parseAbiItem,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { decodeReport, generateAuthHeaders, shouldRefresh } from "./lib.mjs";
 
 /* ------------------------------- fixed wiring ------------------------------- */
 
@@ -89,46 +88,15 @@ const log = (...a) => console.log(new Date().toISOString(), ...a);
 async function fetchLatestReport() {
   const key = process.env.DATASTREAMS_API_KEY;
   const secret = process.env.DATASTREAMS_API_SECRET;
-  if (!key || !secret) return { error: "no Data Streams credentials in env" };
+  if (!key || !secret) throw new Error("no Data Streams credentials in env");
 
   const path = `/api/v1/reports/latest?feedID=${STREAM_FEED_ID}`;
-  const timestamp = Date.now();
-  const bodyHash = crypto.createHash("sha256").update("").digest("hex");
-  const preimage = `GET ${path} ${bodyHash} ${key} ${timestamp}`;
-  const signature = crypto.createHmac("sha256", secret).update(preimage).digest("hex");
+  const url = `${DATASTREAMS_HOST}${path}`;
 
-  const res = await fetch(`${DATASTREAMS_HOST}${path}`, {
-    headers: {
-      Authorization: key,
-      "X-Authorization-Timestamp": String(timestamp),
-      "X-Authorization-Signature-SHA256": signature,
-    },
-  });
+  const res = await fetch(url, { headers: generateAuthHeaders(key, secret, "GET", url) });
   const body = await res.text();
-  if (!res.ok) return { error: `Data Streams HTTP ${res.status}: ${body.slice(0, 200)}` };
+  if (!res.ok) throw new Error(`Data Streams HTTP ${res.status}: ${body.slice(0, 200)}`);
   return { fullReport: JSON.parse(body).report.fullReport };
-}
-
-/** Decode observationsTimestamp + price out of a V3 full report blob. */
-function decodeReport(fullReport) {
-  const [, reportData] = decodeAbiParameters(
-    [{ type: "bytes32[3]" }, { type: "bytes" }],
-    fullReport,
-  );
-  const [feedId, , observationsTimestamp, , , , , price] = decodeAbiParameters(
-    [
-      { type: "bytes32" }, // feedId
-      { type: "uint32" }, //  validFromTimestamp
-      { type: "uint32" }, //  observationsTimestamp
-      { type: "uint192" }, // nativeFee
-      { type: "uint192" }, // linkFee
-      { type: "uint32" }, //  expiresAt
-      { type: "int192" }, //  price
-      { type: "int192" }, //  bid
-    ],
-    reportData,
-  );
-  return { feedId, observationsTimestamp, price };
 }
 
 async function oraclePass() {
@@ -142,14 +110,9 @@ async function oraclePass() {
   );
 
   const report = await fetchLatestReport();
-  if (report.error) {
-    log(`oracle: SKIP — ${report.error}`);
-    return;
-  }
   const fresh = decodeReport(report.fullReport);
   if (fresh.feedId !== STREAM_FEED_ID) {
-    log(`oracle: SKIP — feed ID mismatch ${fresh.feedId}`);
-    return;
+    throw new Error(`feed ID mismatch ${fresh.feedId}`);
   }
 
   let deviationBps = Infinity;
@@ -157,9 +120,7 @@ async function oraclePass() {
     const diff = fresh.price > lastPrice ? fresh.price - lastPrice : lastPrice - fresh.price;
     deviationBps = Number((diff * 10000n) / lastPrice);
   }
-  const stale = ageSec > REFRESH_SECONDS;
-  const moved = deviationBps > DEVIATION_BPS;
-  if (!stale && !moved) {
+  if (!shouldRefresh({ ageSec, deviationBps, refreshSeconds: REFRESH_SECONDS, maxDeviationBps: DEVIATION_BPS })) {
     log(`oracle: fresh enough (deviation ${deviationBps}bps) — no update`);
     return;
   }
@@ -222,8 +183,7 @@ async function liquidationPass() {
     const repay = usdgBalance < maxRepay ? usdgBalance : maxRepay;
     log(`  ${borrower} hf=${hfStr} UNDERWATER debt=${formatUnits(debt, 6)} USDG, repaying ${formatUnits(repay, 6)}`);
     if (repay === 0n) {
-      log("  keeper holds no USDG — ALERT ONLY, fund the keeper to enable liquidations");
-      continue;
+      throw new Error("keeper holds no USDG while an underwater borrower requires liquidation");
     }
 
     const allowance = await pub.readContract({
@@ -262,7 +222,10 @@ async function liquidationPass() {
 
 const gas = await pub.getBalance({ address: account.address });
 log(`keeper ${account.address} gas=${formatUnits(gas, 18)} ETH`);
-if (gas < 10n ** 15n) log("WARNING: keeper gas below 0.001 ETH — top up soon");
+if (gas < 10n ** 15n) {
+  log("FATAL: keeper gas below 0.001 ETH");
+  process.exit(1);
+}
 
 let failed = false;
 try {

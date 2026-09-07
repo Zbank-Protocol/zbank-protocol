@@ -54,9 +54,7 @@ contract ZBankTreasuryTest is Test {
         vm.prank(revenueSource);
         treasury.allocateRevenue(address(usdg), 100_000e6);
         vm.startPrank(admin);
-        vm.expectRevert(
-            abi.encodeWithSelector(ZBankTreasury.BucketUnderflow.selector, 60_000e6, 50_000e6)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ZBankTreasury.BucketUnderflow.selector, 60_000e6, 50_000e6));
         treasury.spend(ZBankTreasury.Bucket.Treasury, address(usdg), admin, 60_000e6, "over");
         treasury.spend(ZBankTreasury.Bucket.Treasury, address(usdg), admin, 50_000e6, "ZEC acquisition batch 1");
         vm.stopPrank();

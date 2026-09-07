@@ -86,17 +86,13 @@ contract ZcashAddressTest is Test {
     }
 
     function test_rejectsUnsupportedVersionPrefix() public {
-        vm.expectRevert(
-            abi.encodeWithSelector(ZcashAddress.UnsupportedVersion.selector, bytes2(0x1cff))
-        );
+        vm.expectRevert(abi.encodeWithSelector(ZcashAddress.UnsupportedVersion.selector, bytes2(0x1cff)));
         harness.validate(BAD_VERSION);
     }
 
     /// @dev A well-formed testnet address must not be accepted for mainnet payouts.
     function test_rejectsTestnetAddress() public {
-        vm.expectRevert(
-            abi.encodeWithSelector(ZcashAddress.UnsupportedVersion.selector, bytes2(0x1d25))
-        );
+        vm.expectRevert(abi.encodeWithSelector(ZcashAddress.UnsupportedVersion.selector, bytes2(0x1d25)));
         harness.validate(TESTNET_ADDR);
     }
 

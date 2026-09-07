@@ -46,7 +46,9 @@ export function BorrowPanel({
   const borrowNum = Number(borrow);
   const collateralValid = Number.isFinite(collateralNum) && collateralNum > 0;
   const borrowValid = Number.isFinite(borrowNum) && borrowNum > 0;
-  const canAct = market.live && actions.ready && !actions.busy && !needsSwitch;
+  const oracleReady = market.oracle.status === "live" && market.oracle.price != null;
+  const canExit = market.live && actions.ready && !actions.busy && !needsSwitch;
+  const canIncreaseExposure = canExit && oracleReady;
   const hasDebt = (position.borrowedUsdg ?? 0) > 0;
 
   return (
@@ -80,8 +82,8 @@ export function BorrowPanel({
           <button
             className="btn btn--gold"
             hidden={needsSwitch}
-            disabled={!canAct || !collateralValid}
-            data-disabled={!canAct || !collateralValid}
+            disabled={!canIncreaseExposure || !collateralValid}
+            data-disabled={!canIncreaseExposure || !collateralValid}
             onClick={() => void actions.depositCollateral(collateralNum)}
           >
             {actions.status === "approving" ? "Approving…" : "Deposit collateral"}
@@ -89,8 +91,8 @@ export function BorrowPanel({
           <button
             className="btn btn--line"
             hidden={needsSwitch}
-            disabled={!canAct || !borrowValid}
-            data-disabled={!canAct || !borrowValid}
+            disabled={!canIncreaseExposure || !borrowValid}
+            data-disabled={!canIncreaseExposure || !borrowValid}
             onClick={() => void actions.borrow(borrowNum)}
           >
             {actions.status === "confirming" ? "Confirming…" : "Borrow USDG"}
@@ -98,8 +100,8 @@ export function BorrowPanel({
           <button
             className="btn btn--line"
             hidden={needsSwitch}
-            disabled={!canAct || !hasDebt}
-            data-disabled={!canAct || !hasDebt}
+            disabled={!canExit || !hasDebt}
+            data-disabled={!canExit || !hasDebt}
             onClick={() =>
               void actions.repay(
                 borrowValid ? borrowNum : Infinity,
@@ -112,8 +114,8 @@ export function BorrowPanel({
           <button
             className="btn btn--line"
             hidden={needsSwitch}
-            disabled={!canAct || !collateralValid}
-            data-disabled={!canAct || !collateralValid}
+            disabled={!canExit || !collateralValid}
+            data-disabled={!canExit || !collateralValid}
             onClick={() => void actions.withdrawCollateral(collateralNum)}
           >
             Withdraw collateral
@@ -126,6 +128,12 @@ export function BorrowPanel({
         )}
         {market.live && !account && (
           <p className="t-note">Connect a wallet above to manage a position.</p>
+        )}
+        {market.live && !oracleReady && (
+          <p className="t-note t-note--error" role="alert">
+            Oracle standby: new collateral and borrowing are disabled until a fresh signed
+            ZEC/USD report is onchain. Repay and withdrawal controls remain available.
+          </p>
         )}
         {!market.live && (
           <p className="t-note" role="note">

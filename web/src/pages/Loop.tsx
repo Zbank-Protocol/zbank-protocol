@@ -82,10 +82,12 @@ export default function Loop() {
   const connected = wallet.address != null;
   const onChain = wallet.chainId === NETWORK.chainId;
   const needsSwitch = connected && !onChain;
+  const oracleReady = market.oracle.status === "live" && market.oracle.price != null;
   const busy = step === "collateral" || step === "borrow" || step === "invest";
   const ready =
     wallet.ready &&
     market.live &&
+    oracleReady &&
     acknowledged &&
     collateralNum != null &&
     collateralNum > 0 &&
@@ -309,6 +311,12 @@ export default function Loop() {
             {!acknowledged && wallet.ready ? (
               <p className="t-note" role="note">
                 Acknowledgment is required before any execution.
+              </p>
+            ) : null}
+            {!oracleReady ? (
+              <p className="t-note t-note--error" role="alert">
+                Oracle standby: ZLOOP cannot open a leveraged position until a fresh signed
+                ZEC/USD report is onchain.
               </p>
             ) : null}
           </div>

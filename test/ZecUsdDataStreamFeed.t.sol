@@ -81,27 +81,21 @@ contract ZecUsdDataStreamFeedTest is Test {
         _push(50e18);
         skip(31 minutes);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ZecUsdDataStreamFeed.StalePrice.selector, block.timestamp - 31 minutes, 30 minutes
-            )
+            abi.encodeWithSelector(ZecUsdDataStreamFeed.StalePrice.selector, block.timestamp - 31 minutes, 30 minutes)
         );
         feed.priceUsd();
     }
 
     function test_wrong_feed_rejected() public {
         verifier.prime(_report(bytes32(uint256(1)), 50e18, uint32(block.timestamp), uint32(block.timestamp + 1)));
-        vm.expectRevert(
-            abi.encodeWithSelector(ZecUsdDataStreamFeed.WrongFeed.selector, bytes32(uint256(1)), FEED_ID)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ZecUsdDataStreamFeed.WrongFeed.selector, bytes32(uint256(1)), FEED_ID));
         feed.updatePrice("");
     }
 
     function test_rollback_rejected() public {
         _push(50e18);
         // A genuine but older report cannot overwrite a newer price.
-        verifier.prime(
-            _report(FEED_ID, 10e18, uint32(block.timestamp - 10), uint32(block.timestamp + 1 days))
-        );
+        verifier.prime(_report(FEED_ID, 10e18, uint32(block.timestamp - 10), uint32(block.timestamp + 1 days)));
         vm.expectRevert(
             abi.encodeWithSelector(
                 ZecUsdDataStreamFeed.NotNewer.selector, uint32(block.timestamp - 10), uint32(block.timestamp)

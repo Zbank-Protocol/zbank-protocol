@@ -197,7 +197,7 @@ export const ZCREDIT_RISK = {
   /** Max loan-to-value at which new borrowing is allowed. */
   maxLtvBps: 5000,
   /** LTV at which a position becomes liquidatable. */
-  liquidationThresholdBps: 6500,
+  liquidationThresholdBps: 7000,
   /** Discount a liquidator receives on seized collateral. */
   liquidationBonusBps: 800,
   /** Share of borrower interest retained by the protocol. */

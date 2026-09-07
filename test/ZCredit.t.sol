@@ -65,9 +65,7 @@ contract ZCreditTest is Test {
         market.borrow(80_000 * USDG); // 40% LTV
         vm.stopPrank();
         vm.prank(lender);
-        vm.expectRevert(
-            abi.encodeWithSelector(ZCredit.InsufficientLiquidity.selector, 50_000 * USDG, 20_000 * USDG)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ZCredit.InsufficientLiquidity.selector, 50_000 * USDG, 20_000 * USDG));
         market.withdraw(50_000 * USDG);
     }
 
@@ -175,9 +173,7 @@ contract ZCreditTest is Test {
         market.depositCollateral(1_000 * ZEC);
         skip(2 hours); // beyond maxAge, no feed update
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ChainlinkOracleAdapter.StalePrice.selector, block.timestamp - 2 hours, 1 hours
-            )
+            abi.encodeWithSelector(ChainlinkOracleAdapter.StalePrice.selector, block.timestamp - 2 hours, 1 hours)
         );
         market.borrow(1_000 * USDG);
         vm.stopPrank();
@@ -220,9 +216,7 @@ contract ZCreditTest is Test {
     function test_collateral_cap_enforced() public {
         vm.startPrank(borrower);
         market.depositCollateral(5_000 * ZEC); // exactly the launch cap
-        vm.expectRevert(
-            abi.encodeWithSelector(ZCredit.CollateralCapExceeded.selector, 5_001 * ZEC, 5_000 * ZEC)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ZCredit.CollateralCapExceeded.selector, 5_001 * ZEC, 5_000 * ZEC));
         market.depositCollateral(1 * ZEC);
         vm.stopPrank();
 
@@ -236,8 +230,7 @@ contract ZCreditTest is Test {
 
     function test_sequencer_down_blocks_pricing() public {
         MockAggregator sequencer = new MockAggregator(0, 0); // 0 = up, fresh
-        ChainlinkOracleAdapter guarded =
-            new ChainlinkOracleAdapter(address(feed), 1 hours, address(sequencer));
+        ChainlinkOracleAdapter guarded = new ChainlinkOracleAdapter(address(feed), 1 hours, address(sequencer));
 
         // Up, but inside the recovery grace period → blocked.
         vm.expectRevert();

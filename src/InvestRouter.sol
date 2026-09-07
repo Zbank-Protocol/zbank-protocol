@@ -34,9 +34,7 @@ contract InvestRouter is Ownable, Pausable, ReentrancyGuard {
 
     event AdapterSet(address adapter);
     event FeeSet(uint16 feeBps, address feeRecipient);
-    event Invested(
-        address indexed investor, address indexed tokenIn, uint256 amountIn, uint256 fee, uint256 legs
-    );
+    event Invested(address indexed investor, address indexed tokenIn, uint256 amountIn, uint256 fee, uint256 legs);
     event Leg(address indexed investor, address indexed tokenOut, uint256 amountIn, uint256 amountOut);
 
     uint256 private constant BPS = 10_000;
