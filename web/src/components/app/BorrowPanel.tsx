@@ -155,7 +155,7 @@ export function BorrowPanel({
             { label: "Borrow APY", value: fmtRate(market.borrowApy, 2) },
             { label: "Accrued interest", value: fmtUsd(position.accruedInterestUsdg) },
           ]}
-          note="Risk parameters are read live from the deployed market contract."
+          note="Displayed beta parameters mirror the deployed market configuration; the contract is authoritative."
         />
         <HealthFactor value={position.healthFactor} />
       </div>

@@ -332,9 +332,10 @@ export default function Docs() {
               ]}
             />
             <p className="t-note">
-              These are the launch parameters of the deployed market; they can be adjusted only
-              within hard onchain rails. Collateral is valued exclusively by the onchain ZEC/USD
-              oracle; stale, zero, or invalid prices halt borrowing.
+              These displayed beta parameters mirror the deployed market configuration; the
+              contract is authoritative and the interface must be synchronized with any onchain
+              change. Collateral is valued exclusively by the onchain ZEC/USD oracle; stale,
+              zero, or invalid prices halt borrowing.
             </p>
           </section>
 

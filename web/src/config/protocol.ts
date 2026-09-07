@@ -182,11 +182,13 @@ export const GOVERNANCE = {
 
 /**
  * ============================================================================
- * TODO: FINAL RISK PARAMETERS REQUIRED BEFORE MAINNET
+ * BETA RISK PARAMETERS — DEPLOYED, NOT YET EXTERNALLY REVIEWED
  * ============================================================================
- * Every value below is a conservative development placeholder. None has been
- * reviewed for production. `finalized: false` gates all execution paths — do
- * not flip it without a documented risk review (see /SECURITY.md).
+ * These values mirror the current beta market configuration. They are not read
+ * from chain by this frontend and have not been externally reviewed. The
+ * deployed contract is authoritative; keep this mirror synchronized with any
+ * onchain change. Do not set `finalized: true` without a documented risk review
+ * and multisig migration (see /SECURITY.md).
  */
 export const ZCREDIT_RISK = {
   finalized: false,

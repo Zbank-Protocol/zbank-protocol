@@ -119,13 +119,13 @@ const CHAPTERS: Chapter[] = [
     kicker: "Where things stand",
     title: ["The bank is live.", "The token is next."],
     copy:
-      "Investing executes today through Uniswap v3 against verified Stock Token liquidity — no ZBANK contract custodies funds on that path. The lending market and ZEC/USD oracle are deployed on Robinhood Chain mainnet and run in open beta: real contracts, real funds, unaudited until the external review lands, and capped while it does. Nothing here fakes a transaction or invents a number — statuses flip only when the wiring is deployed and tested.",
+      "Investing executes today through Uniswap v3 against verified Stock Token liquidity — no ZBANK contract custodies funds on that path. The lending market and ZEC/USD oracle adapter are deployed on Robinhood Chain mainnet in open beta: borrowing halts whenever signed oracle reports are not fresh. The contracts remain unaudited and capped pending external review. Nothing here fakes a transaction or invents a number — statuses flip only when the wiring is deployed and tested.",
     visual: (
       <div className="tour__status">
         {[
           ["ZINVEST · ZINDEX", "Live — Uniswap v3 execution"],
           ["ZCREDIT · ZEARN", "Beta — market + oracle deployed"],
-          ["ZLOOP", "Beta — composes both, live"],
+          ["ZLOOP", "Beta — composed execution path"],
           ["ZTREASURY", "Live dashboard — token metrics pending"],
           ["ZBNK", "Token launch pending"],
         ].map(([k, v]) => (

@@ -22,17 +22,21 @@ export function LiveStrip() {
 
   return (
     <div className="strip" aria-label="Live protocol metrics">
-      <MetricCard label="ZEC / USD Oracle" value={oracleValue} unit={market.oracle.price != null ? "Chainlink" : ""} />
+      <MetricCard label="Stock Token Universe" value={String(universe)} unit="live markets" />
+      <MetricCard label="Network" value={CHAIN.name} unit={`· ${CHAIN.id}`} />
+      <MetricCard
+        label="ZEC / USD Oracle"
+        value={oracleValue}
+        unit={market.oracle.price != null ? "Chainlink" : ""}
+      />
+      <MetricCard
+        label="Credit Liquidity"
+        value={market.availableLiquidity == null ? "—" : fmtUsd(market.availableLiquidity)}
+      />
       <MetricCard
         label="USDG Supplied"
         value={market.totalSupplied == null ? "—" : fmtUsd(market.totalSupplied)}
       />
-      <MetricCard
-        label="Available Liquidity"
-        value={market.availableLiquidity == null ? "—" : fmtUsd(market.availableLiquidity)}
-      />
-      <MetricCard label="Stock Tokens" value={String(universe)} unit="listed" />
-      <MetricCard label="Network" value={CHAIN.name} unit={`· ${CHAIN.id}`} />
       <span className="strip__note t-demo">Live from Robinhood Chain · refreshes every 15s</span>
     </div>
   );

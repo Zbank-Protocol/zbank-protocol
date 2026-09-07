@@ -105,7 +105,9 @@ export default function Credit() {
               <span className="metric__value metric__value--sm" data-pending={market.oracle.status !== "live"}>
                 {market.oracle.status === "live" && market.oracle.price != null
                   ? fmtUsd(market.oracle.price)
-                  : "Pending launch"}
+                  : market.oracle.status === "error"
+                    ? "Unavailable"
+                    : "Standby"}
               </span>
             </div>
             <div className="metric">
@@ -121,9 +123,9 @@ export default function Credit() {
           </div>
           <p className="t-note">
             Collateral is valued exclusively by the onchain {market.oracle.label} oracle — never
-            by a frontend price. Stale, invalid, or zero prices halt borrowing. Risk parameters
-            are read live from the deployed market and may be adjusted, within onchain rails, as
-            the protocol matures.
+            by a frontend price. Stale, invalid, or zero prices halt borrowing. Displayed beta
+            parameters mirror the deployed market configuration; the contract is authoritative
+            and the interface must be synchronized with any onchain change.
           </p>
         </div>
         <BetaNote />

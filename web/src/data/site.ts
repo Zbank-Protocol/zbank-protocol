@@ -359,12 +359,12 @@ export const ROADMAP: RoadmapPhase[] = [
   {
     phase: "Phase 02",
     name: "Invest",
-    copy: "Launch ZINVEST for ZEC-funded Stock Token portfolios.",
+    copy: "Launch ZINVEST for USDG-funded Stock Token portfolios and connect it to ZEC through ZLOOP.",
   },
   {
     phase: "Phase 03",
     name: "Index",
-    copy: "Launch ZEC-denominated portfolio baskets.",
+    copy: "Launch transparent target-allocation baskets that execute through ZINVEST.",
   },
   {
     phase: "Phase 04",

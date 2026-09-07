@@ -4,7 +4,7 @@ import { Rise } from "../components/Rise";
 import { HeroPanel } from "../components/HeroPanel";
 import { LiveStrip } from "../components/LiveStrip";
 import { TreasuryTracker } from "../components/TreasuryTracker";
-import { ProductCard } from "../components/ProductCard";
+import { ProductCard, ProductIcon } from "../components/ProductCard";
 import { RoadmapStage } from "../components/RoadmapStage";
 import { ProtocolLink } from "../components/ProtocolLink";
 import { TwoForces } from "../components/TwoForces";
@@ -75,14 +75,20 @@ export default function Home() {
               <LiveStrip />
 
               <div className="thesis">
-                <p className="thesis__lines">
-                  {HERO_THESIS.lines.map((line) => (
-                    <span className="thesis__line" key={line}>
-                      {line}
-                    </span>
-                  ))}
-                </p>
-                <p className="thesis__support">{HERO_THESIS.support}</p>
+                <div className="thesis__index" aria-hidden="true">
+                  <span>THE ZBANK MANDATE</span>
+                  <span>01 / 01</span>
+                </div>
+                <div className="thesis__body">
+                  <p className="thesis__lines">
+                    {HERO_THESIS.lines.map((line) => (
+                      <span className="thesis__line" key={line}>
+                        {line}
+                      </span>
+                    ))}
+                  </p>
+                  <p className="thesis__support">{HERO_THESIS.support}</p>
+                </div>
               </div>
             </div>
           </Rise>
@@ -100,11 +106,26 @@ export default function Home() {
             {ACTIONS.map((a, i) => (
               <Rise key={a.name} delay={i * 0.07}>
                 <Link className="action" to={a.to}>
+                  <span className="action__top">
+                    <span className="action__icon">
+                      <ProductIcon
+                        name={a.name === "Invest" ? "ZLOOP" : a.name === "Borrow" ? "ZCREDIT" : "ZEARN"}
+                      />
+                    </span>
+                    <span className="action__no">0{i + 1}</span>
+                  </span>
                   <span className="action__name">{a.name}</span>
                   <span className="action__copy">{a.copy}</span>
                   <span className="action__detail">{a.detail}</span>
-                  <span className="product__arrow" aria-hidden="true">
-                    →
+                  <span className="action__foot">
+                    <span>
+                      {a.name === "Invest"
+                        ? "Open ZLOOP"
+                        : a.name === "Borrow"
+                          ? "Open ZCREDIT"
+                          : "Open ZEARN"}
+                    </span>
+                    <span className="action__arrow" aria-hidden="true">↗</span>
                   </span>
                 </Link>
               </Rise>
