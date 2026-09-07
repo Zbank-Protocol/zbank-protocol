@@ -10,6 +10,7 @@ import { useZInvestActions } from "../hooks/useZInvestActions";
 import { useWallet } from "../hooks/useWallet";
 import { WalletButton } from "../components/app/WalletButton";
 import { supportedSymbols, usdgBalance } from "../lib/zinvest";
+import { TickerIcon, tickerName } from "../components/app/TickerIcon";
 
 type Mode = "index" | "custom";
 
@@ -155,10 +156,18 @@ export default function Invest() {
                     </button>
                   ))}
                 </div>
+                <p className="strategy-brief">
+                  <strong>{strategy.name}.</strong> {strategy.description} Weights are targets
+                  you buy at execution — there is no automated rebalancing afterward.
+                </p>
                 <ul className="alloc">
                   {strategy.targets.map((t) => (
-                    <li className="alloc__row" key={t.symbol}>
-                      <span className="alloc__symbol">{t.symbol}</span>
+                    <li className="alloc__row alloc__row--rich" key={t.symbol}>
+                      <TickerIcon symbol={t.symbol} />
+                      <span className="alloc__id">
+                        <span className="alloc__symbol">{t.symbol}</span>
+                        <span className="alloc__name">{tickerName(t.symbol)}</span>
+                      </span>
                       <span className="alloc__bar">
                         <span className="alloc__fill" style={{ width: `${t.weight}%` }} />
                       </span>
@@ -258,8 +267,12 @@ export default function Invest() {
               </span>
               <div className="txpreview__rows">
                 {quote.estimatedReceived.map((r) => (
-                  <div className="txpreview__row" key={r.symbol}>
-                    <span className="txpreview__label">{r.symbol}</span>
+                  <div className="txpreview__row txpreview__row--asset" key={r.symbol}>
+                    <span className="txpreview__label txpreview__label--asset">
+                      <TickerIcon symbol={r.symbol} size={18} />
+                      <span className="txpreview__ticker">{r.symbol}</span>
+                      <span className="txpreview__name">{tickerName(r.symbol)}</span>
+                    </span>
                     <span className="txpreview__value">
                       {r.amount == null
                         ? "—"

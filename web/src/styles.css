@@ -1336,6 +1336,94 @@ a.product:hover .product__arrow {
   gap: var(--sp-2);
 }
 
+/* Rich allocation rows: monogram icon + symbol/name column + bar + weight. */
+.alloc__row--rich {
+  grid-template-columns: auto 11rem minmax(0, 1fr) 3.25rem;
+}
+
+.alloc__id {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.alloc__name {
+  font-size: 0.6875rem;
+  color: var(--ink-4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Ticker monogram badge. Accent color arrives inline per symbol. ---- */
+.tick-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ---- One-line strategy explainer under the picker. ---- */
+.strategy-brief {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--ink-3);
+  border-left: 2px solid var(--gold);
+  padding-left: var(--sp-2);
+  margin: var(--sp-2) 0;
+}
+
+.strategy-brief strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ---- Quote rows with asset identity. ---- */
+.txpreview__label--asset {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.txpreview__ticker {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+  letter-spacing: 0.04em;
+}
+
+.txpreview__name {
+  font-size: 0.6875rem;
+  color: var(--ink-4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Inside the narrower ZINDEX cards, tighten the identity column. */
+.idx .alloc__row--rich {
+  grid-template-columns: auto 8.5rem minmax(0, 1fr) 3.25rem;
+}
+
+@media (max-width: 560px) {
+  .alloc__row--rich,
+  .idx .alloc__row--rich {
+    grid-template-columns: auto 7.5rem minmax(0, 1fr) 3.25rem;
+  }
+  .txpreview__name {
+    display: none;
+  }
+}
+
 .alloc__symbol {
   font-family: var(--font-mono);
   font-size: 0.8125rem;
