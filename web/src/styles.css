@@ -153,6 +153,21 @@ button {
   margin-top: var(--sp-3);
 }
 
+.preaudit-note {
+  max-width: none;
+  margin: calc(var(--sp-2) * -1) 0 var(--sp-4);
+  padding: 0.85rem 1rem;
+  border: 1px solid rgb(244 183 40 / 0.2);
+  border-left: 2px solid var(--gold-dim);
+  background: linear-gradient(90deg, var(--gold-ghost), transparent 72%);
+}
+
+.preaudit-note a {
+  color: var(--gold);
+  text-decoration-color: rgb(244 183 40 / 0.35);
+  text-underline-offset: 0.2em;
+}
+
 /* ============================== Layout ============================== */
 
 .container {

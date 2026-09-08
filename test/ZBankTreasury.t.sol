@@ -16,7 +16,7 @@ contract ZBankTreasuryTest is Test {
 
     function setUp() public {
         zbnk = new ZBNK(admin);
-        // Launch split: 50% ZEC acquisition, 30% buyback+burn, 20% reserve.
+        // Launch split: 50% ZEC acquisition, 30% buyback+retirement, 20% reserve.
         treasury = new ZBankTreasury(address(zbnk), admin, 5_000, 3_000, 2_000);
         usdg = new MockERC20("Global Dollar", "USDG", 6);
         usdg.mint(revenueSource, 1_000_000e6);
@@ -70,12 +70,18 @@ contract ZBankTreasuryTest is Test {
         treasury.spend(ZBankTreasury.Bucket.Reserve, address(usdg), address(this), 1e6, "steal");
     }
 
-    function test_burn_is_permissionless_and_tracked() public {
+    function test_retirement_is_permissionless_and_tracked() public {
         vm.prank(admin);
         zbnk.transfer(address(treasury), 5_000_000e18); // bought-back ZBNK arrives
-        treasury.burnZbnk(5_000_000e18); // anyone can finalize
-        assertEq(treasury.totalZbnkBurned(), 5_000_000e18);
-        assertEq(zbnk.totalSupply(), 995_000_000e18);
+        treasury.retireZbnk(5_000_000e18); // anyone can finalize
+        assertEq(treasury.totalZbnkRetired(), 5_000_000e18);
+        assertEq(zbnk.balanceOf(treasury.RETIREMENT_ADDRESS()), 5_000_000e18);
+        assertEq(zbnk.totalSupply(), 1_000_000_000e18);
+    }
+
+    function test_zero_retirement_rejected() public {
+        vm.expectRevert(ZBankTreasury.ZeroAmount.selector);
+        treasury.retireZbnk(0);
     }
 
     /// @notice Router fees and reserve sweeps arrive as plain transfers — they must be
@@ -102,8 +108,8 @@ contract ZBankTreasuryTest is Test {
     function test_bucketIdle_rejects_zbnk() public {
         vm.prank(admin);
         zbnk.transfer(address(treasury), 1_000e18);
-        vm.expectRevert(ZBankTreasury.ZbnkIsBurnOnly.selector);
-        treasury.bucketIdle(address(zbnk)); // buyback ZBNK is for burning, never spending
+        vm.expectRevert(ZBankTreasury.ZbnkIsRetirementOnly.selector);
+        treasury.bucketIdle(address(zbnk)); // buyback ZBNK is for retirement, never spending
     }
 
     function test_bad_split_rejected() public {

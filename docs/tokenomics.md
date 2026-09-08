@@ -1,16 +1,16 @@
 # ZBNK Tokenomics — the two-force model
 
-> **Status: proposed.** The redemption model, revenue allocation, and token utility described
-> here remain subject to final technical, legal, and governance implementation. No redemption
-> contract is deployed and no redemption rights currently exist. Every figure in this document
-> is an example for illustration, never live protocol data or a forecast.
+> **Status: pre-audit alpha implementation, not deployed.** The redemption model, revenue
+> allocation, and token utility remain subject to final technical, legal, and governance
+> implementation. No redemption rights currently exist. Every figure in this document is an
+> example for illustration, never live protocol data or a forecast.
 
 ## The model in one line
 
 **MORE ZEC. FEWER ZBNK.**
 
 ZBANK is designed around two forces: accumulating ZEC and reducing ZBNK supply. Protocol
-revenue can acquire ZEC for the treasury and buy ZBNK for permanent burn. Under the proposed
+revenue can acquire ZEC for the treasury and buy ZBNK for permanent burn or retirement. Under the proposed
 redemption model, eligible ZBNK can be redeemed against its proportional share of the
 redeemable ZEC treasury.
 
@@ -30,7 +30,7 @@ ZINVEST · ZINDEX · ZCREDIT · ZVAULT · ZLAUNCH · ZPAY
    Revenue purchases ZEC.    Revenue purchases ZBNK
    ZEC enters the ZBANK      from the market.
    Treasury.                 Purchased ZBNK is
-                             permanently burned.
+                             permanently retired.
           │                         │
           ▼                         ▼
     ZEC TREASURY ↑            ZBNK SUPPLY ↓
@@ -59,14 +59,22 @@ The intent is that eligible ZBNK represents a **proposed proportional redemption
 against the **redeemable** ZEC treasury:
 
 ```
-BURN ZBNK  →  RECEIVE PROPORTIONAL ZEC  →  ZBNK IS REMOVED FROM SUPPLY
+RETIRE ZBNK  →  RECEIVE PROPORTIONAL ZEC  →  ZBNK LEAVES ELIGIBLE SUPPLY
 ```
 
-Redemption would permanently remove redeemed ZBNK from eligible supply and transfer the
-corresponding amount of redeemable treasury ZEC according to the protocol's redemption rules.
+`ZBankRedemption.sol` implements two pre-audit alpha paths. Direct redemption atomically
+transfers zZEC on Robinhood Chain. Native redemption snapshots a registered Zcash t-address,
+reserves the proportional zZEC, and creates an operator-settled claim that the holder can cancel
+after its deadline if it remains unpaid.
 
-Until the contracts and legal structure are finalized, every surface that shows this mechanism
-is labelled **"Proposed Redemption Model"**. The website (and this document) must always
+Pons-issued tokens expose the standard ERC-20 interface but no holder burn function. Redeemed
+ZBNK is therefore permanently locked outside eligible supply; treasury buybacks retire ZBNK at
+the inaccessible canonical retirement address. The distinction between total ERC-20 supply and
+eligible supply must remain visible.
+
+Until the contracts and legal structure are finalized and deployed, every surface that shows
+this mechanism is labelled **"Pre-audit alpha"** or **"Proposed Redemption Model"**. The website
+(and this document) must always
 distinguish between live functionality, proposed tokenomics, example calculations, and future
 products.
 
@@ -125,8 +133,8 @@ metrics:  { zecPerEligibleZbnk, treasuryAssetValuePerZbnk, premiumDiscount, miss
 ## The 1% mission
 
 **"1% isn't a slogan. It's the target."** The long-term mission is to acquire 1% of
-circulating ZEC (≈168,500 ZEC at pre-launch estimates; the current demo figure shows
-12,481.37 ZEC owned, 7.4% progress, ~156,018 ZEC remaining).
+circulating ZEC. Until a public reserve address and live supply source are wired, progress
+renders as unavailable rather than using a demo balance.
 
 The mission now has direct relevance to the token model: as the treasury accumulates ZEC,
 treasury assets per eligible ZBNK increase, all else equal — and buybacks can simultaneously
@@ -140,7 +148,7 @@ The Protocol section will expose, as each becomes real (rendering "Pending launc
 never an invented address or transaction):
 
 ZEC Treasury Address · ZBNK Contract · Redeemable Treasury · Strategic Treasury ·
-Eligible Supply · Burn Address · Cumulative Burns · Treasury Purchases · Protocol Revenue ·
+Eligible Supply · Retirement Address · Cumulative Retirements · Treasury Purchases · Protocol Revenue ·
 Revenue Allocation · Redemption Contract · Audit Status
 
 ## Language policy
@@ -153,8 +161,8 @@ assets, wording is constrained until legal counsel confirms the structure:
 "ZBNK can only go up".
 
 **Use instead:** "proposed proportional redemption claim", "redeemable treasury assets",
-"treasury assets per eligible ZBNK", "proposed redemption mechanism", "protocol-funded
-buyback and burn".
+"treasury assets per eligible ZBNK", "pre-audit alpha redemption mechanism", "protocol-funded
+buyback and permanent retirement".
 
 Every page carrying the model also carries the disclaimer: *"The redemption model, revenue
 allocation, and token utility remain subject to final technical, legal, and governance
@@ -172,3 +180,6 @@ implementation."*
 - `web/src/components/Equation.tsx` — the MORE ZEC ÷ FEWER ZBNK motif.
 - `web/src/components/FlywheelDiagram.tsx` — the revenue loop with both branches and the
   convergence chain.
+- `src/ZBankRedemption.sol` — direct zZEC redemption and cancellable operator-settled native
+  ZEC claims.
+- `script/DeployTokenEconomics.s.sol` — canonical Pons token deployment wiring.

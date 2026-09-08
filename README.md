@@ -41,9 +41,10 @@ implementation.
 The web application and machine-readable APIs are live. USDG-funded ZINVEST routes execute
 non-custodially through Uniswap v3. ZCREDIT, ZEARN, and ZLOOP are an **unaudited mainnet beta**.
 
-ZBNK, the treasury contract, proportional redemption, and direct zZEC-funded ZINVEST are not
-live. The interface renders unavailable values as `Pending launch` and does not simulate
-transactions.
+ZBNK, the treasury, redemption, and direct zZEC-funded ZINVEST are not live. The treasury and
+dual-path redemption contracts are implemented as pre-audit alpha code, but deployment waits
+for the canonical Pons ZBNK address. The interface renders unavailable values as
+`Pending launch` and does not simulate transactions.
 
 Deployed Robinhood Chain contracts:
 
@@ -52,6 +53,8 @@ Deployed Robinhood Chain contracts:
 - Temporary protocol Safe: [`0x31837999D9E463B2EB4327CEb4BD7CCa2a500480`](https://robinhoodchain.blockscout.com/address/0x31837999D9E463B2EB4327CEb4BD7CCa2a500480)
 
 Read [`SECURITY.md`](SECURITY.md) before integrating or depositing funds.
+Token-economics integrators should also read
+[`docs/redemption-alpha.md`](docs/redemption-alpha.md).
 
 ## Repository
 

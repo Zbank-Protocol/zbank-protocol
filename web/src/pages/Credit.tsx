@@ -40,6 +40,7 @@ export default function Credit() {
           lede="Deposit ZEC as collateral and draw USDG against it — your ZEC stays yours unless liquidated. Or take the other side: supply the USDG that ZEC holders borrow, and earn the interest they pay."
           aside={<WalletButton />}
         />
+        <BetaNote />
         <div className="mode__tabs mode__tabs--page" role="tablist">
           <button
             role="tab"
@@ -128,7 +129,6 @@ export default function Credit() {
             and the interface must be synchronized with any onchain change.
           </p>
         </div>
-        <BetaNote />
       </div>
     </main>
   );

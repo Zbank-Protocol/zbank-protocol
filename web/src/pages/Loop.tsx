@@ -141,6 +141,7 @@ export default function Loop() {
           lede="Deposit ZEC as collateral, borrow USDG, and invest the borrowed liquidity — one guided flow, the whole position visible before you confirm."
           aside={<WalletButton />}
         />
+        <BetaNote />
 
         <div className="workbench">
           {/* ---- Left: build the position. ---- */}
@@ -321,7 +322,6 @@ export default function Loop() {
             ) : null}
           </div>
         </div>
-        <BetaNote />
       </div>
     </main>
   );

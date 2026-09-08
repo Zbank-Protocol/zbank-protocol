@@ -101,7 +101,7 @@ const CHAPTERS: Chapter[] = [
     kicker: "The engine",
     title: ["Every product feeds", "the same machine."],
     copy:
-      "Execution fees and the lending reserve factor form protocol revenue. Revenue splits two ways: buy ZEC for the treasury, and buy ZBNK for permanent burn. The treasury grows while the eligible supply shrinks — so the ZEC standing behind each remaining ZBNK rises. Only the redeemable slice of the treasury backs the proposed redemption claim, and ZTREASURY reports all of it in public.",
+      "Execution fees and the lending reserve factor form protocol revenue. Revenue splits two ways: buy ZEC for the treasury, and buy ZBNK for permanent burn or retirement. The treasury grows while the eligible supply shrinks — so the ZEC standing behind each remaining ZBNK rises. Only the redeemable slice of the treasury backs redemption, and ZTREASURY reports all of it in public.",
     visual: (
       <div className="tour__stack">
         <DiagramEngine />
@@ -110,16 +110,16 @@ const CHAPTERS: Chapter[] = [
     ),
     facts: [
       ["Accumulate", "Revenue buys ZEC for the treasury"],
-      ["Reduce", "Revenue buys ZBNK and burns it"],
+      ["Reduce", "Revenue buys ZBNK and retires it"],
       ["Verify", "Watch it live on ZTREASURY"],
     ],
     link: { label: "Watch the machine", to: "/treasury" },
   },
   {
     kicker: "Where things stand",
-    title: ["The bank is live.", "The token is next."],
+    title: ["The public beta is live.", "The token stack is built."],
     copy:
-      "Investing executes today through Uniswap v3 against verified Stock Token liquidity — no ZBANK contract custodies funds on that path. The lending market and ZEC/USD oracle adapter are deployed on Robinhood Chain mainnet in open beta: borrowing halts whenever signed oracle reports are not fresh. The contracts remain unaudited and capped pending external review. Nothing here fakes a transaction or invents a number — statuses flip only when the wiring is deployed and tested.",
+      "Investing executes today through Uniswap v3 against verified Stock Token liquidity — no ZBANK contract custodies funds on that path. Lending is deployed as an explicitly pre-audit mainnet beta: borrowing halts whenever signed oracle reports are not fresh. Treasury and dual-path redemption are implemented as pre-audit alpha contracts and deploy after the canonical Pons ZBNK address exists. Nothing here fakes a transaction or invents a number.",
     visual: (
       <div className="tour__status">
         {[
@@ -127,6 +127,7 @@ const CHAPTERS: Chapter[] = [
           ["ZCREDIT · ZEARN", "Beta — market + oracle deployed"],
           ["ZLOOP", "Beta — composed execution path"],
           ["ZTREASURY", "Live dashboard — token metrics pending"],
+          ["TREASURY · REDEMPTION", "Alpha built — awaiting Pons ZBNK"],
           ["ZBNK", "Token launch pending"],
         ].map(([k, v]) => (
           <div className="txpreview__row" key={k}>

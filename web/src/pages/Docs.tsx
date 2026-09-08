@@ -181,7 +181,7 @@ export default function Docs() {
             </div>
             <p>
               Every product feeds one economic engine: protocol revenue acquires ZEC for the
-              treasury and buys ZBNK for permanent burn. More ZEC held against fewer ZBNK — that
+              treasury and buys ZBNK for permanent retirement. More ZEC held against fewer ZBNK — that
               ratio is the number the whole system moves, and{" "}
               <Link to="/treasury">ZTREASURY</Link> exists to let anyone watch it.
             </p>
@@ -233,8 +233,8 @@ export default function Docs() {
               </dd>
               <dt>Eligible ZBNK supply</dt>
               <dd>
-                The ZBNK that counts toward redemption math — total supply minus burned tokens
-                and any excluded balances. Burns permanently shrink it.
+                The ZBNK that counts toward redemption math — total supply minus burned or
+                permanently retired tokens and any excluded balances.
               </dd>
             </dl>
           </section>
@@ -447,25 +447,25 @@ export default function Docs() {
             <p>
               ZBNK is designed around two forces. <strong>Accumulate:</strong> a portion of
               protocol revenue buys ZEC for the treasury. <strong>Reduce:</strong> a portion
-              buys ZBNK on the market and permanently burns it. The treasury grows while the
+              buys ZBNK on the market and permanently retires it. The treasury grows while the
               eligible supply shrinks, so the ZEC standing behind each remaining ZBNK rises:
             </p>
             <DiagramEngine />
             <Formula parts={["Redeemable ZEC", "÷", "Eligible ZBNK supply", "=", "ZEC per ZBNK"]} />
             <p>
               Worked through with the standing example (example only): a treasury of 168,500
-              ZEC against 100,000,000 eligible ZBNK is 0.001685 ZEC per ZBNK. Burn 10,000,000
+              ZEC against 100,000,000 eligible ZBNK is 0.001685 ZEC per ZBNK. Retire 10,000,000
               ZBNK and the same treasury divides across 90,000,000 tokens — 0.001872, an 11.1%
               increase with no new ZEC. Grow the treasury to 200,000 ZEC and it reaches
               0.002222. The <Link to="/token">token page</Link> has this as an interactive
               model you can drive yourself.
             </p>
             <p>
-              <strong>The proposed redemption model</strong> would let eligible ZBNK be burned
-              in exchange for its proportional share of the redeemable treasury. It is labelled
-              proposed everywhere because it is: the redemption contract, the legal structure,
-              and the final rules are not deployed. Nothing on this site implies redemption
-              rights currently exist.
+              <strong>The pre-audit alpha redemption model</strong> lets eligible ZBNK be
+              permanently retired in exchange for its proportional share of the redeemable
+              treasury. The implementation exists, but the canonical token wiring, funded
+              treasury, and legal structure are not deployed. Nothing on this site implies
+              redemption rights currently exist.
             </p>
             <p>
               A second comparison metric follows from the same math:{" "}
@@ -515,7 +515,7 @@ export default function Docs() {
             <Params
               rows={[
                 ["ZEC treasury acquisition", `${REVENUE_ALLOCATION.treasuryBps / 100}%`],
-                ["ZBNK buyback + burn", `${REVENUE_ALLOCATION.burnBps / 100}%`],
+                ["ZBNK buyback + retirement", `${REVENUE_ALLOCATION.burnBps / 100}%`],
                 ["Protocol reserve / operations", `${REVENUE_ALLOCATION.reserveBps / 100}%`],
               ]}
             />
@@ -536,7 +536,8 @@ export default function Docs() {
               ZLOOP run in <strong>open beta</strong>: the lending market and ZEC/USD oracle
               are deployed on mainnet, but the market contract is ZBANK-authored and unaudited,
               administration uses a disclosed temporary 1-of-1 Safe, and collateral is capped
-              onchain. Independent Safe signers and an external audit remain launch gates. A
+              onchain. Independent Safe signers and an external audit remain production-readiness
+              gates; public use before then is explicitly opt-in pre-audit beta. A
               status changes only when the wiring underneath changes — it is a deliberate
               config change, not a copy edit.
             </p>
@@ -545,7 +546,7 @@ export default function Docs() {
                 ["ZINVEST / ZINDEX execution", "Live — Uniswap v3 SwapRouter02 + QuoterV2 (audited public infra)"],
                 ["ZCREDIT lending market", "Deployed on mainnet — open beta, unaudited, collateral capped"],
                 ["ZEC/USD oracle", "Deployed — Chainlink Data Streams, verified onchain, keeper-relayed"],
-                ["Treasury contracts", "Not deployed — ship with the ZBNK token launch"],
+                ["Treasury + redemption", "Pre-audit alpha built — deploys after canonical Pons ZBNK launch"],
                 ["ZBNK token", "Not launched"],
                 ["Audits", "None yet — and none claimed; beta products say so where deposits happen"],
               ]}

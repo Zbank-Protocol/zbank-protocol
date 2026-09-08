@@ -27,10 +27,17 @@ export function PreviewBanner({ product }: { product: ProductKey }) {
  */
 export function BetaNote() {
   return (
-    <p className="t-note container__note" role="note">
-      Beta: the lending market contracts are unaudited and administered by a disclosed
-      temporary 1-of-1 Safe; collateral is capped onchain at 5,000 zZEC. Deposit only what
-      you can afford to lose.
+    <p className="t-note preaudit-note" role="note">
+      Pre-audit mainnet beta: actions move real funds through unaudited contracts administered
+      by a disclosed temporary 1-of-1 Safe. Collateral is capped onchain at 5,000 zZEC. Deposit
+      only what you can afford to lose.{" "}
+      <a
+        href="https://github.com/Zbank-Protocol/zbank-protocol/issues/5"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Review the public audit scope ↗
+      </a>
     </p>
   );
 }

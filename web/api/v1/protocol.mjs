@@ -37,6 +37,8 @@ const manifest = {
     protocolSafe: "0x31837999D9E463B2EB4327CEb4BD7CCa2a500480",
     investRouter: null,
     treasury: null,
+    redemption: null,
+    payoutRegistry: null,
     zbnk: null,
   },
   assets: {
@@ -69,6 +71,7 @@ const manifest = {
     status: "proposed",
     treasuryBps: 5000,
     burnBps: 3000,
+    retirementBps: 3000,
     reserveBps: 2000,
   },
   endpoints: {
@@ -80,7 +83,7 @@ const manifest = {
   warnings: [
     "ZCREDIT, ZEARN, and ZLOOP are unaudited beta products.",
     "Direct zZEC investing is built but not active until its funded pool and router are deployed.",
-    "ZBNK and treasury redemption are not launched.",
+    "Treasury and dual-path redemption are implemented as pre-audit alpha contracts but cannot deploy before the canonical Pons ZBNK address exists.",
     "Never infer missing values; treat null as unavailable.",
   ],
 };

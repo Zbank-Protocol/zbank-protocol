@@ -6,15 +6,11 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-interface IBurnable {
-    function burn(uint256 amount) external;
-}
-
 /// @title ZBankTreasury — the revenue engine behind "MORE ZEC. FEWER ZBNK."
 /// @notice Every unit of protocol revenue that enters is split, onchain and immediately,
 ///         into three earmarked buckets per the configured basis points:
 ///           * treasury  — funds ZEC acquisition (the 1% mission)
-///           * buyback   — funds ZBNK buyback; bought ZBNK is burned through this contract
+///           * buyback   — funds ZBNK buyback; bought ZBNK is permanently retired
 ///           * reserve   — protocol operations
 ///         The split is enforced at entry, the buckets are tracked per asset, and every
 ///         movement out of a bucket names its bucket in an event — so the /treasury page
@@ -28,7 +24,13 @@ contract ZBankTreasury is Ownable, ReentrancyGuard {
     error BadSplit();
     error BucketUnderflow(uint256 requested, uint256 available);
     error NothingIdle();
-    error ZbnkIsBurnOnly();
+    error ZeroAmount();
+    error UnsupportedTransferFee();
+    error ZbnkIsRetirementOnly();
+
+    /// @notice Pons-issued tokens do not expose holder burn. Transfers here are permanently
+    ///         inaccessible and must be excluded from eligible-supply accounting.
+    address public constant RETIREMENT_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
     enum Bucket {
         Treasury,
@@ -41,10 +43,10 @@ contract ZBankTreasury is Ownable, ReentrancyGuard {
     );
     event SplitSet(uint16 treasuryBps, uint16 buybackBps, uint16 reserveBps);
     event Spent(Bucket indexed bucket, address indexed asset, address indexed to, uint256 amount, string memo);
-    event ZbnkBurned(uint256 amount, uint256 totalBurned);
+    event ZbnkRetired(uint256 amount, uint256 totalRetired, address indexed retirementAddress);
 
-    /// @notice The ZBNK token (must expose `burn`).
-    IBurnable public immutable zbnk;
+    /// @notice The canonical ZBNK token.
+    IERC20 public immutable zbnk;
 
     uint16 public treasuryBps;
     uint16 public buybackBps;
@@ -54,14 +56,14 @@ contract ZBankTreasury is Ownable, ReentrancyGuard {
     mapping(address => mapping(Bucket => uint256)) public bucketOf;
     /// @notice Sum of all buckets per asset — anything above it on the balance is idle.
     mapping(address => uint256) public totalBucketed;
-    /// @notice Lifetime ZBNK removed from supply through this contract.
-    uint256 public totalZbnkBurned;
+    /// @notice Lifetime ZBNK permanently removed from eligible supply through this contract.
+    uint256 public totalZbnkRetired;
 
     constructor(address zbnk_, address owner_, uint16 treasuryBps_, uint16 buybackBps_, uint16 reserveBps_)
         Ownable(owner_)
     {
         require(zbnk_ != address(0), "treasury: zero zbnk");
-        zbnk = IBurnable(zbnk_);
+        zbnk = IERC20(zbnk_);
         _setSplit(treasuryBps_, buybackBps_, reserveBps_);
     }
 
@@ -76,10 +78,10 @@ contract ZBankTreasury is Ownable, ReentrancyGuard {
     /// @notice Bucket revenue that arrived as a plain transfer — invest-router fees and
     ///         ZCredit reserve sweeps land this way. Permissionless: splitting idle balance
     ///         per the configured bps is the only thing this can do.
-    /// @dev    ZBNK is excluded: ZBNK held here is bought-back supply awaiting `burnZbnk`,
+    /// @dev    ZBNK is excluded: ZBNK held here is bought-back supply awaiting `retireZbnk`,
     ///         never spendable revenue.
     function bucketIdle(address asset) external nonReentrant {
-        if (asset == address(zbnk)) revert ZbnkIsBurnOnly();
+        if (asset == address(zbnk)) revert ZbnkIsRetirementOnly();
         uint256 idle = IERC20(asset).balanceOf(address(this)) - totalBucketed[asset];
         if (idle == 0) revert NothingIdle();
         _credit(asset, idle);
@@ -111,12 +113,18 @@ contract ZBankTreasury is Ownable, ReentrancyGuard {
         emit Spent(bucket, asset, to, amount, memo);
     }
 
-    /// @notice Burn ZBNK held by this contract (bought back with Buyback-bucket funds).
-    ///         Permissionless: anyone may finalize a burn of whatever ZBNK sits here.
-    function burnZbnk(uint256 amount) external nonReentrant {
-        zbnk.burn(amount);
-        totalZbnkBurned += amount;
-        emit ZbnkBurned(amount, totalZbnkBurned);
+    /// @notice Permanently retire ZBNK held by this contract after a market buyback.
+    ///         Permissionless: anyone may move bought-back ZBNK to the inaccessible retirement
+    ///         address. This works with standard Pons ERC-20 tokens that expose no `burn`.
+    function retireZbnk(uint256 amount) external nonReentrant {
+        if (amount == 0) revert ZeroAmount();
+        uint256 balanceBefore = zbnk.balanceOf(RETIREMENT_ADDRESS);
+        zbnk.safeTransfer(RETIREMENT_ADDRESS, amount);
+        if (zbnk.balanceOf(RETIREMENT_ADDRESS) - balanceBefore != amount) {
+            revert UnsupportedTransferFee();
+        }
+        totalZbnkRetired += amount;
+        emit ZbnkRetired(amount, totalZbnkRetired, RETIREMENT_ADDRESS);
     }
 
     /// @notice Update the revenue split. Takes effect for future allocations only.

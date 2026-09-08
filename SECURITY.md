@@ -17,11 +17,12 @@ Public audit issues are for non-exploitable hardening and defense-in-depth findi
 | Component | Status |
 | --- | --- |
 | `ZcashAddress.sol` (t-address validation library) | Implemented, unit-tested, **not audited** |
-| `PayoutRegistry.sol` (address registry) | Implemented, unit-tested, **not audited, not deployed** |
+| `PayoutRegistry.sol` (native-ZEC payout registry) | Implemented, unit-tested, **not audited, not deployed** — deploys with token economics after canonical Pons ZBNK exists |
 | `ZCredit.sol` (ZCREDIT lending market) | **Deployed** at `0x77ccb77d1fd337b7027b3482ca365db57d92151e`, unit-tested, **not audited**, owned by temporary 1-of-1 Safe `0x31837999D9E463B2EB4327CEb4BD7CCa2a500480` |
 | `InvestRouter.sol` (ZINVEST execution router) | Implemented, unit-tested with the production adapter, **not audited, not deployed** |
 | `UniswapV3Adapter.sol` (approved direct/multi-hop venue paths) | Implemented, unit-tested, **not audited, not deployed** — direct zZEC remains disabled until its market is funded and reviewed |
-| `ZBankTreasury.sol` (revenue split / buckets / burn) | Implemented, unit-tested, **not audited, not deployed** |
+| `ZBankTreasury.sol` (revenue split / buckets / Pons-compatible retirement) | Implemented, unit-tested, **not audited, not deployed** |
+| `ZBankRedemption.sol` (atomic zZEC + operator-settled native ZEC) | Implemented, unit-tested, **not audited, not deployed** — permanently binds to the canonical Pons ZBNK address |
 | `ZBNK.sol` (fixed-supply burnable token) | Implemented, unit-tested, **not launched** — superseded if launched via Pons |
 | `ChainlinkOracleAdapter.sol` (push-feed adapter, fallback) | Implemented, unit-tested |
 | `ZecUsdDataStreamFeed.sol` (ZEC/USD via Chainlink Data Streams verifier) | **Deployed and receiving verified reports** at `0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5`, unit-tested, **not audited** |
@@ -38,11 +39,12 @@ Verified external addresses (Robinhood Chain mainnet, checked onchain 2026-09-07
 | ZEC/USD stream feed id | `0x00039f8a144f4a62715ca60aec1cf848c4821375c57e2259c6c90b7fa49db693` | Chainlink crypto-streams catalog |
 | Safe v1.4.1 factory / L2 singleton | `0x4e1DCf7…ec67` / `0x29fcB43…C762` | canonical addresses, code verified onchain |
 
-Test suite: `forge test` — 71 tests discovered, 70 passing and the RPC-dependent fork test
+Test suite: `forge test` — 82 tests discovered, 81 passing and the RPC-dependent fork test
 skipped when no fork endpoint is available (supply/borrow/repay lifecycle, interest
 accrual to lenders and reserves, close-factor liquidation, stale/zero oracle rejection,
-parameter rails, pause semantics, revenue split accounting, burn tracking, basket routing,
-approved-path validation, and integrated direct-zZEC adapter execution).
+parameter rails, pause semantics, revenue split accounting, retirement tracking, basket routing,
+approved-path validation, integrated direct-zZEC adapter execution, proportional zZEC
+redemption, and cancellable native-ZEC claims).
 
 The frontend reflects this with ZCREDIT, ZEARN, and ZLOOP in Beta and blocks new borrower
 exposure whenever the oracle is stale or uninitialized. ZINVEST/ZINDEX execute non-custodial
@@ -55,8 +57,8 @@ Uniswap v3 routes. Token and treasury metrics remain pending launch.
    share-based lender accounting, kinked utilization rates, health factor, close-factor
    liquidations, hard parameter rails, pause that still allows repay/withdraw. **This
    supersedes the earlier decision 0.2 to only deploy an audited third-party stack — which
-   means the full audit cycle it warned about is now mandatory before this contract holds any
-   mainnet funds.** The audited-stack route (Aave v3 instance / Morpho Blue market) remains
+   means the full audit cycle it warned about is now mandatory before production status or
+   expansion beyond the disclosed alpha/beta caps.** The audited-stack route (Aave v3 instance / Morpho Blue market) remains
    the fallback if the audit timeline is unacceptable. Known accepted simplification: USDG is
    valued at $1 (no debt-side oracle); a USDG depeg is not detected by the market.
 2. **Liquidation system.** Depends on the lending stack chosen. Requirements: keeper
@@ -119,7 +121,8 @@ The frontend mirror lives in `web/src/config/protocol.ts` (`ZCREDIT_RISK`,
   Its sole owner is the separate address `0x367fC81A2205587DF2ae6F9BA0af28EF75A88b07`
   and its threshold is 1. This separates the keeper from administration and creates a Safe
   upgrade path, but it remains single-signature administration. Add independent signers,
-  verify an emergency Safe transaction, and raise the threshold before public launch.
+  verify an emergency Safe transaction, and raise the threshold before production status or
+  expansion of the alpha/beta caps.
 - The admin risk is bounded by onchain rails: the Safe cannot touch user collateral or
   supplied funds, cannot set parameters outside the hard bounds, and pause never blocks
   repay or lender withdrawal.
@@ -131,7 +134,13 @@ The frontend mirror lives in `web/src/config/protocol.ts` (`ZCREDIT_RISK`,
     (bounded by accrued reserves — cannot touch user funds), `pause`/`unpause` (pause blocks
     new exposure only; repay and lender withdrawal always work).
   - `ZBankTreasury`: `spend` (bounded per bucket, memo logged onchain), `setSplit` (must sum
-    to 10000 bps). `allocateRevenue` and `burnZbnk` are permissionless.
+    to 10000 bps). `allocateRevenue` and `retireZbnk` are permissionless. Pons ZBNK exposes
+    no holder burn function, so retired tokens move to the inaccessible canonical retirement
+    address and are excluded from eligible supply.
+  - `ZBankRedemption`: the owner can pause new claims, enable direct/native modes, rotate the
+    native settlement operator, and set a 1–30 day claim timeout. Direct zZEC redemption is
+    atomic. Native ZEC is explicitly operator-settled: pending claims reserve zZEC, snapshot
+    the registered t-address, and become cancellable if not settled by their deadline.
   - `InvestRouter`: `setAdapter`, `setFee` (hard-capped at 200 bps), `pause`/`unpause`.
     The adapter choice is the largest trust lever — a malicious adapter steals in-flight
     swaps. Adapter changes must be time-locked and announced.
@@ -167,8 +176,10 @@ This review raises confidence; it does not replace the external audit below.
 
 - `ZCredit.sol` — full audit, non-negotiable: it custodies collateral and lender funds.
 - `InvestRouter.sol` + the chosen venue adapter, and `ZBankTreasury.sol` — now written, in scope.
-- ZBNK token + any redemption mechanism before the "Proposed Redemption Model" can drop the
-  word Proposed. (No redemption contract exists yet — the model stays labelled Proposed.)
+- `ZBankRedemption.sol` + `PayoutRegistry.sol` — direct redemption custody, eligible-supply
+  accounting, native-claim cancellation, operator settlement, and Pons-token behavior.
+- The Pons-issued ZBNK token and deployed redemption mechanism before the website can drop
+  the words Alpha and Pre-audit.
 - **Do not claim "audited" anywhere until a report exists and is linked.**
 
 ## Required mainnet parameter decisions

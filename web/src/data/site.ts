@@ -147,7 +147,7 @@ export const MISSION = {
   copy:
     "We\u2019re buying 1% of Zcash. ZBANK products generate protocol revenue; a defined portion " +
     "acquires ZEC for the treasury, and a defined portion — under the proposed model — buys " +
-    "ZBNK from the market for permanent burn.",
+    "ZBNK from the market for permanent burn or retirement.",
   owned: "—",
   target: "~168,500 ZEC",
   progressPct: 0,
@@ -237,7 +237,7 @@ export const PRODUCTS: Product[] = [
   {
     name: "ZTREASURY",
     tagline: "Watch the machine work.",
-    copy: "The live protocol dashboard: treasury, burns, supply, and the ZEC-per-ZBNK ratio.",
+    copy: "The live protocol dashboard: treasury, retirements, supply, and the ZEC-per-ZBNK ratio.",
     status: PRODUCT_STATUS.ztreasury,
     href: "/treasury",
   },
@@ -260,8 +260,7 @@ export const FLYWHEEL = {
     },
     {
       title: "Buy ZBNK",
-      steps: ["Permanent burn", "Supply \u2193"],
-      /* Not implemented in contracts — labelled as proposed, never as a promise. */
+      steps: ["Permanent retirement", "Eligible supply \u2193"],
       note: "Proposed allocation",
     },
   ],
@@ -276,7 +275,7 @@ export const TOKENOMICS = {
   headline: ["Two forces.", "One token."],
   lede: "ZBANK is designed around two forces: accumulating ZEC and reducing ZBNK supply.",
   detail:
-    "Protocol revenue can acquire ZEC for the treasury and buy ZBNK for permanent burn. Under " +
+    "Protocol revenue can acquire ZEC for the treasury and buy ZBNK for permanent retirement. Under " +
     "the proposed redemption model, eligible ZBNK can be redeemed against its proportional " +
     "share of the redeemable ZEC treasury.",
   forces: [
@@ -295,8 +294,8 @@ export const TOKENOMICS = {
       name: "Reduce",
       steps: [
         "A portion of protocol revenue buys ZBNK.",
-        "Purchased ZBNK is permanently burned.",
-        "Burned ZBNK leaves eligible supply forever.",
+        "Purchased ZBNK is permanently retired.",
+        "Retired ZBNK leaves eligible supply forever.",
       ],
       result: "Supply \u2193",
     },
@@ -308,37 +307,38 @@ export const TOKENOMICS = {
  * The live/proposed register. Nothing on this list is live pre-launch; the register exists so
  * the distinction is structural, not editorial, when things do go live.
  */
-export type TokenFactStatus = "Live" | "Proposed" | "Pending launch";
+export type TokenFactStatus = "Live" | "Alpha built" | "Proposed" | "Pending launch";
 
 export const TOKEN_FACTS: { label: string; status: TokenFactStatus }[] = [
   { label: "ZBNK token contract", status: "Pending launch" },
   { label: "Protocol-funded ZEC acquisition", status: "Proposed" },
-  { label: "Protocol-funded ZBNK buyback and burn", status: "Proposed" },
-  { label: "Pro-rata redemption against redeemable treasury ZEC", status: "Proposed" },
-  { label: "Redeemable vs. strategic treasury accounting", status: "Proposed" },
+  { label: "Protocol-funded ZBNK buyback and retirement", status: "Alpha built" },
+  { label: "Direct zZEC + native ZEC redemption paths", status: "Alpha built" },
+  { label: "Redeemable vs. strategic treasury accounting", status: "Alpha built" },
   { label: "Governance", status: "Proposed" },
 ];
 
 /**
  * EXAMPLE ONLY — the redemption interface concept. Values are the worked example from the
- * model spec (168,500 redeemable ZEC / 100M eligible ZBNK), never live data. No redemption
- * contract exists; no redemption rights currently exist.
+ * model spec (168,500 redeemable ZEC / 100M eligible ZBNK), never live data. The alpha
+ * redemption contract is implemented but not deployed; no redemption rights currently exist.
  */
 export const REDEMPTION = {
-  badge: "Proposed redemption model",
-  burnLabel: "You burn",
+  badge: "Pre-audit alpha · not deployed",
+  burnLabel: "You permanently retire",
   burn: "100,000 ZBNK",
   rateLabel: "Current treasury rate",
   rate: "0.001685 ZEC / ZBNK",
   receiveLabel: "You receive",
   receive: "168.50 ZEC",
-  burnedLabel: "ZBNK burned",
+  burnedLabel: "ZBNK retired",
   burned: "100,000",
   tooltip:
-    "Redemption would permanently remove redeemed ZBNK from eligible supply and transfer the " +
-    "corresponding amount of redeemable treasury ZEC according to the protocol\u2019s " +
-    "redemption rules.",
-  note: "Example values only. Redemption is not deployed and no redemption rights currently exist.",
+    "The alpha contract permanently locks redeemed Pons ZBNK outside eligible supply. It can " +
+    "transfer zZEC atomically or reserve zZEC for an operator-settled native ZEC claim to a " +
+    "registered t-address.",
+  note:
+    "Example values only. The pre-audit alpha contract is implemented but not deployed; no redemption rights currently exist.",
 } as const;
 
 /* ------------------------------ 11 · Roadmap ------------------------------ */
@@ -393,7 +393,7 @@ export const ROADMAP: RoadmapPhase[] = [
     name: "1% of Zcash",
     copy: "Build toward transparent ownership of 1% of circulating ZEC through protocol revenue.",
     status: "Long-term",
-    items: ["Acquire ZEC", "Publish reserves", "Track redeemable vs. strategic ZEC", "Report every burn"],
+    items: ["Acquire ZEC", "Publish reserves", "Track redeemable vs. strategic ZEC", "Report every retirement"],
     mission: true,
   },
 ];
@@ -438,7 +438,7 @@ export const PROTOCOL_ITEMS: ProtocolItem[] = [
   },
   {
     label: "Revenue Allocation",
-    value: "50% ZEC treasury · 30% ZBNK burn · 20% reserve — proposed",
+    value: "50% ZEC treasury · 30% ZBNK retirement · 20% reserve — proposed",
   },
   {
     label: "Audit Status",
@@ -449,7 +449,7 @@ export const PROTOCOL_ITEMS: ProtocolItem[] = [
     label: "Token-Launch Registry",
     value: null,
     pendingLabel:
-      "ZBNK contract, treasury addresses, eligible supply, and burn data publish here at " +
+      "ZBNK contract, treasury addresses, eligible supply, and retirement data publish here at " +
       "token launch",
   },
 ];

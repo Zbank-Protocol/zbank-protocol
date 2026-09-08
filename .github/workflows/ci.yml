@@ -17,7 +17,7 @@ jobs:
           submodules: recursive
       - uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: stable
+          version: v1.7.1
       - run: forge fmt --check
       - run: forge build
       - run: forge test --summary

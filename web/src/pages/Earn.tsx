@@ -32,6 +32,7 @@ export default function Earn() {
           lede="ZEC holders borrow USDG against their collateral. You supply the USDG they borrow — and earn the variable interest they pay."
           aside={<WalletButton />}
         />
+        <BetaNote />
         <SupplyPanel market={market} position={position} account={wallet.address} />
 
         {/* The mechanism, drawn: rates are a function of utilization, read from the contract. */}
@@ -53,7 +54,6 @@ export default function Earn() {
           depend on available liquidity: funds in use by borrowers return as loans are repaid or
           liquidated, so there is no instant-redemption guarantee.
         </p>
-        <BetaNote />
       </div>
     </main>
   );

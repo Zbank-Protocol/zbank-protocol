@@ -22,24 +22,30 @@ with `SECURITY.md` (the risk register) — nothing below overrides it.
 3. Set config: `TOKEN.address`, `PONS.feeEscrow`, `PONS.memeHook`.
 4. Set `PROTOCOL_CONTRACTS.zbnk` in `web/src/config/protocol.ts` — the dashboard's ZBNK
    balance read activates by itself.
-5. Publish the ZEC treasury t-address (`ZEC_RESERVE.address`) — the proof-of-reserve story
+5. Run `DeployTokenEconomics.s.sol` with the canonical token address. This deploys the
+   pre-audit alpha treasury, payout registry, and dual-path redemption contracts with both
+   redemption modes disabled.
+6. Fund redemption with real zZEC, verify every recorded address, then explicitly enable the
+   atomic zZEC path and/or operator-settled native ZEC path through the owner Safe.
+7. Publish the ZEC treasury t-address (`ZEC_RESERVE.address`) — the proof-of-reserve story
    starts the moment it is public.
-6. Verify: token page shows the live address; explorer links resolve; ZTREASURY stops saying
+8. Verify: token page shows the live address; explorer links resolve; ZTREASURY stops saying
    "Pending launch" for token supply figures once indexing is wired.
 
 ## Phase 2 — Credit market (the long pole)
 
-1. Deploy the lending stack with the Phase 0.4 parameters — `script/Deploy.s.sol` deploys the
-   full suite (token, treasury, oracle adapter, `ZCredit`, router) and refuses to run without
-   the Phase 0 env inputs. Audit first: see SECURITY.md.
-2. Wire the oracle (0.1) and verify staleness/zero-price handling on a fork test.
-3. Set `PROTOCOL_CONTRACTS.creditMarket` and `ORACLES.zecUsd.address`; flip
-   `ZCREDIT_RISK.finalized` only after the documented risk review.
+1. **DEPLOYED PRE-AUDIT BETA:** ZCREDIT and the Data Streams oracle are live with the
+   disclosed development parameters and temporary 1-of-1 Safe.
+2. **ACTIVE:** GitHub and Vercel keepers relay the oracle; verify staleness/zero-price
+   handling continuously.
+3. Keep `ZCREDIT_RISK.finalized` false until the external risk review, even while the public
+   pre-audit beta remains available.
 4. Replace the internals of `useZCreditMarket` / `useZCreditPosition` with contract reads
    (the shapes already match; components don't change).
 5. Liquidation dry run on testnet: open a position, push the oracle, verify a keeper can
    liquidate and the health meter tracked every band on the way down.
-6. Flip `PRODUCT_STATUS.zcredit` and `.zearn` to `Live` — only after 1–5 are verified.
+6. Flip `PRODUCT_STATUS.zcredit` and `.zearn` from `Beta` to `Live` only after audit and
+   production-readiness review.
 
 ## Phase 3 — Invest router
 
@@ -57,8 +63,10 @@ Implementation is complete; activation is waiting on funded liquidity. Follow
 
 ## Phase 4 — Treasury engine
 
-1. Deploy revenue collection + allocation (0.5) and the burn path.
-2. Set `PROTOCOL_CONTRACTS.treasury` / `.burn`; publish addresses on /treasury and /token.
+1. Deploy revenue collection + allocation (0.5), Pons-compatible retirement, payout registry,
+   and redemption with `DeployTokenEconomics.s.sol`.
+2. Set `PROTOCOL_CONTRACTS.treasury`, `.redemption`, `.payoutRegistry`, and `.zbnk`; publish
+   addresses on /treasury and /token.
 3. Feed `useTreasuryMetrics` from chain data / an indexer; windows (24h/7d/30d) come from the
    indexer, never hand-entered.
 4. Flip `PRODUCT_STATUS.ztreasury` to `Live`.

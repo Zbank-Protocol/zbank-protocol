@@ -88,10 +88,14 @@ export const PROTOCOL_CONTRACTS = {
   investRouter: null as `0x${string}` | null,
   /** Treasury accounting. */
   treasury: null as `0x${string}` | null,
+  /** Dual-path pre-audit alpha redemption contract. */
+  redemption: null as `0x${string}` | null,
+  /** Self-service Zcash t-address registry for native-ZEC claims. */
+  payoutRegistry: null as `0x${string}` | null,
   /** ZBNK token. */
   zbnk: null as `0x${string}` | null,
-  /** The burn address once burns are live. */
-  burn: null as `0x${string}` | null,
+  /** Pons-compatible permanent retirement address. */
+  retirement: "0x000000000000000000000000000000000000dEaD" as `0x${string}`,
 } as const;
 
 /* ------------------------------- Uniswap (execution venue) ------------------------------- */

@@ -30,7 +30,7 @@ export default function Treasury() {
     { label: "ZBNK market price", value: t.token.currentPrice == null ? null : fmtUsd(t.token.currentPrice) },
     { label: "Premium / discount", value: t.metrics.premiumDiscount == null ? null : fmtPct(t.metrics.premiumDiscount) },
     { label: "ZEC acquired (all time)", value: t.zecAcquired.find((w) => w.window === "All time")?.value == null ? null : fmtAmount(t.zecAcquired.find((w) => w.window === "All time")!.value!) },
-    { label: "ZBNK burned (all time)", value: t.zbnkBurned.find((w) => w.window === "All time")?.value == null ? null : fmtAmount(t.zbnkBurned.find((w) => w.window === "All time")!.value!) },
+    { label: "ZBNK retired (all time)", value: t.zbnkBurned.find((w) => w.window === "All time")?.value == null ? null : fmtAmount(t.zbnkBurned.find((w) => w.window === "All time")!.value!) },
     { label: "Recent treasury transactions", value: null },
     { label: "Recent burns", value: null },
   ];
