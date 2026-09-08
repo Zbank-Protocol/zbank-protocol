@@ -156,18 +156,18 @@ contract SeedZzecUsdgPool is Script {
         (tokenId, liquidity, amount0, amount1) = INonfungiblePositionManager(POSITION_MANAGER)
             .mint(
                 INonfungiblePositionManager.MintParams({
-                token0: config.token0,
-                token1: config.token1,
-                fee: config.fee,
-                tickLower: config.tickLower,
-                tickUpper: config.tickUpper,
-                amount0Desired: config.token0 == ZZEC ? config.zzecDesired : config.usdgDesired,
-                amount1Desired: config.token0 == ZZEC ? config.usdgDesired : config.zzecDesired,
-                amount0Min: config.token0 == ZZEC ? config.zzecMin : config.usdgMin,
-                amount1Min: config.token0 == ZZEC ? config.usdgMin : config.zzecMin,
-                recipient: config.liquidityOwner,
-                deadline: block.timestamp + 10 minutes
-            })
+                    token0: config.token0,
+                    token1: config.token1,
+                    fee: config.fee,
+                    tickLower: config.tickLower,
+                    tickUpper: config.tickUpper,
+                    amount0Desired: config.token0 == ZZEC ? config.zzecDesired : config.usdgDesired,
+                    amount1Desired: config.token0 == ZZEC ? config.usdgDesired : config.zzecDesired,
+                    amount0Min: config.token0 == ZZEC ? config.zzecMin : config.usdgMin,
+                    amount1Min: config.token0 == ZZEC ? config.usdgMin : config.zzecMin,
+                    recipient: config.liquidityOwner,
+                    deadline: block.timestamp + 10 minutes
+                })
             );
     }
 
