@@ -33,6 +33,9 @@ test("protocol manifest exposes canonical launch state", async () => {
   assert.equal(body.contracts.creditMarket, "0x77ccb77d1fd337b7027b3482ca365db57d92151e");
   assert.equal(body.contracts.protocolSafe, "0x31837999D9E463B2EB4327CEb4BD7CCa2a500480");
   assert.equal(body.contracts.zbnk, null);
+  assert.equal(body.products[0].capabilities.usdgInput, "live");
+  assert.equal(body.products[0].capabilities.zzecInput, "coming_soon_awaiting_funded_pool");
+  assert.equal(body.execution.zzecUsdgPool, null);
   assert.equal(headers["access-control-allow-origin"], "*");
 });
 

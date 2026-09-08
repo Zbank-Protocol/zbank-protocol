@@ -15,7 +15,16 @@ const manifest = {
     },
   },
   products: [
-    { id: "zinvest", action: "invest_usdg", status: "Live", route: "/invest" },
+    {
+      id: "zinvest",
+      action: "invest_usdg_or_zzec",
+      status: "Live",
+      route: "/invest",
+      capabilities: {
+        usdgInput: "live",
+        zzecInput: "coming_soon_awaiting_funded_pool",
+      },
+    },
     { id: "zindex", action: "select_strategy", status: "Live", route: "/invest/indexes" },
     { id: "zcredit", action: "borrow_or_supply", status: "Beta", route: "/credit" },
     { id: "zearn", action: "supply_usdg", status: "Beta", route: "/earn" },
@@ -38,6 +47,9 @@ const manifest = {
     swapRouter02: "0xCaf681a66D020601342297493863E78C959E5cb2",
     quoterV2: "0x33e885eD0Ec9bF04EcfB19341582aADCb4c8A9E7",
     v3Factory: "0x1f7d7550B1b028f7571E69A784071F0205FD2EfA",
+    nonfungiblePositionManager: "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3",
+    zzecUsdgPool: null,
+    zzecUsdgFee: 3000,
   },
   oracle: {
     provider: "chainlink-data-streams",
@@ -67,6 +79,7 @@ const manifest = {
   },
   warnings: [
     "ZCREDIT, ZEARN, and ZLOOP are unaudited beta products.",
+    "Direct zZEC investing is built but not active until its funded pool and router are deployed.",
     "ZBNK and treasury redemption are not launched.",
     "Never infer missing values; treat null as unavailable.",
   ],

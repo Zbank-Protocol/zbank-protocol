@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test:api": "node --test scripts/agent-api.test.mjs",
+    "check:zec-route": "node scripts/check-zec-route.mjs",
     "og": "node scripts/render-brand-assets.mjs",
     "shots": "node scripts/capture-stations.mjs",
     "probe": "node scripts/probe-styles.mjs",

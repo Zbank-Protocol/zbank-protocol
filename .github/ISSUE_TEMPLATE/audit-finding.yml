@@ -1,0 +1,79 @@
+name: Public audit finding
+description: Submit a non-exploitable code-quality or defense-in-depth finding
+title: "[Audit]: "
+labels:
+  - audit
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reviewing ZBANK. If this finding could currently be exploited or
+        put funds at risk, stop and use the repository Security tab to report it privately.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - ZCredit
+        - ZecUsdDataStreamFeed
+        - InvestRouter / UniswapV3Adapter
+        - ZBankTreasury / ZBNK
+        - Keeper / oracle relay
+        - Web transaction flow
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: commit
+    attributes:
+      label: Commit reviewed
+      placeholder: Full commit SHA
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Suggested severity
+      options:
+        - Informational
+        - Low
+        - Medium
+        - High — submit privately instead
+        - Critical — submit privately instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: finding
+    attributes:
+      label: Finding
+      description: Describe the invariant, affected code, and failure mode.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction or test
+      description: Include a minimal Foundry or JavaScript test when possible.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: remediation
+    attributes:
+      label: Suggested remediation
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: disclosure
+    attributes:
+      label: Disclosure confirmation
+      options:
+        - label: This report does not disclose a currently exploitable vulnerability.
+          required: true

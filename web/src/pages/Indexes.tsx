@@ -17,7 +17,7 @@ export default function Indexes() {
           kicker="ZINDEX"
           status={PRODUCT_STATUS.zindex}
           title="One click. An entire market strategy."
-          lede="Target-allocation strategies executed through ZINVEST with USDG — either yours, or borrowed against your ZEC through ZLOOP."
+          lede="Target-allocation strategies executed through ZINVEST with USDG today, or directly from zZEC once its funded onchain route activates."
           aside={<WalletButton />}
         />
         <PreviewBanner product="zindex" />

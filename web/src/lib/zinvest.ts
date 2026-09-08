@@ -1,4 +1,5 @@
-import { ASSETS, STOCK_TOKENS, UNISWAP } from "../config/protocol";
+import { encodePacked } from "viem";
+import { ASSETS, PROTOCOL_CONTRACTS, STOCK_TOKENS, UNISWAP } from "../config/protocol";
 import { ensureAllowance, getPublicClient, getWalletClient } from "./zcredit";
 
 /**
@@ -9,8 +10,12 @@ import { ensureAllowance, getPublicClient, getWalletClient } from "./zcredit";
  */
 
 const USDG = ASSETS.USDG.address as `0x${string}`;
+const ZZEC = ASSETS.ZEC.address as `0x${string}`;
 const USDG_UNIT = 10 ** ASSETS.USDG.decimals;
+const ZZEC_UNIT = 10 ** ASSETS.ZEC.decimals;
 const TOKEN_UNIT = 1e18; // every Stock Token is 18 decimals (verified onchain)
+
+export type InvestInput = "USDG" | "zZEC";
 
 /** quoteExactInputSingle is declared view here so it can run as a plain eth_call. */
 const QUOTER_ABI = [
@@ -34,6 +39,21 @@ const QUOTER_ABI = [
       { name: "amountOut", type: "uint256" },
       { name: "sqrtPriceX96After", type: "uint160" },
       { name: "initializedTicksCrossed", type: "uint32" },
+      { name: "gasEstimate", type: "uint256" },
+    ],
+  },
+  {
+    type: "function",
+    name: "quoteExactInput",
+    stateMutability: "view",
+    inputs: [
+      { name: "path", type: "bytes" },
+      { name: "amountIn", type: "uint256" },
+    ],
+    outputs: [
+      { name: "amountOut", type: "uint256" },
+      { name: "sqrtPriceX96AfterList", type: "uint160[]" },
+      { name: "initializedTicksCrossedList", type: "uint32[]" },
       { name: "gasEstimate", type: "uint256" },
     ],
   },
@@ -72,17 +92,35 @@ const ROUTER_ABI = [
   },
 ] as const;
 
+const INVEST_ROUTER_ABI = [
+  {
+    type: "function",
+    name: "invest",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "tokenIn", type: "address" },
+      { name: "amountIn", type: "uint256" },
+      { name: "tokensOut", type: "address[]" },
+      { name: "weightsBps", type: "uint16[]" },
+      { name: "minOuts", type: "uint256[]" },
+    ],
+    outputs: [],
+  },
+] as const;
+
 export type BasketLeg = {
   symbol: string;
-  /** USDG spent on this leg (human units). */
-  usdgIn: number;
+  /** Input asset spent on this leg (human units). */
+  inputAmount: number;
+  weightBps: number;
   /** Quoted tokens out (human units). */
   quotedOut: number;
 };
 
 export type BasketQuote = {
   legs: BasketLeg[];
-  totalUsdgIn: number;
+  inputSymbol: InvestInput;
+  totalInput: number;
   /** Symbols in the requested allocation that are not in the investable universe. */
   unsupported: string[];
 };
@@ -95,43 +133,78 @@ export const isSupported = (symbol: string) => symbol.toUpperCase() in STOCK_TOK
  * against the token's deepest USDG pool. Unsupported symbols are reported, not guessed.
  */
 export async function quoteBasket(
-  amountUsdg: number,
+  amountInput: number,
   allocation: { symbol: string; weight: number }[],
+  inputSymbol: InvestInput = "USDG",
 ): Promise<BasketQuote> {
   const unsupported = allocation
     .map((a) => a.symbol.toUpperCase())
     .filter((s) => !(s in STOCK_TOKENS));
   const valid = allocation.filter((a) => a.symbol.toUpperCase() in STOCK_TOKENS);
   const totalWeight = valid.reduce((s, a) => s + a.weight, 0);
-  if (amountUsdg <= 0 || totalWeight <= 0) {
-    return { legs: [], totalUsdgIn: 0, unsupported };
+  if (amountInput <= 0 || totalWeight <= 0) {
+    return { legs: [], inputSymbol, totalInput: 0, unsupported };
   }
 
   const client = await getPublicClient();
+  let assignedBps = 0;
+  const weighted = valid.map((a, index) => {
+    const weightBps =
+      index === valid.length - 1
+        ? 10_000 - assignedBps
+        : Math.floor((a.weight / totalWeight) * 10_000);
+    assignedBps += weightBps;
+    return { ...a, weightBps };
+  });
+  const inputUnit = inputSymbol === "USDG" ? USDG_UNIT : ZZEC_UNIT;
+  const totalRaw = BigInt(Math.round(amountInput * inputUnit));
+  let spentRaw = 0n;
   const legs = await Promise.all(
-    valid.map(async (a) => {
+    weighted.map(async (a, index) => {
       const token = STOCK_TOKENS[a.symbol.toUpperCase()];
-      const usdgIn = (amountUsdg * a.weight) / totalWeight;
-      const amountIn = BigInt(Math.round(usdgIn * USDG_UNIT));
-      const [amountOut] = (await client.readContract({
-        address: UNISWAP.quoterV2,
-        abi: QUOTER_ABI,
-        functionName: "quoteExactInputSingle",
-        args: [
-          {
-            tokenIn: USDG,
-            tokenOut: token.address,
-            amountIn,
-            fee: token.fee,
-            sqrtPriceLimitX96: 0n,
-          },
-        ],
-      })) as [bigint, bigint, number, bigint];
-      return { symbol: token.symbol, usdgIn, quotedOut: Number(amountOut) / TOKEN_UNIT };
+      const amountIn =
+        index === weighted.length - 1
+          ? totalRaw - spentRaw
+          : (totalRaw * BigInt(a.weightBps)) / 10_000n;
+      spentRaw += amountIn;
+      let amountOut: bigint;
+      if (inputSymbol === "USDG") {
+        [amountOut] = (await client.readContract({
+          address: UNISWAP.quoterV2,
+          abi: QUOTER_ABI,
+          functionName: "quoteExactInputSingle",
+          args: [
+            {
+              tokenIn: USDG,
+              tokenOut: token.address,
+              amountIn,
+              fee: token.fee,
+              sqrtPriceLimitX96: 0n,
+            },
+          ],
+        })) as [bigint, bigint, number, bigint];
+      } else {
+        const path = encodePacked(
+          ["address", "uint24", "address", "uint24", "address"],
+          [ZZEC, UNISWAP.zzecUsdgFee, USDG, token.fee, token.address],
+        );
+        [amountOut] = (await client.readContract({
+          address: UNISWAP.quoterV2,
+          abi: QUOTER_ABI,
+          functionName: "quoteExactInput",
+          args: [path, amountIn],
+        })) as [bigint, bigint[], number[], bigint];
+      }
+      return {
+        symbol: token.symbol,
+        inputAmount: Number(amountIn) / inputUnit,
+        weightBps: a.weightBps,
+        quotedOut: Number(amountOut) / TOKEN_UNIT,
+      };
     }),
   );
 
-  return { legs, totalUsdgIn: amountUsdg, unsupported };
+  return { legs, inputSymbol, totalInput: amountInput, unsupported };
 }
 
 /**
@@ -147,12 +220,38 @@ export async function executeBasket(
   if (quote.legs.length === 0) throw new Error("Nothing to execute");
   const { encodeFunctionData } = await import("viem");
 
-  const totalIn = BigInt(Math.round(quote.totalUsdgIn * USDG_UNIT));
+  if (quote.inputSymbol === "zZEC") {
+    const investRouter = PROTOCOL_CONTRACTS.investRouter;
+    if (!investRouter) throw new Error("Direct ZEC routing is awaiting pool activation");
+    const totalIn = BigInt(Math.round(quote.totalInput * ZZEC_UNIT));
+    await ensureAllowance(account, ZZEC, investRouter, totalIn);
+    const wallet = await getWalletClient(account);
+    const client = await getPublicClient();
+    const hash = await wallet.writeContract({
+      address: investRouter,
+      abi: INVEST_ROUTER_ABI,
+      functionName: "invest",
+      args: [
+        ZZEC,
+        totalIn,
+        quote.legs.map((leg) => STOCK_TOKENS[leg.symbol].address),
+        quote.legs.map((leg) => leg.weightBps),
+        quote.legs.map((leg) =>
+          BigInt(Math.floor(leg.quotedOut * TOKEN_UNIT * (1 - slippageBps / 10_000))),
+        ),
+      ],
+    });
+    const receipt = await client.waitForTransactionReceipt({ hash });
+    if (receipt.status !== "success") throw new Error("Direct ZEC investment reverted");
+    return hash;
+  }
+
+  const totalIn = BigInt(Math.round(quote.totalInput * USDG_UNIT));
   await ensureAllowance(account, USDG, UNISWAP.swapRouter02, totalIn);
 
   const calls = quote.legs.map((leg) => {
     const token = STOCK_TOKENS[leg.symbol];
-    const amountIn = BigInt(Math.round(leg.usdgIn * USDG_UNIT));
+    const amountIn = BigInt(Math.round(leg.inputAmount * USDG_UNIT));
     const minOut = BigInt(
       Math.floor(leg.quotedOut * TOKEN_UNIT * (1 - slippageBps / 10_000)),
     );

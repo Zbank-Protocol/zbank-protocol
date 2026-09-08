@@ -157,7 +157,7 @@ export default function Docs() {
             </p>
             <Steps
               items={[
-                "INVEST — deploy USDG into Stock Token portfolios, using your own USDG or USDG borrowed against ZEC (ZINVEST, with ZINDEX as its strategy layer).",
+                "INVEST — deploy USDG into Stock Token portfolios today. The direct zZEC route is built and activates after its onchain market is funded (ZINVEST, with ZINDEX as its strategy layer).",
                 "BORROW — post ZEC as collateral and borrow USDG against it (ZCREDIT, with ZLOOP composing borrow + invest).",
                 "EARN — supply the USDG that borrowers draw, and earn the interest they pay (ZEARN).",
               ]}
@@ -165,7 +165,7 @@ export default function Docs() {
             <div className="docs-primitives" aria-label="ZBANK's three primitives">
               <article>
                 <span>01 · INVEST</span>
-                <strong>USDG → markets</strong>
+                <strong>USDG / zZEC → markets</strong>
                 <p>Build Stock Token portfolios through ZINVEST and ZINDEX.</p>
               </article>
               <article>
@@ -245,15 +245,15 @@ export default function Docs() {
               <span>03</span>ZINVEST — Investing
             </h2>
             <p>
-              ZINVEST turns USDG into a portfolio of Stock Tokens. It splits the input across
-              the target weights and swaps each leg through Uniswap v3. If you begin with ZEC,
-              ZLOOP is the ZEC-native path: it borrows USDG against that ZEC, then passes the
-              borrowed USDG into this same execution engine.
+              ZINVEST turns USDG—or, after liquidity activation, zZEC—into a portfolio of Stock
+              Tokens. It splits the input across target weights and swaps each leg through
+              Uniswap v3. ZLOOP remains the keep-your-ZEC path: it borrows USDG against ZEC
+              collateral, then passes the borrowed USDG into the same execution engine.
             </p>
             <Steps
               items={[
                 "Connect a wallet on Robinhood Chain.",
-                "Enter the USDG amount to invest.",
+                "Choose USDG (live) or zZEC (coming soon until its pool is funded), then enter the amount.",
                 "Choose a mode: a prebuilt ZINDEX strategy, or a custom allocation you define asset-by-asset (weights must total 100%).",
                 "Review the quote: route, price impact, network fee, protocol fee, slippage tolerance, and the estimated amount of each token received.",
                 "Execute. The transaction status and explorer link appear in the same panel.",
@@ -266,11 +266,10 @@ export default function Docs() {
               execution, the transaction reverts rather than filling at a worse price.
             </p>
             <p className="t-note">
-              Current status: live. Baskets execute as one atomic multicall against Uniswap
-              v3's audited SwapRouter02 on Robinhood Chain — every component token is a
-              verified canonical Stock Token with live USDG pool liquidity, quotes come from
-              QuoterV2 onchain, and each leg carries its own slippage guard. No ZBANK-authored
-              contract custodies funds on this path.
+              Current status: USDG input is live through Uniswap v3's SwapRouter02. Direct zZEC
+              routing code and pool-seeding tooling are complete, but that input remains Coming
+              soon until the zZEC/USDG market is funded, the router is deployed, and the new
+              path passes external review and mainnet dry runs.
             </p>
           </section>
 

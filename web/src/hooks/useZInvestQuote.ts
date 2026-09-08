@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { ASSETS } from "../config/protocol";
-import { quoteBasket, type BasketQuote } from "../lib/zinvest";
+import { ASSETS, PROTOCOL_CONTRACTS, UNISWAP } from "../config/protocol";
+import { quoteBasket, type BasketQuote, type InvestInput } from "../lib/zinvest";
 
 /**
  * A live ZINVEST quote: debounced QuoterV2 pricing for every leg of the requested basket.
@@ -20,8 +20,9 @@ export type ZInvestQuote = {
 };
 
 export function useZInvestQuote(
-  amountUsdg: number | null,
+  amountInput: number | null,
   allocation: { symbol: string; weight: number }[],
+  inputSymbol: InvestInput = "USDG",
 ): ZInvestQuote {
   const [basket, setBasket] = useState<BasketQuote | null>(null);
   const [quoting, setQuoting] = useState(false);
@@ -31,7 +32,15 @@ export function useZInvestQuote(
   const allocationKey = allocation.map((a) => `${a.symbol}:${a.weight}`).join(",");
 
   useEffect(() => {
-    if (amountUsdg == null || amountUsdg <= 0 || allocation.length === 0) {
+    if (inputSymbol === "zZEC" && (!UNISWAP.zzecUsdgPool || !PROTOCOL_CONTRACTS.investRouter)) {
+      setBasket(null);
+      setError(
+        "Coming soon — the direct ZEC route is built and activates after the zZEC/USDG market is funded.",
+      );
+      setQuoting(false);
+      return;
+    }
+    if (amountInput == null || amountInput <= 0 || allocation.length === 0) {
       setBasket(null);
       setError(null);
       return;
@@ -40,7 +49,7 @@ export function useZInvestQuote(
     setQuoting(true);
     const timer = window.setTimeout(async () => {
       try {
-        const q = await quoteBasket(amountUsdg, allocation);
+        const q = await quoteBasket(amountInput, allocation, inputSymbol);
         if (seq.current !== id) return;
         setBasket(q);
         setError(null);
@@ -54,7 +63,7 @@ export function useZInvestQuote(
     }, 350);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amountUsdg, allocationKey]);
+  }, [amountInput, allocationKey, inputSymbol]);
 
   const hasLegs = basket != null && basket.legs.length > 0;
   const blockedBy =
@@ -66,7 +75,10 @@ export function useZInvestQuote(
   return {
     executable: hasLegs && blockedBy == null,
     blockedBy,
-    route: [ASSETS.USDG.symbol, "Stock Tokens"],
+    route:
+      inputSymbol === "zZEC"
+        ? [ASSETS.ZEC.symbol, ASSETS.USDG.symbol, "Stock Tokens"]
+        : [ASSETS.USDG.symbol, "Stock Tokens"],
     estimatedReceived:
       basket?.legs.map((l) => ({ symbol: l.symbol, amount: l.quotedOut })) ??
       allocation.map((a) => ({ symbol: a.symbol.toUpperCase(), amount: null })),

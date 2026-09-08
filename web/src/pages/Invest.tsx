@@ -1,16 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { PageHead } from "../components/app/PageHead";
 import { PreviewBanner } from "../components/app/PreviewBanner";
 import { AssetAmountInput } from "../components/app/AssetAmountInput";
 import { TransactionPreview } from "../components/app/TransactionPreview";
-import { INDEX_STRATEGIES, NETWORK, PRODUCT_STATUS } from "../config/protocol";
+import {
+  ASSETS,
+  INDEX_STRATEGIES,
+  NETWORK,
+  PRODUCT_STATUS,
+  PROTOCOL_CONTRACTS,
+  UNISWAP,
+} from "../config/protocol";
 import { useZInvestQuote } from "../hooks/useZInvestQuote";
 import { useZInvestActions } from "../hooks/useZInvestActions";
 import { useWallet } from "../hooks/useWallet";
 import { WalletButton } from "../components/app/WalletButton";
-import { supportedSymbols, usdgBalance } from "../lib/zinvest";
+import { supportedSymbols, type InvestInput } from "../lib/zinvest";
 import { TickerIcon, tickerName } from "../components/app/TickerIcon";
+import { useTokenBalance } from "../hooks/useTokenBalance";
 
 type Mode = "index" | "custom";
 
@@ -19,9 +27,9 @@ type CustomRow = { symbol: string; weight: string };
 /**
  * ZINVEST — the flagship investing interface, live on Robinhood Chain.
  *
- * USDG in → choose a prebuilt ZINDEX strategy or a custom allocation → live QuoterV2
- * pricing per leg → one atomic Uniswap v3 multicall, every leg slippage-guarded, tokens
- * settle straight to the connected wallet. No ZBANK contract custodies funds on this path.
+ * USDG uses one atomic Uniswap v3 multicall. Direct zZEC uses the ZBANK InvestRouter and
+ * approved zZEC → USDG → Stock Token paths after liquidity activation. Every leg is quoted,
+ * slippage-guarded, and settles to the connected wallet.
  */
 export default function Invest() {
   const wallet = useWallet();
@@ -35,32 +43,24 @@ export default function Invest() {
   );
 
   const [amount, setAmount] = useState("");
+  const [inputAsset, setInputAsset] = useState<InvestInput>("USDG");
   const [mode, setMode] = useState<Mode>(requested === "CUSTOM" ? "custom" : "index");
   const [strategyIdx, setStrategyIdx] = useState(initialIndex);
   const [slippageBps, setSlippageBps] = useState(50);
-  const [balance, setBalance] = useState<number | null>(null);
   const [custom, setCustom] = useState<CustomRow[]>([
     { symbol: "SPY", weight: "50" },
     { symbol: "NVDA", weight: "50" },
   ]);
 
   const strategy = INDEX_STRATEGIES[strategyIdx];
-
-  useEffect(() => {
-    if (!wallet.address) {
-      setBalance(null);
-      return;
-    }
-    let cancelled = false;
-    usdgBalance(wallet.address as `0x${string}`)
-      .then((b) => {
-        if (!cancelled) setBalance(b);
-      })
-      .catch(() => undefined);
-    return () => {
-      cancelled = true;
-    };
-  }, [wallet.address]);
+  const selectedAsset = inputAsset === "USDG" ? ASSETS.USDG : ASSETS.ZEC;
+  const { balance } = useTokenBalance(
+    wallet.address,
+    selectedAsset.address as `0x${string}`,
+    selectedAsset.decimals,
+  );
+  const directZecReady =
+    UNISWAP.zzecUsdgPool != null && PROTOCOL_CONTRACTS.investRouter != null;
 
   const allocation = useMemo(() => {
     if (mode === "index") return strategy.targets;
@@ -71,7 +71,7 @@ export default function Invest() {
 
   const customTotal = custom.reduce((sum, r) => sum + (Number(r.weight) || 0), 0);
   const amountNum = Number(amount.replace(/[,\s]/g, "")) || null;
-  const quote = useZInvestQuote(amountNum, allocation);
+  const quote = useZInvestQuote(amountNum, allocation, inputAsset);
   const actions = useZInvestActions(wallet.address);
 
   const connected = wallet.address != null;
@@ -82,15 +82,18 @@ export default function Invest() {
   const canExecute =
     wallet.ready && quote.executable && customValid && !overBalance && !actions.busy;
 
-  const executeLabel = !connected
-    ? "Connect wallet to continue"
-    : needsSwitch
-      ? "Switch to Robinhood Chain"
-      : actions.status === "approving"
-        ? "Approving USDG…"
-        : actions.status === "confirming"
-          ? "Confirm in wallet…"
-          : "Execute";
+  const executeLabel =
+    inputAsset === "zZEC" && !directZecReady
+      ? "Direct ZEC · Coming soon"
+      : !connected
+        ? "Connect wallet to continue"
+        : needsSwitch
+          ? "Switch to Robinhood Chain"
+          : actions.status === "approving"
+            ? `Approving ${inputAsset}…`
+            : actions.status === "confirming"
+              ? "Confirm in wallet…"
+              : "Execute";
 
   return (
     <main className="page">
@@ -99,7 +102,7 @@ export default function Invest() {
           kicker="ZINVEST"
           status={PRODUCT_STATUS.zinvest}
           title="One balance. An entire market."
-          lede="The invest leg of the Zcash bank. Put USDG — yours, or borrowed against your ZEC through ZLOOP — into Stock Token portfolios, executed atomically through Uniswap v3. Your ZEC stays yours; the dollars do the buying."
+          lede="The invest leg of the Zcash bank. Invest USDG today, or use the direct zZEC route once its onchain market is funded. Every portfolio leg is quoted and protected on Uniswap v3."
           aside={<WalletButton />}
         />
         <PreviewBanner product="zinvest" />
@@ -107,20 +110,58 @@ export default function Invest() {
         <div className="workbench">
           {/* ---- Left: input, mode, allocation. ---- */}
           <div className="panel">
+            <div className="mode">
+              <span className="metric__label">Funding asset</span>
+              <div className="mode__tabs" role="tablist" aria-label="Funding asset">
+                <button
+                  role="tab"
+                  aria-selected={inputAsset === "USDG"}
+                  data-active={inputAsset === "USDG"}
+                  className="mode__tab"
+                  onClick={() => {
+                    setInputAsset("USDG");
+                    setAmount("");
+                    actions.reset();
+                  }}
+                >
+                  USDG · Live
+                </button>
+                <button
+                  role="tab"
+                  aria-selected={inputAsset === "zZEC"}
+                  data-active={inputAsset === "zZEC"}
+                  className="mode__tab"
+                  onClick={() => {
+                    setInputAsset("zZEC");
+                    setAmount("");
+                    actions.reset();
+                  }}
+                >
+                  zZEC · {directZecReady ? "Live" : "Coming soon"}
+                </button>
+              </div>
+            </div>
+
             <AssetAmountInput
               label="You invest"
-              symbol="USDG"
+              symbol={selectedAsset.symbol}
               value={amount}
               onChange={setAmount}
               balance={balance}
             />
 
-            {/* The obvious question, answered where it's asked. */}
-            <p className="t-note">
-              Holding ZEC instead? Don't sell it — <Link to="/credit/loop">use ZLOOP</Link>:
-              borrow USDG against your ZEC and invest that, keeping your ZEC exposure. A direct
-              ZEC input arrives when a liquid zZEC market exists on Robinhood Chain.
-            </p>
+            {inputAsset === "USDG" ? (
+              <p className="t-note">
+                Holding ZEC instead? <Link to="/credit/loop">Use ZLOOP</Link> to borrow USDG
+                against it without selling, or select zZEC above for the direct route.
+              </p>
+            ) : (
+              <p className="t-note" role="status">
+                {directZecReady
+                  ? "Direct route active: zZEC → USDG → selected Stock Tokens."
+                  : "Coming soon — routing is built. Execution unlocks only after the zZEC/USDG pool is funded and the router passes launch verification."}
+              </p>
+            )}
 
             <div className="mode">
               <span className="metric__label">Investment mode</span>
@@ -262,7 +303,15 @@ export default function Invest() {
             <TransactionPreview
               rows={[
                 { label: "Route", value: quote.route.join(" → ") },
-                { label: "Execution", value: "Uniswap v3 · atomic multicall" },
+                {
+                  label: "Execution",
+                  value:
+                    inputAsset === "zZEC"
+                      ? directZecReady
+                        ? "ZBANK router · Uniswap v3"
+                        : "Awaiting funded market"
+                      : "Uniswap v3 · atomic multicall",
+                },
                 { label: "Legs", value: String(quote.estimatedReceived.length) },
                 { label: "Slippage guard", value: `${(slippageBps / 100).toFixed(2)}% per leg` },
               ]}
@@ -324,10 +373,10 @@ export default function Invest() {
             ) : null}
             {overBalance ? (
               <p className="t-note t-note--error" role="alert">
-                Amount exceeds your USDG balance.
+                Amount exceeds your {selectedAsset.symbol} balance.
               </p>
             ) : null}
-            {quote.blockedBy ? (
+            {quote.blockedBy && (inputAsset === "USDG" || directZecReady) ? (
               <p className="t-note" role="note">
                 {quote.blockedBy}
               </p>

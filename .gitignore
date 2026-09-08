@@ -6,3 +6,6 @@ broadcast/
 .DS_Store
 web/dist/
 .secrets/
+premium-*.json
+web/video/output/
+web/video/audio/candidates/

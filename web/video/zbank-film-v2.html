@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZBANK — A Financial System for Zcash</title>
+  <style>
+    @font-face {
+      font-family: "Archivo";
+      src: url("/archivo.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 100 900;
+      font-stretch: 62% 125%;
+    }
+    @font-face {
+      font-family: "Fraunces";
+      src: url("/fraunces.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 100 900;
+    }
+    @font-face {
+      font-family: "JetBrains";
+      src: url("/mono.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 100 800;
+    }
+    :root {
+      --black: #030304;
+      --near: #08080a;
+      --paper: #f4f1e8;
+      --soft: #a7a49c;
+      --gold: #f3b61f;
+      --gold-dark: #7f5a08;
+      --line: rgba(244,241,232,.13);
+      --sans: "Archivo", sans-serif;
+      --serif: "Fraunces", Georgia, serif;
+      --mono: "JetBrains", monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--black); }
+    body { color: var(--paper); font-family: var(--sans); font-variation-settings: "wdth" 96; }
+    #field, .noise, .shade { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    #field { z-index: 0; }
+    .noise {
+      z-index: 40; opacity: .045; mix-blend-mode: screen;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.52'/%3E%3C/svg%3E");
+      animation: grain .18s steps(2) infinite;
+    }
+    .shade { z-index: 35; box-shadow: inset 0 0 220px 40px #000, inset 0 0 0 1px rgba(255,255,255,.025); }
+    .rail {
+      position: fixed; z-index: 30; left: 64px; right: 64px; top: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      opacity: 0; color: #86847f; font: 550 10px/1 var(--mono); letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .playing .rail { animation: fadeIn 1s 4.4s both; }
+    .rail__mark { display: flex; align-items: center; gap: 12px; color: var(--paper); }
+    .rail__z {
+      display: grid; place-items: center; width: 21px; height: 21px; color: #070707;
+      background: var(--gold); font: 850 14px/1 var(--sans); letter-spacing: -.1em;
+    }
+    .rail__right { display: flex; align-items: center; gap: 20px; }
+    .rail__pulse { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 15px var(--gold); }
+    .timeline { position: fixed; z-index: 31; left: 64px; right: 64px; bottom: 46px; height: 1px; background: rgba(255,255,255,.08); }
+    .timeline::after { content:""; display:block; width:0; height:1px; background:var(--gold); box-shadow:0 0 14px rgba(243,182,31,.7); }
+    .playing .timeline::after { animation: timeline 44.5s linear both; }
+
+    .scene {
+      --start: 0s; --length: 6.6s;
+      position: fixed; z-index: 5; inset: 0; display: grid; place-items: center;
+      padding: 118px 112px 108px; opacity: 0; visibility: hidden;
+    }
+    .playing .scene { animation: scene var(--length) cubic-bezier(.22,.8,.2,1) var(--start) both; }
+    .scene__inner { position: relative; width: min(1620px, 100%); }
+    .scene-no {
+      position: absolute; top: 0; right: 0; color: rgba(244,241,232,.055);
+      font: 250 220px/.75 var(--serif); letter-spacing: -.07em;
+    }
+    .kicker {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 27px;
+      color: var(--gold); font: 600 11px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase;
+    }
+    .kicker::before { content:""; width: 34px; height: 1px; background: var(--gold); }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 { text-wrap: balance; }
+    .display {
+      font-weight: 625; font-stretch: 84%; letter-spacing: -.065em; line-height: .83;
+    }
+    .serif { font-family: var(--serif); font-weight: 290; font-style: italic; letter-spacing: -.045em; }
+    .gold { color: var(--gold); }
+    .ghost { color: rgba(244,241,232,.22); }
+    .copy { color: var(--soft); font-size: 24px; line-height: 1.45; letter-spacing: -.025em; }
+    .micro { color: #7e7b75; font: 500 10px/1.6 var(--mono); letter-spacing: .13em; text-transform: uppercase; }
+    .reveal { opacity: 0; transform: translateY(34px); filter: blur(7px); }
+    .playing .reveal {
+      animation: reveal 1.05s cubic-bezier(.16,1,.3,1) calc(var(--start) + var(--delay, .25s)) both;
+    }
+    .wipe { clip-path: inset(0 100% 0 0); }
+    .playing .wipe {
+      animation: wipe 1.15s cubic-bezier(.16,1,.3,1) calc(var(--start) + var(--delay, .35s)) both;
+    }
+
+    /* 00 — Identity */
+    .s0 { --start: 0s; --length: 6.3s; padding: 0; }
+    .keyart { position:absolute; inset:0; background:center/cover no-repeat url("/key-art.png"); opacity:.78; transform:scale(1.12); }
+    .playing .keyart { animation: cameraPush 6.4s cubic-bezier(.18,.7,.2,1) both; }
+    .s0::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(2,2,3,.96),rgba(2,2,3,.61) 48%,rgba(2,2,3,.08)); }
+    .s0 .scene__inner { z-index:2; padding-left:140px; }
+    .wordmark { font-size: 214px; color:var(--paper); text-shadow:0 10px 70px #000; }
+    .brandline { width:0; height:2px; margin:30px 0 25px; background:var(--gold); }
+    .playing .brandline { animation:lineDraw 1.2s 1.15s cubic-bezier(.16,1,.3,1) both; }
+    .brand-sub { font:500 14px/1 var(--mono); letter-spacing:.24em; color:#d2cfc7; text-transform:uppercase; }
+
+    /* 01 — Thesis */
+    .s1 { --start: 5.7s; --length: 6.8s; text-align:center; }
+    .s1 .scene__inner { display:grid; justify-items:center; }
+    .thesis { font-size: 116px; max-width: 1380px; }
+    .thesis .serif { font-size:1.13em; }
+    .thesis-rule { width:1px; height:0; margin:35px 0; background:linear-gradient(var(--gold),transparent); }
+    .playing .thesis-rule { animation:ruleDown 1s 7.35s both; }
+    .thesis-sub { font:520 18px/1.4 var(--mono); letter-spacing:.16em; color:#b5b2aa; text-transform:uppercase; }
+
+    /* 02 — Products */
+    .s2 { --start: 11.8s; --length: 7.3s; }
+    .product-head { display:flex; justify-content:space-between; align-items:end; margin-bottom:52px; padding-right:170px; }
+    .product-head h2 { font-size: 83px; }
+    .product-head p { width:390px; }
+    .product-list { border-top:1px solid var(--line); }
+    .product-row {
+      --i:0; position:relative; display:grid; grid-template-columns:110px 1.1fr 1fr auto;
+      gap:34px; align-items:center; min-height:137px; border-bottom:1px solid var(--line);
+      opacity:0; transform:translateX(-50px); overflow:hidden;
+    }
+    .product-row::before { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(243,182,31,.085),transparent 72%); transform:scaleX(0); transform-origin:left; }
+    .playing .product-row { animation:rowIn .85s cubic-bezier(.16,1,.3,1) calc(var(--start) + .75s + var(--i) * .38s) both; }
+    .playing .product-row::before { animation:rowWash 1.2s calc(var(--start) + .9s + var(--i) * .38s) both; }
+    .product-row__n { color:var(--gold); font:300 48px/1 var(--serif); }
+    .product-row h3 { font-size:51px; font-weight:590; font-stretch:86%; letter-spacing:-.045em; }
+    .product-row p { color:#99968f; font-size:18px; line-height:1.35; }
+    .product-row__route { font:550 11px/1 var(--mono); letter-spacing:.13em; color:#d0cdc5; white-space:nowrap; }
+    .product-row__route b { color:var(--gold); font-weight:600; }
+
+    /* 03 — Loop */
+    .s3 { --start: 18.4s; --length: 6.8s; }
+    .loop-layout { display:grid; grid-template-columns:.9fr 1.1fr; gap:110px; align-items:center; }
+    .loop-copy h2 { font-size:94px; }
+    .loop-copy .copy { max-width:580px; margin-top:32px; }
+    .loop-visual { position:relative; width:610px; height:610px; margin:auto; }
+    .loop-ring { position:absolute; inset:42px; border:1px solid rgba(243,182,31,.38); border-radius:50%; }
+    .loop-ring::before { content:""; position:absolute; inset:55px; border:1px dashed rgba(255,255,255,.14); border-radius:50%; }
+    .playing .loop-ring { animation:spin 18s linear infinite; }
+    .loop-center { position:absolute; inset:190px; display:grid; place-items:center; align-content:center; gap:10px; border-radius:50%; background:#09090b; box-shadow:0 0 85px rgba(243,182,31,.12); }
+    .loop-center strong { font:310 47px/1 var(--serif); color:var(--gold); }
+    .loop-center span { font:550 9px/1 var(--mono); letter-spacing:.17em; color:#9b9891; text-transform:uppercase; }
+    .loop-node { position:absolute; width:158px; height:76px; display:grid; place-items:center; align-content:center; gap:7px; background:#09090b; border:1px solid var(--line); }
+    .loop-node strong { font-size:20px; letter-spacing:-.03em; }
+    .loop-node span { color:#88857e; font:500 8px/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; }
+    .loop-node--a { top:0; left:226px; }
+    .loop-node--b { right:0; bottom:92px; }
+    .loop-node--c { left:0; bottom:92px; }
+    .loop-caution { margin-top:34px; padding-left:18px; border-left:1px solid #b15b52; color:#b98882; }
+
+    /* 04 — Infrastructure */
+    .s4 { --start: 24.6s; --length: 6.9s; }
+    .ledger-title { display:grid; grid-template-columns:1fr 1fr; gap:90px; align-items:end; margin-bottom:50px; }
+    .ledger-title h2 { font-size:102px; }
+    .ledger-title .copy { max-width:530px; padding-bottom:8px; }
+    .ledger { border-top:1px solid var(--line); }
+    .ledger-row {
+      --i:0; display:grid; grid-template-columns:160px 1fr 250px; align-items:center;
+      min-height:128px; border-bottom:1px solid var(--line); opacity:0;
+    }
+    .playing .ledger-row { animation:ledgerIn .75s cubic-bezier(.16,1,.3,1) calc(var(--start) + .85s + var(--i) * .34s) both; }
+    .ledger-row__type { color:var(--gold); font:550 10px/1 var(--mono); letter-spacing:.18em; }
+    .ledger-row strong { font:440 37px/1 var(--sans); letter-spacing:-.035em; }
+    .ledger-row__proof { display:flex; align-items:center; justify-content:flex-end; gap:13px; color:#aaa79f; font:500 10px/1 var(--mono); letter-spacing:.12em; }
+    .ledger-row__proof::before { content:""; width:7px; height:7px; border-radius:50%; background:#78d99a; box-shadow:0 0 16px rgba(120,217,154,.65); }
+
+    /* 05 — Economics */
+    .s5 { --start: 30.8s; --length: 7.2s; }
+    .economics-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:42px; }
+    .tag { padding:9px 13px; border:1px solid var(--gold-dark); color:var(--gold); font:550 9px/1 var(--mono); letter-spacing:.17em; }
+    .force { position:relative; display:grid; grid-template-columns:1fr 130px 1fr; align-items:center; }
+    .force-block { min-height:400px; display:grid; align-content:center; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+    .force-block--right { text-align:right; }
+    .force-label { color:#8f8c85; font:500 10px/1 var(--mono); letter-spacing:.17em; text-transform:uppercase; }
+    .force-word { margin-top:22px; font-size:107px; }
+    .force-word .serif { color:var(--gold); }
+    .force-op { color:var(--gold); font:250 64px/1 var(--serif); text-align:center; }
+    .equation { margin-top:38px; display:flex; justify-content:center; color:#d8d5cc; font:530 13px/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; }
+    .equation b { color:var(--gold); font-weight:600; }
+
+    /* 06 — Mission */
+    .s6 { --start: 37.2s; --length: 8.3s; text-align:center; }
+    .s6 .scene__inner { display:grid; justify-items:center; }
+    .mission-overline { margin-bottom:22px; color:#a8a59d; font:520 11px/1 var(--mono); letter-spacing:.22em; text-transform:uppercase; }
+    .mission-number { font-size:244px; line-height:.69; letter-spacing:-.095em; font-weight:650; font-stretch:82%; }
+    .mission-number span { color:var(--gold); }
+    .mission-of { margin-top:16px; font:italic 300 86px/1 var(--serif); letter-spacing:-.05em; }
+    .mission-line { width:0; height:1px; margin:37px 0 28px; background:var(--gold); }
+    .playing .mission-line { animation:lineDraw 1.2s 39.05s cubic-bezier(.16,1,.3,1) both; }
+    .mission-statement { color:#c8c5bd; font-size:22px; letter-spacing:-.02em; }
+    .url { margin-top:52px; font:580 14px/1 var(--mono); letter-spacing:.25em; color:var(--paper); }
+    .statuses { display:flex; gap:22px; margin-top:22px; color:#77746e; font:500 8px/1 var(--mono); letter-spacing:.13em; text-transform:uppercase; }
+    .statuses b { color:#78d99a; font-weight:550; }
+
+    @keyframes scene {
+      0% { opacity:0; visibility:visible; transform:scale(1.018); }
+      7% { opacity:1; visibility:visible; transform:scale(1); }
+      88% { opacity:1; visibility:visible; transform:scale(1); }
+      100% { opacity:0; visibility:hidden; transform:scale(.992); }
+    }
+    @keyframes reveal { to { opacity:1; transform:translateY(0); filter:blur(0); } }
+    @keyframes wipe { to { clip-path:inset(0 0 0 0); } }
+    @keyframes cameraPush { from { transform:scale(1.13); filter:brightness(.63); } to { transform:scale(1.015); filter:brightness(1.04); } }
+    @keyframes lineDraw { to { width:180px; } }
+    @keyframes ruleDown { to { height:70px; } }
+    @keyframes rowIn { to { opacity:1; transform:translateX(0); } }
+    @keyframes rowWash { 0%{transform:scaleX(0)} 45%,100%{transform:scaleX(1)} }
+    @keyframes ledgerIn { from { opacity:0; transform:translateY(20px); clip-path:inset(0 0 100% 0); } to { opacity:1; transform:none; clip-path:inset(0); } }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    @keyframes fadeIn { to { opacity:1; } }
+    @keyframes timeline { to { width:100%; } }
+    @keyframes grain { 0%{transform:translate(0)} 25%{transform:translate(-.8%,.8%)} 50%{transform:translate(.7%,-.6%)} 75%{transform:translate(.5%,.8%)} }
+  </style>
+</head>
+<body>
+  <canvas id="field"></canvas>
+  <div class="rail">
+    <div class="rail__mark"><span class="rail__z">Z</span><span>ZBANK</span></div>
+    <div class="rail__right"><span>ROBINHOOD CHAIN · 4663</span><i class="rail__pulse"></i><span>INSTITUTIONAL FILM · 02</span></div>
+  </div>
+  <div class="timeline"></div><div class="noise"></div><div class="shade"></div>
+
+  <section class="scene s0">
+    <div class="keyart"></div>
+    <div class="scene__inner">
+      <div class="kicker reveal" style="--delay:.35s">Capital markets for Zcash</div>
+      <h1 class="wordmark display reveal" style="--delay:.62s">ZBANK</h1>
+      <div class="brandline"></div>
+      <div class="brand-sub reveal" style="--delay:1.2s">A financial system built around ZEC</div>
+    </div>
+  </section>
+
+  <section class="scene s1">
+    <div class="scene__inner">
+      <div class="kicker reveal">The thesis</div>
+      <h2 class="thesis display reveal" style="--delay:.32s">ZCASH WAS BUILT<br />TO BE <span class="serif gold">MONEY.</span></h2>
+      <div class="thesis-rule"></div>
+      <p class="thesis-sub reveal" style="--delay:1.28s">We’re building its bank.</p>
+    </div>
+  </section>
+
+  <section class="scene s2">
+    <div class="scene__inner">
+      <span class="scene-no">02</span>
+      <div class="product-head">
+        <div><div class="kicker reveal">One system</div><h2 class="display reveal" style="--delay:.3s">THREE<br />ACTIONS.</h2></div>
+        <p class="copy reveal" style="--delay:.6s">ZEC stays at the center. Dollars become the working layer.</p>
+      </div>
+      <div class="product-list">
+        <article class="product-row" style="--i:0"><span class="product-row__n">01</span><h3>INVEST</h3><p>Build transparent Stock Token portfolios.</p><span class="product-row__route"><b>USDG LIVE</b> · zZEC SOON → MARKETS</span></article>
+        <article class="product-row" style="--i:1"><span class="product-row__n">02</span><h3>BORROW</h3><p>Draw USDG against wrapped ZEC without selling.</p><span class="product-row__route"><b>zZEC</b> → USDG</span></article>
+        <article class="product-row" style="--i:2"><span class="product-row__n">03</span><h3>EARN</h3><p>Supply USDG and earn variable borrower interest.</p><span class="product-row__route"><b>USDG</b> → INTEREST</span></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene s3">
+    <div class="scene__inner loop-layout">
+      <div class="loop-copy">
+        <div class="kicker reveal">ZLOOP · composability</div>
+        <h2 class="display reveal" style="--delay:.3s">KEEP<br />YOUR ZEC.<br /><span class="serif gold">INVEST ANYWAY.</span></h2>
+        <p class="copy reveal" style="--delay:.75s">Collateral creates borrowing power. Borrowed USDG enters the same portfolio engine.</p>
+        <p class="micro loop-caution reveal" style="--delay:1.1s">Leveraged position · interest accrues · liquidation risk</p>
+      </div>
+      <div class="loop-visual reveal" style="--delay:.48s">
+        <div class="loop-ring"></div>
+        <div class="loop-center"><strong>ZEC</strong><span>Exposure retained</span></div>
+        <div class="loop-node loop-node--a"><strong>COLLATERAL</strong><span>Deposit zZEC</span></div>
+        <div class="loop-node loop-node--b"><strong>USDG</strong><span>Borrow liquidity</span></div>
+        <div class="loop-node loop-node--c"><strong>PORTFOLIO</strong><span>Buy markets</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene s4">
+    <div class="scene__inner">
+      <span class="scene-no">04</span>
+      <div class="ledger-title">
+        <div><div class="kicker reveal">Proof over promises</div><h2 class="display reveal" style="--delay:.25s">NO<br /><span class="serif gold">BLACK BOX.</span></h2></div>
+        <p class="copy reveal" style="--delay:.55s">Pricing, execution, and administration resolve to public infrastructure on Robinhood Chain.</p>
+      </div>
+      <div class="ledger">
+        <div class="ledger-row" style="--i:0"><span class="ledger-row__type">PRICE</span><strong>Chainlink Data Streams</strong><span class="ledger-row__proof">VERIFIED REPORTS</span></div>
+        <div class="ledger-row" style="--i:1"><span class="ledger-row__type">EXECUTION</span><strong>Uniswap v3</strong><span class="ledger-row__proof">ONCHAIN LIQUIDITY</span></div>
+        <div class="ledger-row" style="--i:2"><span class="ledger-row__type">ADMIN</span><strong>Safe governance</strong><span class="ledger-row__proof">PUBLIC CONTROL</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene s5">
+    <div class="scene__inner">
+      <div class="economics-top"><div class="kicker reveal">The economic direction</div><span class="tag reveal" style="--delay:.35s">PROPOSED MODEL</span></div>
+      <div class="force">
+        <div class="force-block reveal" style="--delay:.35s"><span class="force-label">Revenue acquires</span><h2 class="force-word display">MORE<br /><span class="serif">ZEC</span></h2></div>
+        <div class="force-op reveal" style="--delay:.8s">÷</div>
+        <div class="force-block force-block--right reveal" style="--delay:.55s"><span class="force-label">Buybacks create</span><h2 class="force-word display">FEWER<br /><span class="serif">ZBNK</span></h2></div>
+      </div>
+      <p class="equation reveal" style="--delay:1.15s">MORE ZEC&nbsp; ÷ &nbsp;FEWER ZBNK&nbsp; = &nbsp;<b>MORE ZEC PER ELIGIBLE ZBNK</b></p>
+    </div>
+  </section>
+
+  <section class="scene s6">
+    <div class="scene__inner">
+      <p class="mission-overline reveal">The public mission</p>
+      <h2 class="mission-number display reveal" style="--delay:.27s">BUY <span>1%</span></h2>
+      <p class="mission-of reveal" style="--delay:.58s">of Zcash.</p>
+      <div class="mission-line"></div>
+      <p class="mission-statement reveal" style="--delay:1.15s">Zcash was built to be money. We’re building its bank.</p>
+      <p class="url reveal" style="--delay:1.42s">ZBANK.WORLD</p>
+      <div class="statuses reveal" style="--delay:1.7s"><b>ZINVEST · LIVE</b><span>ZCREDIT · BETA</span><span>DIRECT zZEC · COMING SOON</span><span>ZBNK · NOT LAUNCHED</span></div>
+    </div>
+  </section>
+
+  <script>
+    const canvas = document.querySelector("#field");
+    const ctx = canvas.getContext("2d");
+    const W = 1920, H = 1080;
+    canvas.width = W; canvas.height = H;
+    let seed = 92417;
+    const rand = () => ((seed = seed * 16807 % 2147483647) - 1) / 2147483646;
+    const points = Array.from({length: 420}, () => ({
+      x: rand()*W, y: rand()*H, z:.2+rand()*1.65, phase:rand()*Math.PI*2
+    }));
+    const cuts = [5.7,11.8,18.4,24.6,30.8,37.2];
+    const started = performance.now();
+    function frame(now) {
+      const t=(now-started)/1000;
+      ctx.clearRect(0,0,W,H);
+      const pulse=Math.max(...cuts.map(c=>Math.exp(-Math.pow((t-c)/.42,2))),0);
+      const glow=ctx.createRadialGradient(W*.52,H*.48,0,W*.52,H*.48,W*.72);
+      glow.addColorStop(0,`rgba(91,57,0,${.065+pulse*.055})`); glow.addColorStop(1,"rgba(0,0,0,0)");
+      ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+      ctx.lineWidth=1;
+      for(let x=0;x<W;x+=120){ctx.strokeStyle=`rgba(243,182,31,${.022+pulse*.025})`;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+      for(let y=0;y<H;y+=120){ctx.strokeStyle=`rgba(243,182,31,${.022+pulse*.025})`;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+      for(const p of points){
+        const dx=(p.x-W/2)*(1+pulse*.045);
+        const dy=(p.y-H/2)*(1+pulse*.045);
+        const x=W/2+dx+Math.sin(t*.17+p.phase)*48*p.z;
+        const y=H/2+dy+Math.cos(t*.13+p.phase)*28*p.z;
+        const a=.08+.25*(.5+.5*Math.sin(t*.85+p.phase))+pulse*.34;
+        ctx.fillStyle=`rgba(243,182,31,${a})`;
+        ctx.fillRect((x+W)%W,(y+H)%H,p.z*1.45,p.z*1.45);
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    const art=new Image(); art.src="/key-art.png";
+    Promise.all([
+      document.fonts.ready,
+      Promise.race([art.decode(),new Promise(r=>setTimeout(r,1400))])
+    ]).finally(()=>{
+      document.body.classList.add("playing");
+      window.dispatchEvent(new Event("zbank-film-start"));
+      setTimeout(()=>window.dispatchEvent(new Event("zbank-film-complete")),44700);
+    });
+  </script>
+</body>
+</html>

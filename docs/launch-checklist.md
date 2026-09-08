@@ -43,12 +43,17 @@ with `SECURITY.md` (the risk register) — nothing below overrides it.
 
 ## Phase 3 — Invest router
 
-1. Deploy the execution router (ZEC → USDG → Stock Tokens) against real route liquidity.
-2. Set `PROTOCOL_CONTRACTS.investRouter` and the fee config (`FEES`).
-3. Implement `useZInvestQuote` against the router's quoter; verify quotes vs. executions
-   within slippage bounds on testnet.
-4. Flip `PRODUCT_STATUS.zinvest` and `.zindex` to `Live`; ZLOOP to `Beta` once both engines
-   hold, `Live` after the guided flow executes end-to-end in anger.
+Implementation is complete; activation is waiting on funded liquidity. Follow
+`docs/zzec-liquidity-launch.md`.
+
+1. Fund and run `SeedZzecUsdgPool.s.sol` to create the zZEC/USDG pool at the live oracle
+   price. The code cannot supply the required zZEC and USDG capital.
+2. Run `DeployZecInvest.s.sol`; it deploys the approved-path Uniswap adapter and
+   `InvestRouter` only after confirming that the pool has both assets.
+3. Run `INVEST_ROUTER=0x... npm run check:zec-route -- --require-live`, then complete the
+   small/medium/launch-limit mainnet dry runs and external review.
+4. Set `UNISWAP.zzecUsdgPool`, `PROTOCOL_CONTRACTS.investRouter`, and the finalized fee config.
+   The zZEC input changes from Coming soon to Live from those central values.
 
 ## Phase 4 — Treasury engine
 

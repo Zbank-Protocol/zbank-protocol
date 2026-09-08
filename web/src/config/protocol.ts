@@ -106,6 +106,11 @@ export const UNISWAP = {
   swapRouter02: "0xCaf681a66D020601342297493863E78C959E5cb2" as `0x${string}`,
   quoterV2: "0x33e885eD0Ec9bF04EcfB19341582aADCb4c8A9E7" as `0x${string}`,
   v3Factory: "0x1f7d7550B1b028f7571E69A784071F0205FD2EfA" as `0x${string}`,
+  nonfungiblePositionManager:
+    "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3" as `0x${string}`,
+  /** Set after SeedZzecUsdgPool creates and funds the market. */
+  zzecUsdgPool: null as `0x${string}` | null,
+  zzecUsdgFee: 3000 as const,
 } as const;
 
 /**

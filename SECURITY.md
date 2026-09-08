@@ -4,6 +4,14 @@ Status date: 2026-09-08. This document is the honest register of what exists, wh
 and what must be resolved before the capped mainnet beta expands. Nothing in this repository
 has been externally audited. ZCREDIT, ZEARN, and ZLOOP remain explicitly Beta.
 
+## Reporting a vulnerability
+
+Do not disclose an exploitable vulnerability in a public issue. Submit it through GitHub's
+private vulnerability reporting on the repository Security tab. Include the affected commit
+and contract, impact, proof of concept, and proposed remediation when possible.
+
+Public audit issues are for non-exploitable hardening and defense-in-depth findings only.
+
 ## Current onchain surface
 
 | Component | Status |
@@ -11,7 +19,8 @@ has been externally audited. ZCREDIT, ZEARN, and ZLOOP remain explicitly Beta.
 | `ZcashAddress.sol` (t-address validation library) | Implemented, unit-tested, **not audited** |
 | `PayoutRegistry.sol` (address registry) | Implemented, unit-tested, **not audited, not deployed** |
 | `ZCredit.sol` (ZCREDIT lending market) | **Deployed** at `0x77ccb77d1fd337b7027b3482ca365db57d92151e`, unit-tested, **not audited**, owned by temporary 1-of-1 Safe `0x31837999D9E463B2EB4327CEb4BD7CCa2a500480` |
-| `InvestRouter.sol` (ZINVEST execution router) | Implemented, unit-tested, **not audited, not deployed** — requires a real venue adapter |
+| `InvestRouter.sol` (ZINVEST execution router) | Implemented, unit-tested with the production adapter, **not audited, not deployed** |
+| `UniswapV3Adapter.sol` (approved direct/multi-hop venue paths) | Implemented, unit-tested, **not audited, not deployed** — direct zZEC remains disabled until its market is funded and reviewed |
 | `ZBankTreasury.sol` (revenue split / buckets / burn) | Implemented, unit-tested, **not audited, not deployed** |
 | `ZBNK.sol` (fixed-supply burnable token) | Implemented, unit-tested, **not launched** — superseded if launched via Pons |
 | `ChainlinkOracleAdapter.sol` (push-feed adapter, fallback) | Implemented, unit-tested |
@@ -29,10 +38,11 @@ Verified external addresses (Robinhood Chain mainnet, checked onchain 2026-09-07
 | ZEC/USD stream feed id | `0x00039f8a144f4a62715ca60aec1cf848c4821375c57e2259c6c90b7fa49db693` | Chainlink crypto-streams catalog |
 | Safe v1.4.1 factory / L2 singleton | `0x4e1DCf7…ec67` / `0x29fcB43…C762` | canonical addresses, code verified onchain |
 
-Test suite: `forge test` — 64 tests discovered, 63 passing and the RPC-dependent fork test
+Test suite: `forge test` — 71 tests discovered, 70 passing and the RPC-dependent fork test
 skipped when no fork endpoint is available (supply/borrow/repay lifecycle, interest
 accrual to lenders and reserves, close-factor liquidation, stale/zero oracle rejection,
-parameter rails, pause semantics, revenue split accounting, burn tracking, basket routing).
+parameter rails, pause semantics, revenue split accounting, burn tracking, basket routing,
+approved-path validation, and integrated direct-zZEC adapter execution).
 
 The frontend reflects this with ZCREDIT, ZEARN, and ZLOOP in Beta and blocks new borrower
 exposure whenever the oracle is stale or uninitialized. ZINVEST/ZINDEX execute non-custodial
