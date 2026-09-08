@@ -19,25 +19,30 @@ with `SECURITY.md` (the risk register) — nothing below overrides it.
 
 1. **DEPLOYED:** `PonsFeeLiquidityManager`
    (`0x082B87D21A5F840De52F2c154aC4132E3C365295`). Its owner and LP NFT recipient are the
-   protocol Safe. Treasury remains unset until step 6.
-2. Launch ZBNK through the verified Pons v2 factory (`web/src/config.ts` → `PONS.factory`) with
-   **USDG as pair token** and the liquidity manager as `creatorFeeRecipient`.
-3. Record from the launch transaction: token address, curve, pair token, fee escrow, meme hook,
+   protocol Safe. Treasury remains unset until the token-economics deployment.
+2. Deploy `PonsFeeRouter` with `DeployPonsFeeRouter.s.sol`, owned by the protocol Safe and
+   initially pointing at the deployed manager. The router is the permanent Pons fee recipient;
+   manager replacements use its one-day onchain notice period.
+3. Launch only through `LaunchZbnkPons.s.sol`. It pins launch config 0, official USDG, the
+   reviewed economics digest, 1% Pons base fee + 2% ZBANK creator tax = **3% total trader fee**,
+   Pons buyback disabled, and the deployed router as `creatorFeeRecipient`. Simulate without
+   `--broadcast` first; any Pons economics change makes the script revert.
+4. Record from the launch transaction: token address, curve, pair token, fee escrow, meme hook,
    creator-fee recipient, fee policy, and economics hash.
-4. Set config: `TOKEN.address`, `PONS.feeEscrow`, `PONS.memeHook`.
-5. Set `PROTOCOL_CONTRACTS.zbnk` in `web/src/config/protocol.ts` — the dashboard's ZBNK
+5. Set config: `TOKEN.address`, `PONS.feeEscrow`, `PONS.memeHook`, and the router address.
+6. Set `PROTOCOL_CONTRACTS.zbnk` in `web/src/config/protocol.ts` — the dashboard's ZBNK
    balance read activates by itself.
-6. Run `DeployTokenEconomics.s.sol` with the canonical token address. This deploys the
+7. Run `DeployTokenEconomics.s.sol` with the canonical token address. This deploys the
    pre-audit alpha treasury, payout registry, and dual-path redemption contracts with both
    redemption modes disabled.
-7. Set the liquidity manager's treasury through the Safe. Its permissionless harvester routes
+8. Set the liquidity manager's treasury through the Safe. Its permissionless harvester routes
    50% of claimed Pons USDG creator fees into zZEC/USDG liquidity and sends 50% into treasury
    allocation.
-8. Fund redemption with real zZEC, verify every recorded address, then explicitly enable the
+9. Fund redemption with real zZEC, verify every recorded address, then explicitly enable the
    atomic zZEC path and/or operator-settled native ZEC path through the owner Safe.
-9. Publish the ZEC treasury t-address (`ZEC_RESERVE.address`) — the proof-of-reserve story
+10. Publish the ZEC treasury t-address (`ZEC_RESERVE.address`) — the proof-of-reserve story
    starts the moment it is public.
-10. Verify: token page shows the live address; explorer links resolve; ZTREASURY stops saying
+11. Verify: token page shows the live address; explorer links resolve; ZTREASURY stops saying
    "Pending launch" for token supply figures once indexing is wired.
 
 ## Phase 2 — Credit market (the long pole)

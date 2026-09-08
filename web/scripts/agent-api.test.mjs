@@ -41,12 +41,23 @@ test("protocol manifest exposes canonical launch state", async () => {
     body.contracts.ponsFeeLiquidityManager,
     "0x082B87D21A5F840De52F2c154aC4132E3C365295",
   );
+  assert.equal(body.contracts.ponsFeeRouter, null);
   assert.equal(body.pons.factory, "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e");
   assert.equal(body.pons.quoteAsset, "USDG");
+  assert.equal(body.pons.baseFeeBps, 100);
+  assert.equal(body.pons.creatorTaxBps, 200);
+  assert.equal(body.pons.totalTraderFeeBps, 300);
+  assert.equal(body.pons.buybackEnabledAtLaunch, false);
   assert.equal(body.pons.feeLiquidityBps, 5000);
   assert.equal(body.products[0].capabilities.usdgInput, "live");
   assert.equal(body.products[0].capabilities.zzecInput, "coming_soon_awaiting_funded_pool");
   assert.equal(body.execution.zzecUsdgPool, null);
+  assert.equal(
+    body.revenueAllocation.treasuryBps +
+      body.revenueAllocation.retirementBps +
+      body.revenueAllocation.reserveBps,
+    10_000,
+  );
   assert.equal(
     body.integrations.morpho.vault,
     "0xBeEff033F34C046626B8D0A041844C5d1A5409dd",

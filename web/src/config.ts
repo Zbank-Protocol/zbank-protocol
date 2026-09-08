@@ -58,7 +58,13 @@ export const PONS = {
   graduationGuard: "0xf5695117b99B6f6401e67d4195BD653628176C6C" as `0x${string}`,
   /** Standard protocol trading fee, before any creator tax. */
   protocolFeeBps: 100,
-  /** Current split of the standard fee: the creator keeps 70%, Pons keeps 30%. */
+  /** ZBANK launch pin: 2% creator tax + 1% Pons base = 3% total trader fee. */
+  creatorTaxBps: 200,
+  totalTraderFeeBps: 300,
+  buybackEnabledAtLaunch: false,
+  expectedEconomics:
+    "0x7909a028ec0fee3564b05d53b74cd91d79786f17ac5aa90be360c0b78201e86a" as `0x${string}`,
+  /** Current split of the 1% standard fee: creator 70%, Pons 30%; creator tax is separate. */
   creatorShareBps: 7000,
 } as const;
 
@@ -68,6 +74,7 @@ export const CONTRACTS = {
   treasury: null as `0x${string}` | null,
   feeLiquidityManager:
     "0x082B87D21A5F840De52F2c154aC4132E3C365295" as `0x${string}` | null,
+  feeRouter: null as `0x${string}` | null,
 } as const;
 
 /**

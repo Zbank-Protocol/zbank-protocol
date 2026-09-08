@@ -521,9 +521,10 @@ export default function Docs() {
               <span>10</span>Revenue model
             </h2>
             <p>
-              Potential revenue sources: the ZINVEST execution fee, the ZCREDIT reserve factor
-              (the spread between borrow and supply interest), the ZLOOP execution fee, and
-              routing fees if ZSWAP charges them. Product revenue converges on one allocation:
+              The deployed ZCREDIT reserve factor is currently ZBANK's only implemented protocol
+              revenue mechanism; it earns only when borrowers pay interest. ZINVEST, ZLOOP, and
+              ZSWAP do not currently charge ZBANK fees. Future revenue converges on one proposed
+              allocation:
             </p>
             <Params
               rows={[
@@ -538,10 +539,12 @@ export default function Docs() {
             </p>
             <p>
               ZBNK trading adds a separate first stage. The token launches against USDG on Pons
-              with the pre-audit liquidity manager as creator-fee recipient. The alpha
-              configuration routes 50% of claimed USDG into a zZEC/USDG position and sends 50%
-              into the treasury allocation above. Anyone may trigger harvesting; every LP NFT
-              mints directly to the protocol Safe.
+              with a permanent Safe-controlled fee router as creator-fee recipient. Launch terms
+              are pinned to a 1% Pons base fee plus 2% ZBANK creator tax — 3% total paid by the
+              trader — with Pons buyback initially disabled. The router forwards claimed USDG
+              into a replaceable manager after a one-day upgrade notice. The manager routes 50%
+              into zZEC/USDG liquidity and 50% into the treasury allocation above. Anyone may
+              trigger harvesting; every LP NFT mints directly to the protocol Safe.
             </p>
             <p>
               Community liquidity is separate and non-custodial. On{" "}
@@ -574,7 +577,8 @@ export default function Docs() {
                 ["ZEARN · diversified USDG", "Live — direct third-party Morpho V2 vault shares"],
                 ["ZEC/USD oracle", "Deployed — Chainlink Data Streams, verified onchain, keeper-relayed"],
                 ["Treasury + redemption", "Pre-audit alpha built — deploys after canonical Pons ZBNK launch"],
-                ["Token-fee liquidity manager", "Pre-audit alpha built — deploy before Pons launch"],
+                ["Token-fee manager", "Deployed pre-audit alpha — waits behind fee router"],
+                ["Permanent Pons fee router", "Built and tested — must deploy before ZBNK"],
                 ["ZBNK token", "Not launched"],
                 ["Audits", "None yet — and none claimed; beta products say so where deposits happen"],
               ]}

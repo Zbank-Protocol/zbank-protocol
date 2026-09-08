@@ -51,14 +51,17 @@ for the canonical Pons ZBNK address. The interface renders unavailable values as
 `Pending launch` and does not simulate transactions.
 
 The user-owned `/liquidity` flow and Pons creator-fee liquidity manager are implemented. The
-zZEC/USDG pool is not initialized yet; ZBNK creator-fee harvesting activates after the manager,
-token, and treasury addresses are deployed and linked.
+zZEC/USDG pool is not initialized yet. A permanent Safe-controlled fee router is implemented so
+Pons can point at one address while manager implementations remain replaceable after a one-day
+notice. ZBNK creator-fee harvesting activates after the router, token, pool, and treasury are
+deployed and linked.
 
 Deployed Robinhood Chain contracts:
 
 - ZCREDIT: [`0x77ccb77d1fd337b7027b3482ca365db57d92151e`](https://robinhoodchain.blockscout.com/address/0x77ccb77d1fd337b7027b3482ca365db57d92151e)
 - ZEC/USD feed: [`0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5`](https://robinhoodchain.blockscout.com/address/0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5)
 - Pons fee liquidity manager: [`0x082B87D21A5F840De52F2c154aC4132E3C365295`](https://robinhoodchain.blockscout.com/address/0x082B87D21A5F840De52F2c154aC4132E3C365295)
+- Pons fee router: not deployed — must deploy before ZBNK and use it as the creator-fee recipient
 - Temporary protocol Safe: [`0x31837999D9E463B2EB4327CEb4BD7CCa2a500480`](https://robinhoodchain.blockscout.com/address/0x31837999D9E463B2EB4327CEb4BD7CCa2a500480)
 
 Read [`SECURITY.md`](SECURITY.md) before integrating or depositing funds.

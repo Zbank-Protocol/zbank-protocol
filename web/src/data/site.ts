@@ -450,6 +450,11 @@ export const PROTOCOL_ITEMS: ProtocolItem[] = [
     value: "0x082B87D21A5F840De52F2c154aC4132E3C365295 — deployed pre-audit alpha",
   },
   {
+    label: "Permanent Pons Fee Router",
+    value: null,
+    pendingLabel: "Built and tested — deploy before ZBNK launch",
+  },
+  {
     label: "Audit Status",
     value: "Unaudited — external audit pending",
     href: "https://github.com/Zbank-Protocol/contracts/blob/main/SECURITY.md",

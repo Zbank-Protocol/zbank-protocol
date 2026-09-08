@@ -56,6 +56,7 @@ const manifest = {
     redemption: null,
     payoutRegistry: null,
     ponsFeeLiquidityManager: "0x082B87D21A5F840De52F2c154aC4132E3C365295",
+    ponsFeeRouter: null,
     zbnk: null,
   },
   assets: {
@@ -76,8 +77,13 @@ const manifest = {
     feeEscrow: "0xd3AFEB2a57f70eF218Aa82451c51B2fb0416Ac9e",
     memeHook: "0xE5e702641Ea86F4ae6cC3cDaeD2B886f976Be044",
     quoteAsset: "USDG",
+    baseFeeBps: 100,
+    creatorTaxBps: 200,
+    totalTraderFeeBps: 300,
+    buybackEnabledAtLaunch: false,
+    expectedEconomics: "0x7909a028ec0fee3564b05d53b74cd91d79786f17ac5aa90be360c0b78201e86a",
     feeLiquidityBps: 5000,
-    status: "manager_deployed_awaiting_token_and_treasury",
+    status: "fee_router_built_awaiting_deployment",
   },
   integrations: {
     morpho: {
@@ -113,7 +119,6 @@ const manifest = {
   revenueAllocation: {
     status: "proposed",
     treasuryBps: 5000,
-    burnBps: 3000,
     retirementBps: 3000,
     reserveBps: 2000,
   },
@@ -129,7 +134,8 @@ const manifest = {
     "The diversified ZEARN lane deposits directly into a third-party Morpho vault; ZBANK does not control its allocations, rates, or liquidity.",
     "Direct zZEC investing is built but not active until its funded pool and router are deployed.",
     "Users can initialize and fund zZEC/USDG directly; execution is price-guarded and LP NFTs remain user-owned.",
-    "The pre-audit Pons fee manager is built to route 50% of creator fees into zZEC/USDG liquidity after deployment.",
+    "The permanent Pons fee router is built but not deployed; ZBNK must use its deployed address as creatorFeeRecipient.",
+    "The deployed pre-audit manager routes 50% of received USDG creator fees into zZEC/USDG liquidity after treasury and pool activation.",
     "Treasury and dual-path redemption are implemented as pre-audit alpha contracts but cannot deploy before the canonical Pons ZBNK address exists.",
     "Never infer missing values; treat null as unavailable.",
   ],

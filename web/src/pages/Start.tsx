@@ -101,7 +101,7 @@ const CHAPTERS: Chapter[] = [
     kicker: "The engine",
     title: ["Every product feeds", "the same machine."],
     copy:
-      "Execution fees and the lending reserve factor form protocol revenue. Revenue buys ZEC for the treasury and ZBNK for permanent retirement. ZBNK trading adds another loop: Pons USDG creator fees fund the shared zZEC/USDG market and feed treasury allocation. Only the redeemable treasury slice backs redemption, and ZTREASURY reports it in public.",
+      "Borrower interest reserves and future ZBNK trading fees form protocol revenue; current ZINVEST and ZLOOP routes do not charge ZBANK fees. Revenue is intended to buy ZEC and permanently retire ZBNK. Pons USDG creator fees add another loop: a replaceable manager funds the shared zZEC/USDG market and treasury allocation. Only the redeemable treasury slice backs redemption, and ZTREASURY reports it in public.",
     visual: (
       <div className="tour__stack">
         <DiagramEngine />

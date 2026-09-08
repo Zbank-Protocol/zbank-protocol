@@ -55,10 +55,12 @@ Nothing about this loop promises or guarantees any token price outcome.
 
 ### ZBNK trading-fee liquidity
 
-ZBNK launches against USDG on Pons. Its creator-fee recipient is the pre-audit
-`PonsFeeLiquidityManager`:
+ZBNK launches against USDG on Pons with a 3% total trader fee: 1% Pons base fee plus
+2% ZBANK creator tax. Pons buyback-and-lock starts disabled. Its permanent creator-fee
+recipient is a Safe-controlled `PonsFeeRouter`, which can replace the downstream pre-audit
+`PonsFeeLiquidityManager` after a one-day notice:
 
-`Pons USDG creator fees → 50% zZEC/USDG liquidity + 50% treasury allocation`
+`Pons USDG creator fees → fee router → 50% zZEC/USDG liquidity + 50% treasury allocation`
 
 The liquidity share mints an oracle-guarded, single-sided USDG position below spot directly to
 the protocol Safe. It supplies USDG to users selling zZEC into the ZINVEST route and accumulates

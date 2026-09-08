@@ -95,6 +95,8 @@ export const PROTOCOL_CONTRACTS = {
   /** Claims Pons USDG creator fees and funds zZEC/USDG liquidity. */
   ponsFeeLiquidityManager:
     "0x082B87D21A5F840De52F2c154aC4132E3C365295" as `0x${string}` | null,
+  /** Permanent Pons creator-fee recipient; points at a replaceable manager implementation. */
+  ponsFeeRouter: null as `0x${string}` | null,
   /** ZBNK token. */
   zbnk: null as `0x${string}` | null,
   /** Pons-compatible permanent retirement address. */

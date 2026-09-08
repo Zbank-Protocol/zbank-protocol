@@ -24,6 +24,7 @@ Public audit issues are for non-exploitable hardening and defense-in-depth findi
 | `ZBankTreasury.sol` (revenue split / buckets / Pons-compatible retirement) | Implemented, unit-tested, **not audited, not deployed** |
 | `ZBankRedemption.sol` (atomic zZEC + operator-settled native ZEC) | Implemented, unit-tested, **not audited, not deployed** — permanently binds to the canonical Pons ZBNK address |
 | `PonsFeeLiquidityManager.sol` (USDG creator fees → LP + treasury) | **Deployed pre-audit alpha** at `0x082B87D21A5F840De52F2c154aC4132E3C365295`, unit-tested, owned by the protocol Safe; treasury unset until ZBNK launches |
+| `PonsFeeRouter.sol` (permanent fee recipient → replaceable manager) | Implemented, unit-tested, **not audited, not deployed** — one-day manager-upgrade notice, Safe-owned Pons controls, atomic routing |
 | `ZBNK.sol` (fixed-supply burnable token) | Implemented, unit-tested, **not launched** — superseded if launched via Pons |
 | `ChainlinkOracleAdapter.sol` (push-feed adapter, fallback) | Implemented, unit-tested |
 | `ZecUsdDataStreamFeed.sol` (ZEC/USD via Chainlink Data Streams verifier) | **Deployed and receiving verified reports** at `0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5`, unit-tested, **not audited** |
@@ -42,7 +43,7 @@ Verified external addresses (Robinhood Chain mainnet, checked onchain 2026-09-07
 | Pons v2 factory / fee escrow | `0x7eD598…EC7e` / `0xd3AFEB…Ac9e` | v2 client ABI + live interface calls; USDG approved as pair token |
 | Pons graduation guard | `0xf56951…C6C` | previously misidentified as the factory; does not expose `launchConfigCount()` |
 
-Test suite: `forge test` — 88 tests discovered, 87 passing and the RPC-dependent fork test
+Test suite: `forge test` — 100 tests discovered, 99 passing and the RPC-dependent fork test
 skipped when no fork endpoint is available (supply/borrow/repay lifecycle, interest
 accrual to lenders and reserves, close-factor liquidation, stale/zero oracle rejection,
 parameter rails, pause semantics, revenue split accounting, retirement tracking, basket routing,
@@ -50,6 +51,9 @@ approved-path validation, integrated direct-zZEC adapter execution, proportional
 redemption, and cancellable native-ZEC claims).
 The liquidity-manager suite additionally covers fee claiming, bounded allocation, one-sided LP
 funding, oracle divergence rejection, pause behavior, and Safe-owned LP NFTs.
+The fee-router suite covers atomic escrow claims, direct funding, manager-failure rollback,
+timelocked upgrades, emergency Pons-recipient transfer, buyback control, pausing, and recovery
+boundaries.
 
 The frontend reflects this with ZCREDIT, ZEARN, and ZLOOP in Beta and blocks new borrower
 exposure whenever the oracle is stale or uninitialized. ZINVEST/ZINDEX execute non-custodial
@@ -150,6 +154,9 @@ The frontend mirror lives in `web/src/config/protocol.ts` (`ZCREDIT_RISK`,
     bounded liquidity/range/deviation parameters. Harvesting is permissionless. LP NFTs mint
     directly to the protocol Safe. The contract refuses to fund when Uniswap spot diverges
     beyond the configured Chainlink-oracle tolerance.
+  - `PonsFeeRouter`: the Safe can propose a new manager subject to a one-day public delay,
+    pause routing, control Pons buyback-and-lock, or transfer the Pons creator recipient away
+    from the router in an emergency. USDG cannot be recovered around the disclosed route.
   - `InvestRouter`: `setAdapter`, `setFee` (hard-capped at 200 bps), `pause`/`unpause`.
     The adapter choice is the largest trust lever — a malicious adapter steals in-flight
     swaps. Adapter changes must be time-locked and announced.
@@ -187,7 +194,7 @@ This review raises confidence; it does not replace the external audit below.
 - `InvestRouter.sol` + the chosen venue adapter, and `ZBankTreasury.sol` — now written, in scope.
 - `ZBankRedemption.sol` + `PayoutRegistry.sol` — direct redemption custody, eligible-supply
   accounting, native-claim cancellation, operator settlement, and Pons-token behavior.
-- `PonsFeeLiquidityManager.sol` and the `/liquidity` transaction path — Pons escrow behavior,
+- `PonsFeeRouter.sol`, `PonsFeeLiquidityManager.sol`, and the `/liquidity` transaction path — Pons escrow behavior,
   spot/oracle manipulation, range math, token approvals, LP accounting, and user slippage.
 - The Pons-issued ZBNK token and deployed redemption mechanism before the website can drop
   the words Alpha and Pre-audit.

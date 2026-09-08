@@ -234,10 +234,11 @@ export default function Liquidity() {
               <span>50% protocol treasury</span>
             </div>
             <p className="t-note">
-              ZBNK launches against USDG on Pons. The pre-audit liquidity manager claims the
-              USDG creator-fee stream permissionlessly. Its liquidity share becomes a
-              single-sided USDG position below spot, supplying dollars to zZEC sellers and
-              accumulating zZEC as trades cross the range.
+              ZBNK launches against USDG on Pons with a permanent Safe-controlled fee router.
+              The router forwards USDG into a replaceable pre-audit liquidity manager after a
+              one-day upgrade notice. Its liquidity share becomes a single-sided USDG position
+              below spot, supplying dollars to zZEC sellers and accumulating zZEC as trades cross
+              the range.
             </p>
             <span className="chip chip--proposed">Pre-audit alpha · activates with ZBNK</span>
             {PROTOCOL_CONTRACTS.ponsFeeLiquidityManager ? (

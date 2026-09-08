@@ -26,11 +26,13 @@ tier, and launch limits can all be verified before users see it as Live.
   full-range zZEC/USDG, and retain the resulting Uniswap LP NFT.
 - `script/SeedZzecUsdgPool.s.sol` creates the zZEC/USDG pool at the live Chainlink
   ZEC/USD oracle price and mints the initial LP position to the protocol Safe.
-- `PonsFeeLiquidityManager.sol` claims ZBNK's USDG creator fees, routes 50% into an
-  oracle-guarded one-sided USDG position below spot, and sends 50% to treasury allocation.
-  The deployed pre-audit manager is
-  `0x082B87D21A5F840De52F2c154aC4132E3C365295`; use it as the Pons
-  `creatorFeeRecipient`.
+- `PonsFeeRouter.sol` is the permanent Safe-controlled Pons `creatorFeeRecipient`. It can
+  replace downstream manager implementations after a one-day notice or transfer the Pons
+  recipient entirely in an emergency.
+- `PonsFeeLiquidityManager.sol` receives routed USDG, places 50% into an oracle-guarded
+  one-sided position below spot, and sends 50% to treasury allocation. The deployed pre-audit
+  manager is `0x082B87D21A5F840De52F2c154aC4132E3C365295`; do not use the implementation
+  directly as the immutable launch recipient.
 - `src/adapters/UniswapV3Adapter.sol` executes only owner-approved direct and multi-hop
   Uniswap v3 paths.
 - `script/DeployZecInvest.s.sol` refuses to deploy until the pool exists with both assets,
