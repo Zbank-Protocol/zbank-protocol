@@ -32,11 +32,11 @@ export function BetaNote() {
       by a disclosed temporary 1-of-1 Safe. Collateral is capped onchain at 5,000 zZEC. Deposit
       only what you can afford to lose.{" "}
       <a
-        href="https://github.com/Zbank-Protocol/zbank-protocol/issues/5"
+        href="https://github.com/Zbank-Protocol/zbank-protocol/blob/main/SECURITY.md"
         target="_blank"
         rel="noreferrer"
       >
-        Review the public audit scope ↗
+        Review the security scope ↗
       </a>
     </p>
   );
