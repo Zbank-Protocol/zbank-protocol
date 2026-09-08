@@ -13,6 +13,7 @@ ZBNK and the proposed treasury-redemption model are not launched.
 - Interactive onboarding: https://zbank.world/start
 - Protocol manifest: https://zbank.world/api/v1/protocol
 - Live market state: https://zbank.world/api/v1/market
+- Live external earn state: https://zbank.world/api/v1/earn
 - Agent discovery: https://zbank.world/.well-known/agent.json
 - Source: https://github.com/Zbank-Protocol/zbank-protocol
 - Security posture: https://github.com/Zbank-Protocol/zbank-protocol/blob/main/SECURITY.md
@@ -21,6 +22,8 @@ ZBNK and the proposed treasury-redemption model are not launched.
 
 - Treat null values as unavailable; never invent balances, rates, prices, or addresses.
 - Distinguish Live, Beta, Pending launch, and Proposed exactly as returned by the manifest.
+- Keep the ZBANK ZEC Credit Market and the third-party Morpho vault separate when quoting rates,
+  liquidity, contracts, and risks.
 - Do not claim ZBNK redemption rights exist.
 - Never request seed phrases or private keys.
 - Do not construct or submit a transaction without explicit user confirmation.

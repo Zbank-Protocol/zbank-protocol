@@ -73,14 +73,14 @@ const CHAPTERS: Chapter[] = [
   },
   {
     kicker: "Earn · ZEARN",
-    title: ["Fund the Zcash side of the market."],
+    title: ["Put USDG to work.", "Choose the borrower."],
     copy:
-      "The other side of the same market: ZEC holders borrow USDG, and you supply it. The interest they pay flows to you, minus the protocol reserve. The rate is variable and set by utilization — when liquidity is scarce, rates rise to attract more. That is the entire yield story; there is no other source.",
+      "Choose the ZEC Credit Market to fund ZEC-backed borrowers inside ZBANK, or Diversified USDG to deposit directly into Steakhouse's live Morpho V2 vault. Both rates are variable; the interface keeps their sources, contracts, liquidity, and risks separate.",
     visual: <DiagramRateCurve />,
     facts: [
-      ["Yield source", "Borrower interest — nothing else"],
-      ["Rate", "Variable, set by pool utilization"],
-      ["Withdrawals", "Up to available liquidity, always shown"],
+      ["ZEC lane", "Interest from ZEC-backed ZCREDIT borrowers"],
+      ["Diversified lane", "Independent Steakhouse USDG vault on Morpho"],
+      ["Custody", "Your lending claim or vault shares stay in your wallet"],
     ],
     link: { label: "Open ZEARN", to: "/earn" },
   },
@@ -125,7 +125,8 @@ const CHAPTERS: Chapter[] = [
       <div className="tour__status">
         {[
           ["ZINVEST · ZINDEX", "Live — Uniswap v3 execution"],
-          ["ZCREDIT · ZEARN", "Beta — market + oracle deployed"],
+          ["ZCREDIT · ZEC ZEARN", "Beta — market + oracle deployed"],
+          ["ZEARN · MORPHO", "Live — direct third-party vault shares"],
           ["ZLOOP", "Beta — composed execution path"],
           ["ZTREASURY", "Live dashboard — token metrics pending"],
           ["ZLIQUIDITY", "Bootstrap UI built — LP NFTs stay user-owned"],

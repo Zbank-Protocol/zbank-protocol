@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import earnHandler from "../api/v1/earn.mjs";
 import protocolHandler from "../api/v1/protocol.mjs";
 import marketHandler from "../api/v1/market.mjs";
 import keeperHandler from "../api/internal/keeper.mjs";
@@ -46,7 +47,51 @@ test("protocol manifest exposes canonical launch state", async () => {
   assert.equal(body.products[0].capabilities.usdgInput, "live");
   assert.equal(body.products[0].capabilities.zzecInput, "coming_soon_awaiting_funded_pool");
   assert.equal(body.execution.zzecUsdgPool, null);
+  assert.equal(
+    body.integrations.morpho.vault,
+    "0xBeEff033F34C046626B8D0A041844C5d1A5409dd",
+  );
+  assert.equal(body.integrations.morpho.custody, "user_owned_vault_shares");
+  assert.equal(body.endpoints.earn, "/api/v1/earn");
   assert.equal(headers["access-control-allow-origin"], "*");
+});
+
+test("earn endpoint reports live third-party vault metrics", async () => {
+  const previousFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({
+    ok: true,
+    json: async () => ({
+      data: {
+        vaultV2ByAddress: {
+          address: "0xBeEff033F34C046626B8D0A041844C5d1A5409dd",
+          name: "Steakhouse USDG",
+          symbol: "steakUSDG",
+          totalAssets: "453220835210927",
+          totalAssetsUsd: 453_204_997.27,
+          liquidity: "30154807502501",
+          liquidityUsd: 30_153_753.73,
+          sharePrice: 1.0062,
+          apy: 0.039,
+          netApy: 0.039,
+          avgNetApy: 0.037,
+          performanceFee: 0,
+          managementFee: 0,
+          listed: true,
+        },
+      },
+    }),
+  });
+  try {
+    const { statusCode, body } = await invoke(earnHandler);
+    assert.equal(statusCode, 200);
+    assert.equal(body.schema, "zbank.earn.v1");
+    assert.equal(body.vault.status, "live");
+    assert.equal(body.vault.underlying, "USDG");
+    assert.equal(body.vault.netApy, 0.039);
+    assert.equal(body.vault.availableLiquidity, "30154807502501");
+  } finally {
+    globalThis.fetch = previousFetch;
+  }
 });
 
 test("live market endpoint returns explicit units and oracle state", async () => {

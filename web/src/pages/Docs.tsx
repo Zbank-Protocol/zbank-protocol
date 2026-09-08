@@ -382,22 +382,35 @@ export default function Docs() {
               <span>06</span>ZEARN — Earning
             </h2>
             <p>
-              ZEARN is the lender side of ZCREDIT with everything else removed. You deposit
-              USDG; that USDG becomes the liquidity ZCREDIT borrowers draw on; the interest
-              they pay flows back to you, minus the protocol reserve. Same market, same
-              contracts — ZEARN is presentation, not a second protocol.
+              ZEARN exposes two transparent USDG lending lanes. The ZEC Credit Market is the
+              lender side of ZCREDIT: USDG becomes liquidity for ZEC-backed borrowers and their
+              interest flows to suppliers, minus the protocol reserve. Diversified USDG deposits
+              directly into the live third-party Steakhouse USDG vault on Morpho V2.
+            </p>
+            <Params
+              rows={[
+                ["ZEC Credit Market", "ZBANK beta contract · borrower-paid yield · ZEC collateral"],
+                ["Diversified USDG", "Morpho Vault V2 · Steakhouse curator · multiple USDG markets"],
+                ["Custody", "Users hold their ZCREDIT claim or steakUSDG shares directly"],
+                ["Live metrics", "/api/v1/market and /api/v1/earn"],
+              ]}
+            />
+            <p>
+              <strong>Where the yield comes from:</strong> in the ZEC lane, only interest paid by
+              ZEC-backed borrowers. In the Morpho lane, interest comes from borrowers across the
+              vault's underlying USDG markets. Rates are variable in both lanes. Incentives, if
+              any ever exist, must be displayed separately rather than folded into lending APY.
             </p>
             <p>
-              <strong>Where the yield comes from:</strong> borrower interest, and only borrower
-              interest. If ZBNK incentive emissions ever exist, they are displayed as a
-              separate line — never folded into the lending APY.
+              <strong>Withdrawals are not guaranteed instant.</strong> USDG may be in use by
+              borrowers. The ZEC lane exposes ZCREDIT pool liquidity; the diversified lane
+              exposes Morpho-reported vault liquidity. A transaction can still fail if liquidity
+              moves before confirmation.
             </p>
-            <p>
-              <strong>Withdrawals are not guaranteed instant.</strong> Your USDG may be in use
-              by borrowers. You can always withdraw up to the pool's available liquidity; a
-              larger withdrawal waits until borrowers repay or new lenders supply. The panel
-              shows available liquidity at all times, and the rising rates at high utilization
-              are the mechanism that replenishes it.
+            <p className="t-note">
+              Morpho and Steakhouse are independent third parties. ZBANK does not control vault
+              allocations, rates, gates, liquidity, or curator actions. Inspect the vault and its
+              underlying markets before depositing.
             </p>
           </section>
 
@@ -544,19 +557,21 @@ export default function Docs() {
             </h2>
             <p>
               ZINVEST and ZINDEX are <strong>live</strong>: execution runs entirely through
-              Uniswap v3's audited public contracts on Robinhood Chain. ZCREDIT, ZEARN, and
-              ZLOOP run in <strong>open beta</strong>: the lending market and ZEC/USD oracle
+              Uniswap v3's audited public contracts on Robinhood Chain. ZCREDIT, the ZEC-backed
+              ZEARN lane, and ZLOOP run in <strong>open beta</strong>: the lending market and ZEC/USD oracle
               are deployed on mainnet, but the market contract is ZBANK-authored and unaudited,
               administration uses a disclosed temporary 1-of-1 Safe, and collateral is capped
               onchain. Independent Safe signers and an external audit remain production-readiness
-              gates; public use before then is explicitly opt-in pre-audit beta. A
-              status changes only when the wiring underneath changes — it is a deliberate
-              config change, not a copy edit.
+              gates; public use before then is explicitly opt-in pre-audit beta. The diversified
+              ZEARN lane is live through the independent Steakhouse USDG Morpho V2 vault and
+              carries that third-party system's own risks. A status changes only when the wiring
+              underneath changes — it is a deliberate config change, not a copy edit.
             </p>
             <Params
               rows={[
                 ["ZINVEST / ZINDEX execution", "Live — Uniswap v3 SwapRouter02 + QuoterV2 (audited public infra)"],
                 ["ZCREDIT lending market", "Deployed on mainnet — open beta, unaudited, collateral capped"],
+                ["ZEARN · diversified USDG", "Live — direct third-party Morpho V2 vault shares"],
                 ["ZEC/USD oracle", "Deployed — Chainlink Data Streams, verified onchain, keeper-relayed"],
                 ["Treasury + redemption", "Pre-audit alpha built — deploys after canonical Pons ZBNK launch"],
                 ["Token-fee liquidity manager", "Pre-audit alpha built — deploy before Pons launch"],
@@ -593,6 +608,11 @@ export default function Docs() {
                 <code>/api/v1/market</code>
                 <p>Cached live oracle and lending-market telemetry from Robinhood Chain.</p>
               </a>
+              <a href="/api/v1/earn">
+                <span>GET</span>
+                <code>/api/v1/earn</code>
+                <p>Live Steakhouse USDG vault rate, liquidity, share price, fees, and status.</p>
+              </a>
               <a href="/.well-known/agent.json">
                 <span>DISCOVER</span>
                 <code>/.well-known/agent.json</code>
@@ -627,8 +647,9 @@ export default function Docs() {
               </dd>
               <dt>Where does the ZEARN yield actually come from?</dt>
               <dd>
-                From borrowers. There is no other source. If nobody borrows, the supply rate is
-                near zero — which is exactly what the utilization-based model will show.
+                From borrowers. ZEC Credit Market yield comes from ZCREDIT borrowers; Diversified
+                USDG yield comes from the independent markets selected by the Steakhouse-curated
+                Morpho vault. The interface keeps those rates separate.
               </dd>
               <dt>Can I lose money in ZEARN?</dt>
               <dd>
@@ -647,8 +668,10 @@ export default function Docs() {
               <dt>What is live today?</dt>
               <dd>
                 ZINVEST and ZINDEX execute through Uniswap v3. The ZEC/USD oracle is live and
-                ZCREDIT, ZEARN, and ZLOOP are open beta because the ZBANK-authored lending
-                contract remains unaudited. ZBNK and treasury redemption are not launched.
+                ZCREDIT, the ZEC-backed ZEARN lane, and ZLOOP are open beta because the
+                ZBANK-authored lending contract remains unaudited. The diversified ZEARN lane
+                directly uses the live Steakhouse USDG Morpho vault. ZBNK and treasury redemption
+                are not launched.
               </dd>
               <dt>Is ZSWAP a privacy product?</dt>
               <dd>

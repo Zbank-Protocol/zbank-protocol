@@ -28,7 +28,8 @@ ZBANK is building a Zcash-native financial system on Robinhood Chain:
 - **ZINVEST** — route USDG into transparent Stock Token portfolios.
 - **ZINDEX** — prebuilt and custom portfolio strategies powered by ZINVEST.
 - **ZCREDIT** — deposit zZEC collateral, borrow USDG, or supply USDG to earn borrower-paid interest.
-- **ZEARN** — a simplified lender interface for the ZCREDIT USDG pool.
+- **ZEARN** — choose ZEC-backed ZCREDIT lending or direct, user-owned shares in the live
+  third-party Steakhouse USDG Morpho V2 vault.
 - **ZLOOP** — keep ZEC exposure, borrow USDG, and invest the borrowed capital.
 - **ZLIQUIDITY** — fund zZEC/USDG directly and keep the Uniswap LP NFT.
 - **ZTREASURY** — public protocol, reserve, retirement, and revenue-allocation reporting.
@@ -40,7 +41,9 @@ implementation.
 ## Honest launch status
 
 The web application and machine-readable APIs are live. USDG-funded ZINVEST routes execute
-non-custodially through Uniswap v3. ZCREDIT, ZEARN, and ZLOOP are an **unaudited mainnet beta**.
+non-custodially through Uniswap v3. ZCREDIT, the ZEC-backed ZEARN lane, and ZLOOP are an
+**unaudited mainnet beta**. ZEARN's diversified lane interacts directly with the independent
+Steakhouse USDG Morpho V2 vault; ZBANK does not custody those positions or control that vault.
 
 ZBNK, the treasury, redemption, and direct zZEC-funded ZINVEST are not live. The treasury and
 dual-path redemption contracts are implemented as pre-audit alpha code, but deployment waits
@@ -60,7 +63,8 @@ Deployed Robinhood Chain contracts:
 
 Read [`SECURITY.md`](SECURITY.md) before integrating or depositing funds.
 Token-economics integrators should also read
-[`docs/redemption-alpha.md`](docs/redemption-alpha.md).
+[`docs/redemption-alpha.md`](docs/redemption-alpha.md). The verified external-protocol backlog
+lives in [`docs/ecosystem-integrations.md`](docs/ecosystem-integrations.md).
 
 ## Repository
 

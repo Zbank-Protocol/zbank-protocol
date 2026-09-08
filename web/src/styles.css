@@ -3376,6 +3376,251 @@ a.protocol:hover {
   align-items: center;
 }
 
+/* ---- ZEARN market selector + external vault. ---- */
+
+.earn-lanes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: var(--sp-2) 0;
+  padding: 1px;
+  background: var(--line);
+  border: 1px solid var(--line-strong);
+}
+
+.earn-lane {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 6.75rem;
+  padding: 1.15rem 1.35rem;
+  overflow: hidden;
+  text-align: left;
+  color: var(--ink-2);
+  background: rgb(12 13 13 / 0.92);
+  border: 0;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.earn-lane::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms ease;
+}
+
+.earn-lane[data-active="true"] {
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 12% 0%, rgb(211 166 74 / 0.11), transparent 44%),
+    var(--panel);
+}
+
+.earn-lane[data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+.earn-lane__index,
+.earn-lane em {
+  font: 600 0.65rem/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.earn-lane__index {
+  color: var(--gold);
+}
+
+.earn-lane span:nth-child(2) {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.earn-lane strong {
+  font: 560 0.9rem/1.2 var(--font-display);
+  letter-spacing: 0.08em;
+}
+
+.earn-lane small {
+  color: var(--ink-3);
+  font-size: 0.78rem;
+}
+
+.earn-lane em {
+  color: var(--ink-4);
+  font-style: normal;
+}
+
+.morpho-vault {
+  margin-top: var(--sp-2);
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background:
+    radial-gradient(circle at 76% -24%, rgb(211 166 74 / 0.09), transparent 38%),
+    linear-gradient(145deg, rgb(17 18 18 / 0.98), rgb(8 9 9 / 0.98));
+}
+
+.morpho-vault__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: 1.3rem 1.45rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.morpho-vault__identity,
+.morpho-vault__badges,
+.morpho-vault__links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.morpho-vault__identity h2 {
+  margin: 0.25rem 0 0;
+  font: 520 clamp(1.35rem, 2.4vw, 2rem)/1 var(--font-display);
+  letter-spacing: -0.025em;
+}
+
+.morpho-vault__metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-bottom: 1px solid var(--line);
+}
+
+.morpho-vault__metrics > div {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 1rem 1.15rem;
+  border-right: 1px solid var(--line);
+}
+
+.morpho-vault__metrics > div:last-child {
+  border-right: 0;
+}
+
+.morpho-vault__metrics strong {
+  overflow: hidden;
+  color: var(--ink);
+  font: 520 clamp(1rem, 1.5vw, 1.25rem)/1 var(--font-mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.morpho-vault__body {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.9fr) minmax(22rem, 1.1fr);
+}
+
+.morpho-vault__action,
+.morpho-vault__explain {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  padding: 1.45rem;
+}
+
+.morpho-vault__action {
+  border-right: 1px solid var(--line);
+}
+
+.morpho-vault__action .mode__tabs {
+  width: 100%;
+}
+
+.morpho-vault__action .mode__tab {
+  flex: 1;
+}
+
+.morpho-vault__explain {
+  background: rgb(255 255 255 / 0.014);
+}
+
+.morpho-vault__explain p {
+  max-width: 62ch;
+  color: var(--ink-2);
+  line-height: 1.62;
+}
+
+.morpho-vault__links {
+  flex-wrap: wrap;
+  padding-top: 0.4rem;
+}
+
+.morpho-vault__links a {
+  color: var(--gold);
+  font: 600 0.67rem/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+@media (max-width: 960px) {
+  .morpho-vault__metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .morpho-vault__metrics > div:nth-child(3) {
+    border-right: 0;
+  }
+
+  .morpho-vault__metrics > div:nth-child(-n + 3) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 720px) {
+  .earn-lanes,
+  .morpho-vault__body {
+    grid-template-columns: 1fr;
+  }
+
+  .earn-lane {
+    grid-template-columns: auto 1fr;
+  }
+
+  .earn-lane em {
+    display: none;
+  }
+
+  .morpho-vault__head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .morpho-vault__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .morpho-vault__metrics > div {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .morpho-vault__metrics > div:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .morpho-vault__metrics > div:nth-child(3) {
+    border-right: 1px solid var(--line);
+  }
+
+  .morpho-vault__action {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+}
+
 /* ---- Custom allocation rows. ---- */
 
 .custom-row {

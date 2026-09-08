@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { MorphoVaultPanel } from "../components/app/MorphoVaultPanel";
 import { PageHead } from "../components/app/PageHead";
 import { BetaNote } from "../components/app/PreviewBanner";
 import { RateCurve } from "../components/app/RateCurve";
@@ -21,6 +23,7 @@ export default function Earn() {
   const wallet = useWallet();
   const market = useZCreditMarket();
   const position = useZCreditPosition(wallet.address);
+  const [lane, setLane] = useState<"zec" | "diversified">("zec");
 
   return (
     <main className="page">
@@ -28,32 +31,72 @@ export default function Earn() {
         <PageHead
           kicker="ZEARN"
           status={PRODUCT_STATUS.zearn}
-          title="Fund the Zcash side of the market."
-          lede="ZEC holders borrow USDG against their collateral. You supply the USDG they borrow — and earn the variable interest they pay."
+          title="Put your USDG to work."
+          lede="Fund ZEC-backed borrowing inside ZBANK, or use a live third-party Morpho vault for diversified USDG lending. You choose the source of the yield."
           aside={<WalletButton />}
         />
-        <BetaNote />
-        <SupplyPanel market={market} position={position} account={wallet.address} />
 
-        {/* The mechanism, drawn: rates are a function of utilization, read from the contract. */}
-        <div className="panel panel--wide">
-          <span className="metric__label">How the rate is set</span>
-          <RateCurve market={market} />
-          <p className="t-note">
-            The borrow rate follows pool utilization along this curve — read live from the
-            deployed contract, not configured in the site. When ZEC holders borrow, utilization
-            moves right, the rate climbs, and suppliers earn it (minus the{" "}
-            {(market.reserveFactorBps / 100).toFixed(0)}% protocol reserve). An empty pool is
-            the left edge of the curve, not a broken product: early suppliers hold the whole
-            move.
-          </p>
+        <div className="earn-lanes" role="tablist" aria-label="Choose an earn market">
+          <button
+            className="earn-lane"
+            data-active={lane === "zec"}
+            role="tab"
+            aria-selected={lane === "zec"}
+            onClick={() => setLane("zec")}
+          >
+            <span className="earn-lane__index">01</span>
+            <span>
+              <strong>ZEC CREDIT MARKET</strong>
+              <small>Yield paid by ZEC-backed borrowers</small>
+            </span>
+            <em>Native ZBANK</em>
+          </button>
+          <button
+            className="earn-lane"
+            data-active={lane === "diversified"}
+            role="tab"
+            aria-selected={lane === "diversified"}
+            onClick={() => setLane("diversified")}
+          >
+            <span className="earn-lane__index">02</span>
+            <span>
+              <strong>DIVERSIFIED USDG</strong>
+              <small>Steakhouse-curated lending via Morpho</small>
+            </span>
+            <em>Third party</em>
+          </button>
         </div>
 
-        <p className="t-note container__note">
-          ZEARN is the lender side of the ZCREDIT market — not a separate protocol. Withdrawals
-          depend on available liquidity: funds in use by borrowers return as loans are repaid or
-          liquidated, so there is no instant-redemption guarantee.
-        </p>
+        {lane === "zec" ? (
+          <>
+            <BetaNote />
+            <SupplyPanel market={market} position={position} account={wallet.address} />
+
+            <div className="panel panel--wide">
+              <span className="metric__label">How the ZEC credit rate is set</span>
+              <RateCurve market={market} />
+              <p className="t-note">
+                The borrow rate follows pool utilization along this curve — read live from the
+                deployed contract, not configured in the site. When ZEC holders borrow,
+                utilization moves right, the rate climbs, and suppliers earn it (minus the{" "}
+                {(market.reserveFactorBps / 100).toFixed(0)}% protocol reserve).
+              </p>
+            </div>
+
+            <p className="t-note container__note">
+              This lane is the lender side of ZCREDIT. Withdrawals depend on available liquidity:
+              USDG in use by ZEC borrowers returns as loans are repaid or liquidated.
+            </p>
+          </>
+        ) : (
+          <>
+            <MorphoVaultPanel account={wallet.address} />
+            <p className="t-note container__note">
+              This lane interacts directly with a third-party Morpho Vault V2. ZBANK does not
+              control its allocations, rates, liquidity, contracts, or curator decisions.
+            </p>
+          </>
+        )}
       </div>
     </main>
   );

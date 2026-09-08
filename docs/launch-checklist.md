@@ -52,8 +52,13 @@ with `SECURITY.md` (the risk register) — nothing below overrides it.
    (the shapes already match; components don't change).
 5. Liquidation dry run on testnet: open a position, push the oracle, verify a keeper can
    liquidate and the health meter tracked every band on the way down.
-6. Flip `PRODUCT_STATUS.zcredit` and `.zearn` from `Beta` to `Live` only after audit and
-   production-readiness review.
+6. Flip `PRODUCT_STATUS.zcredit` and the ZEC-backed ZEARN lane from `Beta` to `Live` only after
+   audit and production-readiness review.
+7. **LIVE THIRD-PARTY RAIL:** ZEARN's Diversified USDG lane deposits directly into Steakhouse
+   USDG (`0xBeEff033F34C046626B8D0A041844C5d1A5409dd`) on Morpho V2. ZBANK never owns the
+   shares. Keep `/api/v1/earn`, vault links, curator attribution, variable-rate language, and
+   withdrawal-liquidity warnings visible; smoke-test deposit and full redemption after every
+   vault or frontend change.
 
 ## Phase 3 — Invest router
 

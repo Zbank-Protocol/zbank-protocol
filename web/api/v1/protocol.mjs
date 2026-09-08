@@ -27,7 +27,16 @@ const manifest = {
     },
     { id: "zindex", action: "select_strategy", status: "Live", route: "/invest/indexes" },
     { id: "zcredit", action: "borrow_or_supply", status: "Beta", route: "/credit" },
-    { id: "zearn", action: "supply_usdg", status: "Beta", route: "/earn" },
+    {
+      id: "zearn",
+      action: "supply_usdg",
+      status: "Mixed",
+      route: "/earn",
+      capabilities: {
+        zecCreditMarket: "beta_zbank_contract",
+        diversifiedUsdg: "live_third_party_morpho_v2",
+      },
+    },
     { id: "zloop", action: "borrow_and_invest", status: "Beta", route: "/credit/loop" },
     { id: "ztreasury", action: "verify_protocol", status: "Live", route: "/treasury" },
     {
@@ -70,6 +79,23 @@ const manifest = {
     feeLiquidityBps: 5000,
     status: "manager_deployed_awaiting_token_and_treasury",
   },
+  integrations: {
+    morpho: {
+      vault: "0xBeEff033F34C046626B8D0A041844C5d1A5409dd",
+      product: "Steakhouse USDG",
+      version: "vault-v2",
+      underlying: "USDG",
+      custody: "user_owned_vault_shares",
+      curator: "Steakhouse Financial",
+      metricsEndpoint: "/api/v1/earn",
+      status: "live_third_party",
+    },
+    across: {
+      purpose: "bridge_usdg_to_robinhood_chain",
+      url: "https://across.to",
+      status: "external_link",
+    },
+  },
   oracle: {
     provider: "chainlink-data-streams",
     feedId: "0x00039f8a144f4a62715ca60aec1cf848c4821375c57e2259c6c90b7fa49db693",
@@ -94,11 +120,13 @@ const manifest = {
   endpoints: {
     protocol: "/api/v1/protocol",
     market: "/api/v1/market",
+    earn: "/api/v1/earn",
     agentDiscovery: "/.well-known/agent.json",
     llms: "/llms.txt",
   },
   warnings: [
-    "ZCREDIT, ZEARN, and ZLOOP are unaudited beta products.",
+    "The ZCREDIT-backed ZEARN lane and ZLOOP are unaudited ZBANK beta products.",
+    "The diversified ZEARN lane deposits directly into a third-party Morpho vault; ZBANK does not control its allocations, rates, or liquidity.",
     "Direct zZEC investing is built but not active until its funded pool and router are deployed.",
     "Users can initialize and fund zZEC/USDG directly; execution is price-guarded and LP NFTs remain user-owned.",
     "The pre-audit Pons fee manager is built to route 50% of creator fees into zZEC/USDG liquidity after deployment.",

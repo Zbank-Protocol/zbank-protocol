@@ -377,3 +377,24 @@ export const NETWORK = {
   rpcUrl: CHAIN.rpcUrl,
   explorer: CHAIN.explorer,
 } as const;
+
+/* ------------------------------- External earn rails ------------------------------- */
+
+export const MORPHO = {
+  steakhouseUsdgVault:
+    "0xBeEff033F34C046626B8D0A041844C5d1A5409dd" as `0x${string}`,
+  shareSymbol: "steakUSDG",
+  shareDecimals: 18,
+  underlying: ASSETS.USDG.address as `0x${string}`,
+  appUrl:
+    "https://app.morpho.org/robinhood-chain/vault/0xBeEff033F34C046626B8D0A041844C5d1A5409dd/steakhouse-usdg#overview",
+  apiUrl: "/api/v1/earn",
+  curator: "Steakhouse Financial",
+  status: "live-third-party",
+} as const;
+
+export const EXTERNAL_RAILS = {
+  acrossBridge: "https://across.to",
+  uniswap: "https://app.uniswap.org",
+  morpho: "https://app.morpho.org/robinhood-chain",
+} as const;
