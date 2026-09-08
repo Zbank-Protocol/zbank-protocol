@@ -245,6 +245,10 @@ export default async function handler(req, res) {
 
     const oracle = await oraclePass(publicClient, walletClient);
     const liquidations = await liquidationPass(publicClient, walletClient, account);
+    console.log(
+      "keeper_success",
+      JSON.stringify({ oracle, liquidations, ranAt: new Date().toISOString() }),
+    );
     return res.status(200).json({
       ok: true,
       ranAt: new Date().toISOString(),
