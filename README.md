@@ -30,10 +30,11 @@ ZBANK is building a Zcash-native financial system on Robinhood Chain:
 - **ZCREDIT** — deposit zZEC collateral, borrow USDG, or supply USDG to earn borrower-paid interest.
 - **ZEARN** — a simplified lender interface for the ZCREDIT USDG pool.
 - **ZLOOP** — keep ZEC exposure, borrow USDG, and invest the borrowed capital.
-- **ZTREASURY** — public protocol, reserve, burn, and revenue-allocation reporting.
+- **ZLIQUIDITY** — fund zZEC/USDG directly and keep the Uniswap LP NFT.
+- **ZTREASURY** — public protocol, reserve, retirement, and revenue-allocation reporting.
 
 The long-term economic thesis is simple: **more ZEC, fewer ZBNK**. Product revenue is intended
-to acquire ZEC and buy back and burn ZBNK, subject to final technical, legal, and governance
+to acquire ZEC and buy back and permanently retire ZBNK, subject to final technical, legal, and governance
 implementation.
 
 ## Honest launch status
@@ -45,6 +46,10 @@ ZBNK, the treasury, redemption, and direct zZEC-funded ZINVEST are not live. The
 dual-path redemption contracts are implemented as pre-audit alpha code, but deployment waits
 for the canonical Pons ZBNK address. The interface renders unavailable values as
 `Pending launch` and does not simulate transactions.
+
+The user-owned `/liquidity` flow and Pons creator-fee liquidity manager are implemented. The
+zZEC/USDG pool is not initialized yet; ZBNK creator-fee harvesting activates after the manager,
+token, and treasury addresses are deployed and linked.
 
 Deployed Robinhood Chain contracts:
 

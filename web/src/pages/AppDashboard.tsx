@@ -14,6 +14,7 @@ const QUICK_ACTIONS = [
   { label: "ZCREDIT", detail: "Borrow against ZEC", icon: "ZCREDIT", to: "/credit" },
   { label: "ZEARN", detail: "Fund ZEC borrowers", icon: "ZEARN", to: "/earn" },
   { label: "ZINVEST", detail: "Build a portfolio", icon: "ZINVEST", to: "/invest" },
+  { label: "ZLIQUIDITY", detail: "Fund the ZEC market", icon: "ZEC", to: "/liquidity" },
   { label: "ZTREASURY", detail: "Verify the protocol", icon: "ZTREASURY", to: "/treasury" },
 ] as const;
 

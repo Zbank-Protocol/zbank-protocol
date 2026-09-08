@@ -101,7 +101,7 @@ const CHAPTERS: Chapter[] = [
     kicker: "The engine",
     title: ["Every product feeds", "the same machine."],
     copy:
-      "Execution fees and the lending reserve factor form protocol revenue. Revenue splits two ways: buy ZEC for the treasury, and buy ZBNK for permanent burn or retirement. The treasury grows while the eligible supply shrinks — so the ZEC standing behind each remaining ZBNK rises. Only the redeemable slice of the treasury backs redemption, and ZTREASURY reports all of it in public.",
+      "Execution fees and the lending reserve factor form protocol revenue. Revenue buys ZEC for the treasury and ZBNK for permanent retirement. ZBNK trading adds another loop: Pons USDG creator fees fund the shared zZEC/USDG market and feed treasury allocation. Only the redeemable treasury slice backs redemption, and ZTREASURY reports it in public.",
     visual: (
       <div className="tour__stack">
         <DiagramEngine />
@@ -111,6 +111,7 @@ const CHAPTERS: Chapter[] = [
     facts: [
       ["Accumulate", "Revenue buys ZEC for the treasury"],
       ["Reduce", "Revenue buys ZBNK and retires it"],
+      ["Deepen", "ZBNK fees fund zZEC / USDG liquidity"],
       ["Verify", "Watch it live on ZTREASURY"],
     ],
     link: { label: "Watch the machine", to: "/treasury" },
@@ -127,6 +128,7 @@ const CHAPTERS: Chapter[] = [
           ["ZCREDIT · ZEARN", "Beta — market + oracle deployed"],
           ["ZLOOP", "Beta — composed execution path"],
           ["ZTREASURY", "Live dashboard — token metrics pending"],
+          ["ZLIQUIDITY", "Bootstrap UI built — LP NFTs stay user-owned"],
           ["TREASURY · REDEMPTION", "Alpha built — awaiting Pons ZBNK"],
           ["ZBNK", "Token launch pending"],
         ].map(([k, v]) => (

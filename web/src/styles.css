@@ -4679,6 +4679,136 @@ main,
   z-index: 2;
 }
 
+/* ============================== ZLIQUIDITY ============================== */
+
+.liquidity-status {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin-bottom: var(--sp-4);
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background: var(--line);
+}
+
+.liquidity-status > div {
+  min-height: 6.5rem;
+  padding: 1.15rem;
+  background: rgb(8 9 11 / 0.9);
+}
+
+.liquidity-status strong {
+  display: block;
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+  font-weight: 500;
+}
+
+.liquidity-status__asset {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.liquidity-workbench {
+  align-items: stretch;
+}
+
+.liquidity-workbench .panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.panel__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+  font-weight: 520;
+  letter-spacing: -0.04em;
+}
+
+.btn--wide {
+  width: 100%;
+  min-height: 3.35rem;
+  margin-top: 0.3rem;
+}
+
+.form-message {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--gold);
+}
+
+.form-message--error {
+  color: #ff837a;
+}
+
+.liquidity-fees {
+  background:
+    linear-gradient(145deg, rgb(244 183 40 / 0.055), transparent 50%),
+    rgb(8 9 11 / 0.88);
+}
+
+.liquidity-flow {
+  display: grid;
+  gap: 0.65rem;
+  margin-block: 0.5rem;
+}
+
+.liquidity-flow span {
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--line);
+  background: rgb(4 5 6 / 0.62);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.liquidity-flow b {
+  padding-left: 1rem;
+  color: var(--gold-dim);
+  font-weight: 400;
+}
+
+.liquidity-risks {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.3fr) 1fr auto;
+  gap: var(--sp-3);
+  align-items: start;
+  margin-top: var(--sp-4);
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.liquidity-risks p {
+  max-width: 65ch;
+  margin: 0;
+  color: var(--ink-3);
+  line-height: 1.6;
+}
+
+.liquidity-risks a {
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .liquidity-status {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .liquidity-risks {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ============================== Motion fallback ============================== */
 
 @media (prefers-reduced-motion: reduce) {

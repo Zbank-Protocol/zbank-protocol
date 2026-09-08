@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import AppDashboard from "./pages/AppDashboard";
 import Invest from "./pages/Invest";
 import Indexes from "./pages/Indexes";
+import Liquidity from "./pages/Liquidity";
 import Credit from "./pages/Credit";
 import Loop from "./pages/Loop";
 import Earn from "./pages/Earn";
@@ -63,6 +64,7 @@ export default function App() {
         <Route path="/app" element={<AppDashboard />} />
         <Route path="/invest" element={<Invest />} />
         <Route path="/invest/indexes" element={<Indexes />} />
+        <Route path="/liquidity" element={<Liquidity />} />
         <Route path="/credit" element={<Credit />} />
         <Route path="/credit/loop" element={<Loop />} />
         <Route path="/earn" element={<Earn />} />

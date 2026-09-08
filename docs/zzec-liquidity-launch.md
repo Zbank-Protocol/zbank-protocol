@@ -4,7 +4,7 @@ The direct ZINVEST path is implemented as:
 
 `zZEC → USDG → selected Stock Tokens`
 
-The first hop uses a ZBANK-seeded Uniswap v3 zZEC/USDG pool. Each second hop uses the
+The first hop uses a community- and protocol-funded Uniswap v3 zZEC/USDG pool. Each second hop uses the
 existing liquid USDG/Stock Token pool selected in `web/src/config/protocol.ts`.
 
 ## Why this path
@@ -22,8 +22,12 @@ tier, and launch limits can all be verified before users see it as Live.
 
 ## What is built
 
+- `/liquidity` lets any connected user initialize the pool at the live oracle price, add
+  full-range zZEC/USDG, and retain the resulting Uniswap LP NFT.
 - `script/SeedZzecUsdgPool.s.sol` creates the zZEC/USDG pool at the live Chainlink
   ZEC/USD oracle price and mints the initial LP position to the protocol Safe.
+- `PonsFeeLiquidityManager.sol` claims ZBNK's USDG creator fees, routes 50% into an
+  oracle-guarded one-sided USDG position below spot, and sends 50% to treasury allocation.
 - `src/adapters/UniswapV3Adapter.sol` executes only owner-approved direct and multi-hop
   Uniswap v3 paths.
 - `script/DeployZecInvest.s.sol` refuses to deploy until the pool exists with both assets,
@@ -36,7 +40,9 @@ tier, and launch limits can all be verified before users see it as Live.
 
 ## Capital requirement
 
-Code cannot create liquidity. The seeding wallet must hold real zZEC and USDG.
+Liquidity always requires real assets. Community LPs supply both zZEC and USDG directly and
+keep their position NFTs. The Pons fee manager contributes USDG creator fees automatically;
+its below-spot range supplies USDG to zZEC sellers and accumulates zZEC when trades cross it.
 
 At the oracle price, the starting values should be approximately balanced:
 
@@ -74,7 +80,13 @@ front-run initialization from consuming an unexpected asset amount. The script a
 - reverts if an existing pool differs materially from the oracle price;
 - reverts if the deployment wallet lacks either asset.
 
-## 2. Simulate, then create and seed the pool
+## 2. Create and fund the pool
+
+The public path is `/liquidity`: connect a Robinhood Chain wallet, initialize at the live
+oracle price if needed, then deposit both assets. The page blocks funding if pool spot differs
+from the oracle by more than 2%.
+
+For a protocol-owned seed, simulate the Foundry script first:
 
 Run without `--broadcast` first:
 

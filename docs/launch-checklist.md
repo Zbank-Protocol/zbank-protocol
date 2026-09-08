@@ -17,19 +17,26 @@ with `SECURITY.md` (the risk register) — nothing below overrides it.
 
 ## Phase 1 — Token launch (ZBNK on Pons)
 
-1. Launch ZBNK through the Pons factory (`web/src/config.ts` → `PONS.factory`).
-2. Record from the launch transaction: token address, fee escrow, meme hook.
-3. Set config: `TOKEN.address`, `PONS.feeEscrow`, `PONS.memeHook`.
-4. Set `PROTOCOL_CONTRACTS.zbnk` in `web/src/config/protocol.ts` — the dashboard's ZBNK
+1. Deploy `PonsFeeLiquidityManager` and verify its owner and LP NFT recipient are the protocol
+   Safe. Treasury remains unset until step 6.
+2. Launch ZBNK through the verified Pons v2 factory (`web/src/config.ts` → `PONS.factory`) with
+   **USDG as pair token** and the liquidity manager as `creatorFeeRecipient`.
+3. Record from the launch transaction: token address, curve, pair token, fee escrow, meme hook,
+   creator-fee recipient, fee policy, and economics hash.
+4. Set config: `TOKEN.address`, `PONS.feeEscrow`, `PONS.memeHook`.
+5. Set `PROTOCOL_CONTRACTS.zbnk` in `web/src/config/protocol.ts` — the dashboard's ZBNK
    balance read activates by itself.
-5. Run `DeployTokenEconomics.s.sol` with the canonical token address. This deploys the
+6. Run `DeployTokenEconomics.s.sol` with the canonical token address. This deploys the
    pre-audit alpha treasury, payout registry, and dual-path redemption contracts with both
    redemption modes disabled.
-6. Fund redemption with real zZEC, verify every recorded address, then explicitly enable the
+7. Set the liquidity manager's treasury through the Safe. Its permissionless harvester routes
+   50% of claimed Pons USDG creator fees into zZEC/USDG liquidity and sends 50% into treasury
+   allocation.
+8. Fund redemption with real zZEC, verify every recorded address, then explicitly enable the
    atomic zZEC path and/or operator-settled native ZEC path through the owner Safe.
-7. Publish the ZEC treasury t-address (`ZEC_RESERVE.address`) — the proof-of-reserve story
+9. Publish the ZEC treasury t-address (`ZEC_RESERVE.address`) — the proof-of-reserve story
    starts the moment it is public.
-8. Verify: token page shows the live address; explorer links resolve; ZTREASURY stops saying
+10. Verify: token page shows the live address; explorer links resolve; ZTREASURY stops saying
    "Pending launch" for token supply figures once indexing is wired.
 
 ## Phase 2 — Credit market (the long pole)
@@ -52,8 +59,9 @@ with `SECURITY.md` (the risk register) — nothing below overrides it.
 Implementation is complete; activation is waiting on funded liquidity. Follow
 `docs/zzec-liquidity-launch.md`.
 
-1. Fund and run `SeedZzecUsdgPool.s.sol` to create the zZEC/USDG pool at the live oracle
-   price. The code cannot supply the required zZEC and USDG capital.
+1. Initialize and fund zZEC/USDG at the live oracle price through `/liquidity`, or use
+   `SeedZzecUsdgPool.s.sol` for a protocol-owned seed. User-funded positions mint directly to
+   each user's wallet; the protocol cannot withdraw them.
 2. Run `DeployZecInvest.s.sol`; it deploys the approved-path Uniswap adapter and
    `InvestRouter` only after confirming that the pool has both assets.
 3. Run `INVEST_ROUTER=0x... npm run check:zec-route -- --require-live`, then complete the

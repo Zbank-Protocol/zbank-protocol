@@ -23,6 +23,7 @@ Public audit issues are for non-exploitable hardening and defense-in-depth findi
 | `UniswapV3Adapter.sol` (approved direct/multi-hop venue paths) | Implemented, unit-tested, **not audited, not deployed** — direct zZEC remains disabled until its market is funded and reviewed |
 | `ZBankTreasury.sol` (revenue split / buckets / Pons-compatible retirement) | Implemented, unit-tested, **not audited, not deployed** |
 | `ZBankRedemption.sol` (atomic zZEC + operator-settled native ZEC) | Implemented, unit-tested, **not audited, not deployed** — permanently binds to the canonical Pons ZBNK address |
+| `PonsFeeLiquidityManager.sol` (USDG creator fees → LP + treasury) | Implemented, unit-tested, **not audited, not deployed** — intended Pons creator-fee recipient |
 | `ZBNK.sol` (fixed-supply burnable token) | Implemented, unit-tested, **not launched** — superseded if launched via Pons |
 | `ChainlinkOracleAdapter.sol` (push-feed adapter, fallback) | Implemented, unit-tested |
 | `ZecUsdDataStreamFeed.sol` (ZEC/USD via Chainlink Data Streams verifier) | **Deployed and receiving verified reports** at `0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5`, unit-tested, **not audited** |
@@ -38,13 +39,17 @@ Verified external addresses (Robinhood Chain mainnet, checked onchain 2026-09-07
 | Data Streams verifier proxy | `0xcE73c8ad08CBDEaCa6078BF0627C8fe0a9a536E7` | docs.robinhood.com/chain/data-streams |
 | ZEC/USD stream feed id | `0x00039f8a144f4a62715ca60aec1cf848c4821375c57e2259c6c90b7fa49db693` | Chainlink crypto-streams catalog |
 | Safe v1.4.1 factory / L2 singleton | `0x4e1DCf7…ec67` / `0x29fcB43…C762` | canonical addresses, code verified onchain |
+| Pons v2 factory / fee escrow | `0x7eD598…EC7e` / `0xd3AFEB…Ac9e` | v2 client ABI + live interface calls; USDG approved as pair token |
+| Pons graduation guard | `0xf56951…C6C` | previously misidentified as the factory; does not expose `launchConfigCount()` |
 
-Test suite: `forge test` — 82 tests discovered, 81 passing and the RPC-dependent fork test
+Test suite: `forge test` — 88 tests discovered, 87 passing and the RPC-dependent fork test
 skipped when no fork endpoint is available (supply/borrow/repay lifecycle, interest
 accrual to lenders and reserves, close-factor liquidation, stale/zero oracle rejection,
 parameter rails, pause semantics, revenue split accounting, retirement tracking, basket routing,
 approved-path validation, integrated direct-zZEC adapter execution, proportional zZEC
 redemption, and cancellable native-ZEC claims).
+The liquidity-manager suite additionally covers fee claiming, bounded allocation, one-sided LP
+funding, oracle divergence rejection, pause behavior, and Safe-owned LP NFTs.
 
 The frontend reflects this with ZCREDIT, ZEARN, and ZLOOP in Beta and blocks new borrower
 exposure whenever the oracle is stale or uninitialized. ZINVEST/ZINDEX execute non-custodial
@@ -141,6 +146,10 @@ The frontend mirror lives in `web/src/config/protocol.ts` (`ZCREDIT_RISK`,
     native settlement operator, and set a 1–30 day claim timeout. Direct zZEC redemption is
     atomic. Native ZEC is explicitly operator-settled: pending claims reserve zZEC, snapshot
     the registered t-address, and become cancellable if not settled by their deadline.
+  - `PonsFeeLiquidityManager`: the owner can set the treasury, pause harvesting, and adjust
+    bounded liquidity/range/deviation parameters. Harvesting is permissionless. LP NFTs mint
+    directly to the protocol Safe. The contract refuses to fund when Uniswap spot diverges
+    beyond the configured Chainlink-oracle tolerance.
   - `InvestRouter`: `setAdapter`, `setFee` (hard-capped at 200 bps), `pause`/`unpause`.
     The adapter choice is the largest trust lever — a malicious adapter steals in-flight
     swaps. Adapter changes must be time-locked and announced.
@@ -178,6 +187,8 @@ This review raises confidence; it does not replace the external audit below.
 - `InvestRouter.sol` + the chosen venue adapter, and `ZBankTreasury.sol` — now written, in scope.
 - `ZBankRedemption.sol` + `PayoutRegistry.sol` — direct redemption custody, eligible-supply
   accounting, native-claim cancellation, operator settlement, and Pons-token behavior.
+- `PonsFeeLiquidityManager.sol` and the `/liquidity` transaction path — Pons escrow behavior,
+  spot/oracle manipulation, range math, token approvals, LP accounting, and user slippage.
 - The Pons-issued ZBNK token and deployed redemption mechanism before the website can drop
   the words Alpha and Pre-audit.
 - **Do not claim "audited" anywhere until a report exists and is linked.**

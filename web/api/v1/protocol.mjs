@@ -30,6 +30,13 @@ const manifest = {
     { id: "zearn", action: "supply_usdg", status: "Beta", route: "/earn" },
     { id: "zloop", action: "borrow_and_invest", status: "Beta", route: "/credit/loop" },
     { id: "ztreasury", action: "verify_protocol", status: "Live", route: "/treasury" },
+    {
+      id: "zliquidity",
+      action: "fund_zzec_usdg_pool",
+      status: "Bootstrap",
+      route: "/liquidity",
+      custody: "user_owned_uniswap_v3_lp_nft",
+    },
   ],
   contracts: {
     creditMarket: "0x77ccb77d1fd337b7027b3482ca365db57d92151e",
@@ -39,6 +46,7 @@ const manifest = {
     treasury: null,
     redemption: null,
     payoutRegistry: null,
+    ponsFeeLiquidityManager: null,
     zbnk: null,
   },
   assets: {
@@ -52,6 +60,15 @@ const manifest = {
     nonfungiblePositionManager: "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3",
     zzecUsdgPool: null,
     zzecUsdgFee: 3000,
+  },
+  pons: {
+    version: "v2",
+    factory: "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e",
+    feeEscrow: "0xd3AFEB2a57f70eF218Aa82451c51B2fb0416Ac9e",
+    memeHook: "0xE5e702641Ea86F4ae6cC3cDaeD2B886f976Be044",
+    quoteAsset: "USDG",
+    feeLiquidityBps: 5000,
+    status: "manager_built_not_deployed",
   },
   oracle: {
     provider: "chainlink-data-streams",
@@ -83,6 +100,8 @@ const manifest = {
   warnings: [
     "ZCREDIT, ZEARN, and ZLOOP are unaudited beta products.",
     "Direct zZEC investing is built but not active until its funded pool and router are deployed.",
+    "Users can initialize and fund zZEC/USDG directly; execution is price-guarded and LP NFTs remain user-owned.",
+    "The pre-audit Pons fee manager is built to route 50% of creator fees into zZEC/USDG liquidity after deployment.",
     "Treasury and dual-path redemption are implemented as pre-audit alpha contracts but cannot deploy before the canonical Pons ZBNK address exists.",
     "Never infer missing values; treat null as unavailable.",
   ],

@@ -53,6 +53,21 @@ ZEC PER ZBNK = REDEEMABLE ZEC TREASURY / ELIGIBLE ZBNK SUPPLY
 
 Nothing about this loop promises or guarantees any token price outcome.
 
+### ZBNK trading-fee liquidity
+
+ZBNK launches against USDG on Pons. Its creator-fee recipient is the pre-audit
+`PonsFeeLiquidityManager`:
+
+`Pons USDG creator fees → 50% zZEC/USDG liquidity + 50% treasury allocation`
+
+The liquidity share mints an oracle-guarded, single-sided USDG position below spot directly to
+the protocol Safe. It supplies USDG to users selling zZEC into the ZINVEST route and accumulates
+zZEC when trades cross its range. The treasury share then follows the treasury's configured
+ZEC-acquisition / ZBNK-retirement / reserve split.
+
+Community funding is separate: `/liquidity` mints each contributor's Uniswap v3 LP NFT directly
+to that contributor. ZBANK never owns or can withdraw those user positions.
+
 ## The proposed redemption model
 
 The intent is that eligible ZBNK represents a **proposed proportional redemption claim**

@@ -510,7 +510,7 @@ export default function Docs() {
             <p>
               Potential revenue sources: the ZINVEST execution fee, the ZCREDIT reserve factor
               (the spread between borrow and supply interest), the ZLOOP execution fee, and
-              routing fees if ZSWAP charges them. All of it converges on one allocation:
+              routing fees if ZSWAP charges them. Product revenue converges on one allocation:
             </p>
             <Params
               rows={[
@@ -522,6 +522,18 @@ export default function Docs() {
             <p className="t-note">
               Placeholder split, validated in config to sum to exactly 100%. Final percentages
               are not confirmed and will be published with the treasury contracts.
+            </p>
+            <p>
+              ZBNK trading adds a separate first stage. The token launches against USDG on Pons
+              with the pre-audit liquidity manager as creator-fee recipient. The alpha
+              configuration routes 50% of claimed USDG into a zZEC/USDG position and sends 50%
+              into the treasury allocation above. Anyone may trigger harvesting; every LP NFT
+              mints directly to the protocol Safe.
+            </p>
+            <p>
+              Community liquidity is separate and non-custodial. On{" "}
+              <Link to="/liquidity">ZLIQUIDITY</Link>, users provide zZEC and USDG directly to
+              Uniswap v3 and receive their own LP NFT. ZBANK cannot withdraw user positions.
             </p>
           </section>
 
@@ -547,6 +559,7 @@ export default function Docs() {
                 ["ZCREDIT lending market", "Deployed on mainnet — open beta, unaudited, collateral capped"],
                 ["ZEC/USD oracle", "Deployed — Chainlink Data Streams, verified onchain, keeper-relayed"],
                 ["Treasury + redemption", "Pre-audit alpha built — deploys after canonical Pons ZBNK launch"],
+                ["Token-fee liquidity manager", "Pre-audit alpha built — deploy before Pons launch"],
                 ["ZBNK token", "Not launched"],
                 ["Audits", "None yet — and none claimed; beta products say so where deposits happen"],
               ]}

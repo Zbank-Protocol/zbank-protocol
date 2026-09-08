@@ -51,9 +51,11 @@ export const TOKEN = {
  * which is an easy way to silently show holders the wrong number.
  */
 export const PONS = {
-  factory: "0xf5695117b99B6f6401e67d4195BD653628176C6C" as `0x${string}`,
-  feeEscrow: null as `0x${string}` | null,
-  memeHook: null as `0x${string}` | null,
+  /** Pons v2 factory; verified by launchConfigCount() on Robinhood Chain. */
+  factory: "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e" as `0x${string}`,
+  feeEscrow: "0xd3AFEB2a57f70eF218Aa82451c51B2fb0416Ac9e" as `0x${string}` | null,
+  memeHook: "0xE5e702641Ea86F4ae6cC3cDaeD2B886f976Be044" as `0x${string}` | null,
+  graduationGuard: "0xf5695117b99B6f6401e67d4195BD653628176C6C" as `0x${string}`,
   /** Standard protocol trading fee, before any creator tax. */
   protocolFeeBps: 100,
   /** Current split of the standard fee: the creator keeps 70%, Pons keeps 30%. */

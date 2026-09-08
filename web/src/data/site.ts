@@ -441,6 +441,11 @@ export const PROTOCOL_ITEMS: ProtocolItem[] = [
     value: "50% ZEC treasury · 30% ZBNK retirement · 20% reserve — proposed",
   },
   {
+    label: "Token-Fee Liquidity",
+    value:
+      "50% of Pons USDG creator fees fund zZEC / USDG · 50% enters treasury allocation — alpha built",
+  },
+  {
     label: "Audit Status",
     value: "Unaudited — external audit pending",
     href: "https://github.com/Zbank-Protocol/contracts/blob/main/SECURITY.md",

@@ -29,6 +29,7 @@ const NAV: NavEntry[] = [
     menu: [
       { name: "ZINVEST", ticker: "ZINVEST", desc: "USDG live; direct zZEC routing coming soon.", to: "/invest" },
       { name: "ZINDEX", ticker: "ZINDEX", desc: "Prebuilt market strategies — ZTECH, ZAI, Z500.", to: "/invest/indexes" },
+      { name: "ZLIQUIDITY", ticker: "ZEC", desc: "Fund the shared zZEC / USDG market and own the LP position.", to: "/liquidity" },
     ],
   },
   {
