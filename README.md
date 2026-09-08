@@ -55,6 +55,7 @@ Deployed Robinhood Chain contracts:
 
 - ZCREDIT: [`0x77ccb77d1fd337b7027b3482ca365db57d92151e`](https://robinhoodchain.blockscout.com/address/0x77ccb77d1fd337b7027b3482ca365db57d92151e)
 - ZEC/USD feed: [`0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5`](https://robinhoodchain.blockscout.com/address/0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5)
+- Pons fee liquidity manager: [`0x082B87D21A5F840De52F2c154aC4132E3C365295`](https://robinhoodchain.blockscout.com/address/0x082B87D21A5F840De52F2c154aC4132E3C365295)
 - Temporary protocol Safe: [`0x31837999D9E463B2EB4327CEb4BD7CCa2a500480`](https://robinhoodchain.blockscout.com/address/0x31837999D9E463B2EB4327CEb4BD7CCa2a500480)
 
 Read [`SECURITY.md`](SECURITY.md) before integrating or depositing funds.

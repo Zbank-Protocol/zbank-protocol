@@ -3,7 +3,7 @@ import { PageHead } from "../components/app/PageHead";
 import { WalletButton } from "../components/app/WalletButton";
 import { AssetAmountInput } from "../components/app/AssetAmountInput";
 import { TickerIcon } from "../components/app/TickerIcon";
-import { ASSETS, NETWORK } from "../config/protocol";
+import { ASSETS, NETWORK, PROTOCOL_CONTRACTS } from "../config/protocol";
 import { useWallet } from "../hooks/useWallet";
 import { useTokenBalance } from "../hooks/useTokenBalance";
 import {
@@ -240,6 +240,16 @@ export default function Liquidity() {
               accumulating zZEC as trades cross the range.
             </p>
             <span className="chip chip--proposed">Pre-audit alpha · activates with ZBNK</span>
+            {PROTOCOL_CONTRACTS.ponsFeeLiquidityManager ? (
+              <a
+                className="liquidity-manager-link"
+                href={`${NETWORK.explorer}/address/${PROTOCOL_CONTRACTS.ponsFeeLiquidityManager}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Fee manager · {PROTOCOL_CONTRACTS.ponsFeeLiquidityManager.slice(0, 10)}… ↗
+              </a>
+            ) : null}
           </aside>
         </div>
 

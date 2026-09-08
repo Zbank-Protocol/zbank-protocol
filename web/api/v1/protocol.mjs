@@ -46,7 +46,7 @@ const manifest = {
     treasury: null,
     redemption: null,
     payoutRegistry: null,
-    ponsFeeLiquidityManager: null,
+    ponsFeeLiquidityManager: "0x082B87D21A5F840De52F2c154aC4132E3C365295",
     zbnk: null,
   },
   assets: {
@@ -68,7 +68,7 @@ const manifest = {
     memeHook: "0xE5e702641Ea86F4ae6cC3cDaeD2B886f976Be044",
     quoteAsset: "USDG",
     feeLiquidityBps: 5000,
-    status: "manager_built_not_deployed",
+    status: "manager_deployed_awaiting_token_and_treasury",
   },
   oracle: {
     provider: "chainlink-data-streams",

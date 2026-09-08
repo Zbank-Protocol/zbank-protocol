@@ -66,6 +66,8 @@ export const PONS = {
 export const CONTRACTS = {
   payoutRegistry: null as `0x${string}` | null,
   treasury: null as `0x${string}` | null,
+  feeLiquidityManager:
+    "0x082B87D21A5F840De52F2c154aC4132E3C365295" as `0x${string}` | null,
 } as const;
 
 /**

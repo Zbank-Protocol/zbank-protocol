@@ -4774,6 +4774,18 @@ main,
   font-weight: 400;
 }
 
+.liquidity-manager-link {
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.2em;
+}
+
+.liquidity-manager-link:hover {
+  color: var(--gold);
+}
+
 .liquidity-risks {
   display: grid;
   grid-template-columns: minmax(10rem, 0.3fr) 1fr auto;

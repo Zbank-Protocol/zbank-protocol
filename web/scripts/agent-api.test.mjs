@@ -36,7 +36,10 @@ test("protocol manifest exposes canonical launch state", async () => {
   assert.equal(body.contracts.zbnk, null);
   assert.equal(body.contracts.redemption, null);
   assert.equal(body.contracts.payoutRegistry, null);
-  assert.equal(body.contracts.ponsFeeLiquidityManager, null);
+  assert.equal(
+    body.contracts.ponsFeeLiquidityManager,
+    "0x082B87D21A5F840De52F2c154aC4132E3C365295",
+  );
   assert.equal(body.pons.factory, "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e");
   assert.equal(body.pons.quoteAsset, "USDG");
   assert.equal(body.pons.feeLiquidityBps, 5000);

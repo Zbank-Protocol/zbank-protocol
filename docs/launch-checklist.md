@@ -17,8 +17,9 @@ with `SECURITY.md` (the risk register) — nothing below overrides it.
 
 ## Phase 1 — Token launch (ZBNK on Pons)
 
-1. Deploy `PonsFeeLiquidityManager` and verify its owner and LP NFT recipient are the protocol
-   Safe. Treasury remains unset until step 6.
+1. **DEPLOYED:** `PonsFeeLiquidityManager`
+   (`0x082B87D21A5F840De52F2c154aC4132E3C365295`). Its owner and LP NFT recipient are the
+   protocol Safe. Treasury remains unset until step 6.
 2. Launch ZBNK through the verified Pons v2 factory (`web/src/config.ts` → `PONS.factory`) with
    **USDG as pair token** and the liquidity manager as `creatorFeeRecipient`.
 3. Record from the launch transaction: token address, curve, pair token, fee escrow, meme hook,

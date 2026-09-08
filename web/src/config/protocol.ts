@@ -93,7 +93,8 @@ export const PROTOCOL_CONTRACTS = {
   /** Self-service Zcash t-address registry for native-ZEC claims. */
   payoutRegistry: null as `0x${string}` | null,
   /** Claims Pons USDG creator fees and funds zZEC/USDG liquidity. */
-  ponsFeeLiquidityManager: null as `0x${string}` | null,
+  ponsFeeLiquidityManager:
+    "0x082B87D21A5F840De52F2c154aC4132E3C365295" as `0x${string}` | null,
   /** ZBNK token. */
   zbnk: null as `0x${string}` | null,
   /** Pons-compatible permanent retirement address. */

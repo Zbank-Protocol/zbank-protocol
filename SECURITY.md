@@ -23,7 +23,7 @@ Public audit issues are for non-exploitable hardening and defense-in-depth findi
 | `UniswapV3Adapter.sol` (approved direct/multi-hop venue paths) | Implemented, unit-tested, **not audited, not deployed** — direct zZEC remains disabled until its market is funded and reviewed |
 | `ZBankTreasury.sol` (revenue split / buckets / Pons-compatible retirement) | Implemented, unit-tested, **not audited, not deployed** |
 | `ZBankRedemption.sol` (atomic zZEC + operator-settled native ZEC) | Implemented, unit-tested, **not audited, not deployed** — permanently binds to the canonical Pons ZBNK address |
-| `PonsFeeLiquidityManager.sol` (USDG creator fees → LP + treasury) | Implemented, unit-tested, **not audited, not deployed** — intended Pons creator-fee recipient |
+| `PonsFeeLiquidityManager.sol` (USDG creator fees → LP + treasury) | **Deployed pre-audit alpha** at `0x082B87D21A5F840De52F2c154aC4132E3C365295`, unit-tested, owned by the protocol Safe; treasury unset until ZBNK launches |
 | `ZBNK.sol` (fixed-supply burnable token) | Implemented, unit-tested, **not launched** — superseded if launched via Pons |
 | `ChainlinkOracleAdapter.sol` (push-feed adapter, fallback) | Implemented, unit-tested |
 | `ZecUsdDataStreamFeed.sol` (ZEC/USD via Chainlink Data Streams verifier) | **Deployed and receiving verified reports** at `0x931F6295bf6aB9Dc02997a03b4ba85Aca9373AF5`, unit-tested, **not audited** |

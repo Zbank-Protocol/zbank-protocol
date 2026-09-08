@@ -28,6 +28,9 @@ tier, and launch limits can all be verified before users see it as Live.
   ZEC/USD oracle price and mints the initial LP position to the protocol Safe.
 - `PonsFeeLiquidityManager.sol` claims ZBNK's USDG creator fees, routes 50% into an
   oracle-guarded one-sided USDG position below spot, and sends 50% to treasury allocation.
+  The deployed pre-audit manager is
+  `0x082B87D21A5F840De52F2c154aC4132E3C365295`; use it as the Pons
+  `creatorFeeRecipient`.
 - `src/adapters/UniswapV3Adapter.sol` executes only owner-approved direct and multi-hop
   Uniswap v3 paths.
 - `script/DeployZecInvest.s.sol` refuses to deploy until the pool exists with both assets,
