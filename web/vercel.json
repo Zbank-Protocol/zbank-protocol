@@ -2,8 +2,17 @@
   "functions": {
     "api/v1/*.mjs": {
       "maxDuration": 10
+    },
+    "api/internal/*.mjs": {
+      "maxDuration": 60
     }
   },
+  "crons": [
+    {
+      "path": "/api/internal/keeper",
+      "schedule": "*/10 * * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/.well-known/agent.json",

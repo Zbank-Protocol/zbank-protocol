@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import protocolHandler from "../api/v1/protocol.mjs";
 import marketHandler from "../api/v1/market.mjs";
+import keeperHandler from "../api/internal/keeper.mjs";
 
-async function invoke(handler) {
+async function invoke(handler, req = { method: "GET", headers: {} }) {
   let statusCode;
   let body;
   const headers = {};
@@ -21,7 +22,7 @@ async function invoke(handler) {
     },
     end: () => res,
   };
-  await handler({ method: "GET" }, res);
+  await handler(req, res);
   return { statusCode, body, headers };
 }
 
@@ -47,4 +48,18 @@ test("live market endpoint returns explicit units and oracle state", async () =>
   assert.equal(typeof body.market.availableLiquidityUsdg, "string");
   assert.equal(body.market.collateralCapZec, "5000");
   assert.equal(body.units.utilizationBps, "basis_points");
+});
+
+test("keeper endpoint rejects requests without the cron bearer token", async () => {
+  const previous = process.env.CRON_SECRET;
+  process.env.CRON_SECRET = "test-cron-secret";
+  try {
+    const { statusCode, body, headers } = await invoke(keeperHandler);
+    assert.equal(statusCode, 401);
+    assert.equal(body.error, "unauthorized");
+    assert.equal(headers["cache-control"], "no-store");
+  } finally {
+    if (previous == null) delete process.env.CRON_SECRET;
+    else process.env.CRON_SECRET = previous;
+  }
 });
